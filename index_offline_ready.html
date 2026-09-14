@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>العشرة - لعبة الإثارة</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;background:radial-gradient(circle at top,#287b5d,#07382e 48%,#011612);color:#fff;min-height:100vh}
+.page{display:none;min-height:100vh;padding:12px;align-items:center;justify-content:center}
+.page.show{display:flex}
+.box{width:100%;max-width:900px;background:#001c15ee;border-radius:24px;padding:16px;box-shadow:0 18px 60px #000;border:1px solid #ffffff22}
+h1{text-align:center;color:#ffd83d;font-size:40px;margin:5px 0 15px}
+input,select,button{width:100%;padding:13px;margin-top:8px;border-radius:12px;font-size:16px}
+input,select{background:#fff;color:#111;border:0}
+button{border:0;background:#ffd83d;font-weight:bold;color:#171200}
+.dark{background:#155b49;color:#fff}.red{background:#a62d3d;color:#fff}.blue{background:#2858a0;color:#fff}
+.small{text-align:center;color:#aaa;font-size:12px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#0008;padding:10px;border-radius:15px}
+.target{background:#ffd83d;color:#111;padding:8px 13px;border-radius:20px;font-weight:bold}
+.round{background:#2858a0;padding:8px 12px;border-radius:20px;font-weight:bold}
+.players{display:flex;gap:7px;overflow-x:auto;margin:9px 0}
+.player{min-width:110px;background:#ffffff12;border-radius:10px;padding:7px;text-align:center}
+.player.turn{background:#ffd83d;color:#111;font-weight:bold}
+.table{min-height:285px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.message{min-height:45px;font-size:18px;font-weight:bold}
+.pile{width:130px;height:170px;border:3px solid white;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:45px;background:repeating-linear-gradient(45deg,#17358e 0 8px,#eee 8px 12px,#b22238 12px 20px);box-shadow:0 10px 25px #000;margin:10px auto}
+.pulse{animation:pulse .4s}@keyframes pulse{50%{transform:scale(1.12)}}
+.hand{display:flex;gap:7px;overflow-x:auto;padding:10px 2px 14px;min-height:120px}
+.card{min-width:65px;height:95px;background:#fff;color:#111;border:2px solid #ddd;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:23px;font-weight:bold;box-shadow:0 5px 12px #000;cursor:pointer;flex-shrink:0}
+.card.red{color:#c52236}
+.log{height:85px;overflow:auto;background:#0008;border-radius:10px;padding:7px;font-size:12px}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.recordBox{margin-top:12px;padding:10px;background:#ffffff0d;border-radius:14px}
+.recordTitle{text-align:center;color:#ffd83d;font-weight:bold}.recordStatus{text-align:center;font-size:13px;margin:6px}.recording{color:#ff5365;font-weight:bold}
+audio{width:100%;margin-top:8px}.winner{text-align:center;color:#ffd83d;font-size:29px;line-height:1.7}.score{text-align:center;font-size:19px;line-height:2}
+.fly{position:fixed;z-index:999;width:67px;height:97px;background:#fff;color:#111;border:2px solid #ddd;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:22px;font-weight:bold;box-shadow:0 10px 25px #000;pointer-events:none;transition:transform .5s,opacity .5s}
+</style>
+</head>
+<body>
+<div id="start" class="page show"><div class="box">
+<h1>🃏 العشرة 🔥</h1>
+<p style="text-align:center;font-size:18px">نسخة الجولات المتعددة والإثارة</p>
+<label>طريقة اللعب</label>
+<select id="mode"><option value="human">👥 لاعبين حقيقيين</option><option value="computer">🤖 لاعب ضد الكمبيوتر</option><option value="mixed">👥 لاعبين + كمبيوتر</option></select>
+<label>عدد اللاعبين</label>
+<select id="count"><option value="2">2 لاعبين</option><option value="3">3 لاعبين</option><option value="4" selected>4 لاعبين</option></select>
+<div id="names"></div>
+<button id="startBtn">🔥 بداية اللعبة</button>
+<button id="musicStart" class="dark">🎵 تشغيل الموسيقى الحماسية</button>
+<p class="small">156 ورقة • 3 مجموعات • توزيع متكرر<br>6 أوراق لكل لاعب في كل جولة<br>6 أوراق جديدة على الأرض مع كل توزيع</p>
+</div></div>
+
+<div id="game" class="page"><div class="box">
+<div class="top"><b id="turnName">الدور</b><div class="target">🎯 المطلوب: <span id="target">1</span></div><div class="round">🔄 الجولة: <span id="round">1</span></div></div>
+<div id="players" class="players"></div>
+<div class="table"><div id="message" class="message">اللعبة بدأت</div><div id="pile" class="pile">🂠</div><div>🃏 أوراق الأرض: <b id="pileCount">0</b></div><div>📦 المتبقي: <b id="deckCount">0</b></div></div>
+<b id="handTitle"></b><div id="hand" class="hand"></div><div id="log" class="log"></div>
+<div class="controls"><button id="musicBtn" class="dark">🎵 إيقاف الموسيقى</button><button id="passBtn">👁️ تسليم الدور</button><button id="rulesBtn" class="blue">📖 القواعد</button><button id="endBtn" class="red">🏁 نهاية اللعبة</button></div>
+<div class="recordBox"><div class="recordTitle">🎙️ التسجيل الصوتي</div><div id="recordStatus" class="recordStatus">التسجيل متوقف</div>
+<div class="controls"><button id="recordBtn" class="red">🔴 بدء التسجيل</button><button id="stopRecordBtn" class="dark" disabled>⏹️ إيقاف</button><button id="playRecordBtn" class="dark">▶️ تشغيل</button><button id="deleteRecordBtn" class="red">🗑️ حذف</button></div>
+<audio id="recordAudio" controls style="display:none"></audio><button id="downloadRecordBtn" class="dark" style="display:none">💾 حفظ التسجيل</button></div>
+</div></div>
+
+<div id="pass" class="page"><div class="box"><h1 style="font-size:32px">🔒 تسليم الدور</h1><p id="passText" style="text-align:center;font-size:23px"></p><p style="text-align:center;color:#bbb">سلّم الهاتف للاعب الجديد ولا تنظر إلى أوراق اللاعب السابق.</p><button id="continueBtn">▶ استمرار</button></div></div>
+
+<div id="end" class="page"><div class="box"><h1>🏁 نهاية اللعبة</h1><div id="winner" class="winner"></div><hr><div id="score" class="score"></div><button id="newBtn">🔄 لعبة جديدة</button></div></div>
+
+<script>
+"use strict";
+let players=[],deck=[],pile=[],target=1,turn=0,round=1,lastWinner=-1;
+let music=false,musicTimer=null,audioCtx=null;
+let recorder=null,recordedChunks=[],recordedBlob=null,recordedURL=null,microphoneStream=null;
+
+function page(id){document.querySelectorAll(".page").forEach(x=>x.classList.remove("show"));document.getElementById(id).classList.add("show");}
+function makeNames(){
+let mode=document.getElementById("mode").value,count=+document.getElementById("count").value;if(mode==="computer")count=2;
+let box=document.getElementById("names");box.innerHTML="";
+for(let i=1;i<=count;i++){let computer=(mode==="computer"&&i===2)||(mode==="mixed"&&i>1);
+box.innerHTML+="<label>"+(computer?"🤖 ":"👤 ")+"اسم "+i+"</label><input id='name"+i+"' value='"+(computer?"الكمبيوتر "+i:"اللاعب "+i)+"' maxlength='18'>";}}
+document.getElementById("mode").onchange=makeNames;document.getElementById("count").onchange=makeNames;makeNames();
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function createDeck(){
+let suits=[["♠",false],["♥",true],["♦",true],["♣",false]],cards=[],id=0;
+for(let copy=0;copy<3;copy++)for(let s of suits)for(let r=1;r<=13;r++)cards.push({id:id++,rank:r,suit:s[0],red:s[1]});
+for(let i=0;i<6;i++)shuffle(cards);return cards;
+}
+function dealNewRound(){
+round++;let playersCount=players.length;
+for(let i=0;i<6;i++)for(let p=0;p<playersCount;p++)if(deck.length>0)players[p].hand.push(deck.pop());
+for(let i=0;i<6;i++)if(deck.length>0)pile.push(deck.pop());
+log("🔥 توزيع جديد! الجولة "+round+" بدأت — 6 أوراق لكل لاعب.");
+log("🂠 تمت إضافة أوراق جديدة إلى الأرض.");
+document.getElementById("round").textContent=round;
+}
+function startGame(){
+let mode=document.getElementById("mode").value,count=+document.getElementById("count").value;if(mode==="computer")count=2;
+players=[];
+for(let i=1;i<=count;i++){let computer=(mode==="computer"&&i===2)||(mode==="mixed"&&i>1);
+players.push({name:document.getElementById("name"+i).value.trim()||"اللاعب "+i,computer:computer,hand:[],won:0});}
+deck=createDeck();pile=[];target=1;turn=0;round=0;lastWinner=-1;dealNewRound();page("game");
+document.getElementById("message").textContent="🔥 بدأت الجولة الأولى! الرقم 1 مختبئ...";render();startMusic();
+}
+function render(){
+document.getElementById("turnName").textContent="🎮 الدور: "+players[turn].name;
+document.getElementById("target").textContent=target;document.getElementById("round").textContent=round;
+document.getElementById("pileCount").textContent=pile.length;document.getElementById("deckCount").textContent=deck.length;
+let pb=document.getElementById("players");pb.innerHTML="";
+players.forEach((p,i)=>{let d=document.createElement("div");d.className="player"+(i===turn?" turn":"");d.innerHTML=(p.computer?"🤖 ":"👤 ")+p.name+"<br>🃏 "+p.hand.length+" | 🏆 "+p.won;pb.appendChild(d);});
+let hand=document.getElementById("hand");hand.innerHTML="";
+if(players[turn].computer){document.getElementById("handTitle").textContent="🤖 الكمبيوتر يفكر...";return;}
+document.getElementById("handTitle").textContent="🖐️ أوراق "+players[turn].name;
+players[turn].hand.forEach((c,i)=>{let el=document.createElement("div");el.className="card"+(c.red?" red":"");let name=c.rank;if(c.rank===11)name="J";if(c.rank===12)name="Q";if(c.rank===13)name="K";
+el.innerHTML="<b>"+name+"</b><span>"+c.suit+"</span>";el.onclick=()=>playCard(i,el);hand.appendChild(el);});
+}
+function animateCard(el,card){
+if(!el)return;let r=el.getBoundingClientRect(),p=document.getElementById("pile").getBoundingClientRect(),fly=document.createElement("div");
+fly.className="fly"+(card.red?" red":"");let name=card.rank;if(card.rank===11)name="J";if(card.rank===12)name="Q";if(card.rank===13)name="K";
+fly.innerHTML="<b>"+name+"</b><span>"+card.suit+"</span>";fly.style.left=r.left+"px";fly.style.top=r.top+"px";document.body.appendChild(fly);
+requestAnimationFrame(()=>{fly.style.transform="translate("+(p.left-r.left)+"px,"+(p.top-r.top)+"px) rotate(12deg) scale(.7)";fly.style.opacity=".2";});setTimeout(()=>fly.remove(),550);
+}
+function playCard(index,sourceEl){
+let player=players[turn],card=player.hand[index];if(!card)return;if(sourceEl)animateCard(sourceEl,card);player.hand.splice(index,1);cardSound();
+let name=card.rank;if(card.rank===11)name="الولد J";if(card.rank===12)name="البنت Q";if(card.rank===13)name="الشايب K";log("🃏 "+player.name+" لعب "+name);
+if(card.rank===target){
+let amount=pile.length;player.won+=amount;pile=[];lastWinner=turn;
+document.getElementById("message").textContent="💥💥 "+player.name+" وجد الرقم "+target+" وأخذ "+amount+" ورقة!";
+log("🔥🔥 الكومة كلها أصبحت ملك "+player.name);pileSound();
+let pe=document.getElementById("pile");pe.classList.add("pulse");setTimeout(()=>pe.classList.remove("pulse"),400);
+target++;if(target>10){setTimeout(finishGame,1200);return;}
+}else{
+pile.push(card);
+if(card.rank===11)document.getElementById("message").textContent="🃏 الولد J! الكومة تكبر...";
+else if(card.rank===12)document.getElementById("message").textContent="👸 البنت Q! الرقم ما زال مختبئًا...";
+else if(card.rank===13)document.getElementById("message").textContent="👑 الشايب K! إثارة أكثر...";
+else document.getElementById("message").textContent="🃏 الورقة لم تكن "+target+" ... استمر!";
+}
+if(allHandsEmpty()){handleEndOfDistribution();return;}nextPlayer();
+}
+function allHandsEmpty(){return players.every(p=>p.hand.length===0);}
+function handleEndOfDistribution(){
+if(deck.length>0){document.getElementById("message").textContent="🔥 انتهى التوزيع... استعدوا للتوزيع الجديد!";log("⏳ انتهت أوراق الأيدي ولكن اللعبة مستمرة.");
+setTimeout(()=>{dealNewRound();turn=0;render();if(players[turn].computer)setTimeout(computerPlay,900);else{page("pass");document.getElementById("passText").innerHTML="🔥 توزيع جديد!<br>الدور الآن لـ <b>"+players[turn].name+"</b>";}},1000);return;}
+finishGame();
+}
+function nextPlayer(){
+let n=(turn+1)%players.length,safety=0;while(players[n].hand.length===0&&safety<players.length){n=(n+1)%players.length;safety++;}turn=n;
+if(players[turn].computer){render();setTimeout(computerPlay,900);}else{page("pass");document.getElementById("passText").innerHTML="🎴 الدور الآن لـ <b>"+players[turn].name+"</b>";}
+}
+function computerPlay(){
+if(!players[turn].computer)return;let hand=players[turn].hand;if(!hand.length){nextPlayer();return;}
+let wanted=[];hand.forEach((c,i)=>{if(c.rank===target)wanted.push(i)});let choice;
+if(wanted.length&&Math.random()<0.65)choice=wanted[Math.floor(Math.random()*wanted.length)];else choice=Math.floor(Math.random()*hand.length);
+playCard(choice,null);
+}
+function passTurn(){
+let n=(turn+1)%players.length,safety=0;while(players[n].hand.length===0&&safety<players.length){n=(n+1)%players.length;safety++;}turn=n;
+page("pass");document.getElementById("passText").innerHTML="🎴 الدور الآن لـ <b>"+players[turn].name+"</b>";
+}
+function continueTurn(){page("game");render();if(players[turn].computer)setTimeout(computerPlay,800);}
+function finishGame(){
+if(pile.length){let receiver=lastWinner>=0?lastWinner:turn;players[receiver].won+=pile.length;pile=[];}
+let ranking=players.slice().sort((a,b)=>b.won-a.won);
+document.getElementById("winner").innerHTML="🏆 الفائز الكبير 🏆<br>"+ranking[0].name+"<br>"+ranking[0].won+" ورقة";
+document.getElementById("score").innerHTML=ranking.map((p,i)=>(i+1)+". "+p.name+" — "+p.won+" ورقة").join("<br>");page("end");endMusic();
+}
+function log(text){let box=document.getElementById("log");box.innerHTML="<div>"+text+"</div>"+box.innerHTML;}
+function getAudio(){let AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;if(!audioCtx)audioCtx=new AC();if(audioCtx.state==="suspended")audioCtx.resume();return audioCtx;}
+function tone(f,d,v){let c=getAudio();if(!c)return;let o=c.createOscillator(),g=c.createGain();o.type="sawtooth";o.frequency.value=f;g.gain.value=v||.05;o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+d);}
+function cardSound(){tone(130,.07,.13);setTimeout(()=>tone(380,.08,.09),60);}
+function pileSound(){[392,494,587,659,784,988,1175].forEach((n,i)=>setTimeout(()=>tone(n,.16,.12),i*80));}
+function startMusic(){
+getAudio();if(music)return;music=true;let notes=[262,330,392,523,392,330,440,523,659,523,440,659,784,659,523,440,330,392,523,659,784,659,523,392],pos=0;
+musicTimer=setInterval(()=>{tone(notes[pos++%notes.length],.16,.045);},190);updateMusic();
+}
+function toggleMusic(){getAudio();if(music){music=false;clearInterval(musicTimer);}else startMusic();updateMusic();}
+function updateMusic(){let b=document.getElementById("musicBtn");b.textContent=music?"🔇 إيقاف الموسيقى":"🎵 تشغيل الموسيقى";}
+function endMusic(){music=false;clearInterval(musicTimer);[523,659,784,988,1175,1318].forEach((n,i)=>setTimeout(()=>tone(n,.28,.11),i*150));}
+function rules(){alert("🃏🔥 قواعد العشرة 🔥🃏\n\n156 ورقة = 3 مجموعات.\n\n6 أوراق لكل لاعب في كل توزيع.\n\n6 أوراق على الأرض مع كل توزيع.\n\nإذا انتهت أوراق اللاعبين، يبدأ توزيع جديد تلقائيًا طالما توجد كوتشينة.\n\nالرقم المطلوب يبدأ من 1 إلى 10.\n\nJ الولد و Q البنت و K الشايب أوراق تفريق.\n\nالرقم لا يتغير حتى تظهر ورقة الرقم المطلوب.\n\nمن يظهر الرقم المطلوب يأخذ الكومة كاملة.\n\nبعد الرقم 10 تنتهي اللعبة.\n\nالأكثر أوراقًا هو الفائز.");}
+
+async function startRecording(){
+try{
+if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){alert("التسجيل يحتاج Chrome وHTTPS.");return;}
+if(typeof MediaRecorder==="undefined"){alert("المتصفح لا يدعم التسجيل.");return;}
+microphoneStream=await navigator.mediaDevices.getUserMedia({audio:true});recordedChunks=[];let options={};
+if(MediaRecorder.isTypeSupported("audio/webm;codecs=opus"))options.mimeType="audio/webm;codecs=opus";
+recorder=new MediaRecorder(microphoneStream,options);
+recorder.ondataavailable=e=>{if(e.data.size)recordedChunks.push(e.data);};
+recorder.onstop=()=>{recordedBlob=new Blob(recordedChunks,{type:recorder.mimeType||"audio/webm"});if(recordedURL)URL.revokeObjectURL(recordedURL);recordedURL=URL.createObjectURL(recordedBlob);
+let audio=document.getElementById("recordAudio");audio.src=recordedURL;audio.style.display="block";document.getElementById("downloadRecordBtn").style.display="block";document.getElementById("recordStatus").textContent="✅ تم حفظ التسجيل";document.getElementById("recordStatus").classList.remove("recording");};
+recorder.start();document.getElementById("recordStatus").textContent="🔴 التسجيل يعمل الآن...";document.getElementById("recordStatus").classList.add("recording");document.getElementById("recordBtn").disabled=true;document.getElementById("stopRecordBtn").disabled=false;
+}catch(e){alert("لم يتم السماح بالميكروفون. افتح اللعبة في Chrome عبر HTTPS واضغط Allow / سماح.");}
+}
+function stopRecording(){if(recorder&&recorder.state!=="inactive")recorder.stop();if(microphoneStream){microphoneStream.getTracks().forEach(t=>t.stop());microphoneStream=null;}document.getElementById("recordBtn").disabled=false;document.getElementById("stopRecordBtn").disabled=true;}
+function playRecording(){if(!recordedURL){alert("لا يوجد تسجيل.");return;}document.getElementById("recordAudio").play();}
+function deleteRecording(){if(recordedURL)URL.revokeObjectURL(recordedURL);recordedURL=null;recordedBlob=null;recordedChunks=[];let a=document.getElementById("recordAudio");a.pause();a.src="";a.style.display="none";document.getElementById("downloadRecordBtn").style.display="none";document.getElementById("recordStatus").textContent="🎙️ التسجيل متوقف";}
+function downloadRecording(){if(!recordedURL){alert("لا يوجد تسجيل.");return;}let a=document.createElement("a");a.href=recordedURL;a.download="تسجيل_لعبة_العشرة.webm";a.click();}
+
+document.getElementById("startBtn").onclick=startGame;
+document.getElementById("musicStart").onclick=startMusic;
+document.getElementById("musicBtn").onclick=toggleMusic;
+document.getElementById("passBtn").onclick=passTurn;
+document.getElementById("continueBtn").onclick=continueTurn;
+document.getElementById("rulesBtn").onclick=rules;
+document.getElementById("endBtn").onclick=()=>{if(confirm("🏁 هل تريد إنهاء اللعبة الآن؟"))finishGame();};
+document.getElementById("newBtn").onclick=()=>location.reload();
+document.getElementById("recordBtn").onclick=startRecording;
+document.getElementById("stopRecordBtn").onclick=stopRecording;
+document.getElementById("playRecordBtn").onclick=playRecording;
+document.getElementById("deleteRecordBtn").onclick=deleteRecording;
+document.getElementById("downloadRecordBtn").onclick=downloadRecording;
+</script>
+
+<!-- تشغيل الأوفلاين فقط: لا يغير اللعبة أو الموسيقى -->
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./sw.js").catch(function(){});
+  });
+}
+</script>
+
+</body>
+</html>
