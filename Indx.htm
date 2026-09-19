@@ -1,0 +1,1682 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎮 منصة ألعابي</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ font-family:Arial,Tahoma,sans-serif;
+ background:linear-gradient(135deg,#07152e,#123d67);
+ color:white;
+ min-height:100vh;
+}
+
+.wrap{
+ max-width:1100px;
+ margin:auto;
+ padding:18px;
+}
+
+.hero,.card,.panel{
+ background:rgba(255,255,255,.09);
+ border:1px solid rgba(255,255,255,.15);
+ border-radius:22px;
+ box-shadow:0 12px 35px rgba(0,0,0,.25);
+}
+
+.hero{
+ padding:24px;
+ text-align:center;
+ margin-bottom:16px;
+}
+
+.hero h1{
+ margin:0 0 8px;
+ font-size:34px;
+}
+
+.hero p{
+ margin:6px 0;
+ color:#dbeafe;
+}
+
+.panel{
+ padding:18px;
+ margin:14px 0;
+}
+
+.auth{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
+}
+
+input,select{
+ width:100%;
+ padding:13px;
+ border:0;
+ border-radius:12px;
+ font-size:16px;
+}
+
+button{
+ border:0;
+ border-radius:12px;
+ padding:12px 16px;
+ font-size:16px;
+ font-weight:bold;
+ cursor:pointer;
+ margin:4px;
+ background:white;
+ color:#09203d;
+}
+
+button.primary{
+ background:#ffd54a;
+ color:#251d00;
+}
+
+button.danger{
+ background:#ff8d8d;
+}
+
+.muted{
+ color:#cbd5e1;
+ font-size:14px;
+}
+
+.hidden{
+ display:none!important;
+}
+
+.msg{
+ padding:10px;
+ border-radius:10px;
+ background:rgba(0,0,0,.2);
+ margin-top:10px;
+ white-space:pre-wrap;
+}
+
+.games{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:14px;
+}
+
+.card{
+ padding:18px;
+ text-align:center;
+}
+
+.icon{
+ font-size:54px;
+}
+
+.card h3{
+ margin:8px 0;
+}
+
+.price{
+ font-size:20px;
+ font-weight:bold;
+ margin:8px;
+}
+
+.badge{
+ display:inline-block;
+ padding:5px 9px;
+ border-radius:20px;
+ background:#1d9bf0;
+ font-size:12px;
+}
+
+.row{
+ display:flex;
+ gap:8px;
+ flex-wrap:wrap;
+ align-items:center;
+}
+
+.between{
+ justify-content:space-between;
+}
+
+.status-paid{
+ color:#86efac;
+}
+
+.status-pending{
+ color:#fde68a;
+}
+
+.status-rejected,
+.status-refunded{
+ color:#fca5a5;
+}
+
+.scroll{
+ overflow:auto;
+}
+
+table{
+ width:100%;
+ border-collapse:collapse;
+ font-size:14px;
+}
+
+th,td{
+ padding:9px;
+ border-bottom:1px solid rgba(255,255,255,.12);
+ text-align:right;
+}
+
+footer{
+ text-align:center;
+ color:#cbd5e1;
+ padding:20px;
+}
+
+@media(max-width:760px){
+
+ .games{
+  grid-template-columns:1fr;
+ }
+
+ .auth{
+  grid-template-columns:1fr;
+ }
+
+ .hero h1{
+  font-size:27px;
+ }
+
+ table{
+  min-width:760px;
+ }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+<section class="hero">
+
+<h1>🎮 منصة ألعابي</h1>
+
+<p>
+🍳 مطعمي • 🎴 العشرة • 🎣 صائد السمك
+</p>
+
+<p class="muted">
+حساب واحد — الهاتف والكمبيوتر — اشتراك حسب المدة
+</p>
+
+</section>
+
+
+<!-- تسجيل الدخول -->
+
+<section id="authPanel" class="panel">
+
+<h2>🔐 تسجيل الدخول / إنشاء حساب</h2>
+
+<div class="auth">
+
+<input
+ id="email"
+ type="email"
+ placeholder="البريد الإلكتروني">
+
+<input
+ id="password"
+ type="password"
+ placeholder="كلمة المرور">
+
+</div>
+
+<div class="row">
+
+<button
+ class="primary"
+ onclick="signup()">
+إنشاء حساب
+</button>
+
+<button
+ onclick="login()">
+دخول
+</button>
+
+</div>
+
+<div id="authMsg" class="msg">
+أنشئ حسابًا أو ادخل بحسابك.
+</div>
+
+</section>
+
+
+
+<!-- المنصة -->
+
+<section id="appPanel" class="hidden">
+
+
+<section class="panel">
+
+<div class="row between">
+
+<div>
+<b>👤 الحساب:</b>
+<span id="userEmail"></span>
+</div>
+
+<button onclick="logout()">
+خروج
+</button>
+
+</div>
+
+</section>
+
+
+
+<!-- الألعاب -->
+
+<section class="panel">
+
+<h2>🎮 ألعابي</h2>
+
+<div id="games" class="games"></div>
+
+<div
+ id="gamesMsg"
+ class="msg hidden">
+</div>
+
+</section>
+
+
+
+<!-- الطلبات -->
+
+<section class="panel">
+
+<h2>🧾 طلباتي</h2>
+
+<div id="orders" class="scroll">
+
+<p class="muted">
+جارٍ التحميل...
+</p>
+
+</div>
+
+</section>
+
+
+
+<!-- لوحة المالك -->
+
+<section
+ id="ownerPanel"
+ class="panel hidden">
+
+<h2>👑 لوحة المالك</h2>
+
+<p class="muted">
+من هنا تستطيع إدارة الأسعار والمدة والطلبات.
+</p>
+
+<div id="ownerCatalog"></div>
+
+<h3>📦 آخر الطلبات</h3>
+
+<div
+ id="ownerOrders"
+ class="scroll">
+</div>
+
+<h3>🎟️ الاشتراكات</h3>
+
+<div
+ id="ownerEntitlements"
+ class="scroll">
+</div>
+
+</section>
+
+</section>
+
+</div>
+
+
+<footer>
+© منصة ألعابي
+</footer>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+"https://auptwgjiivhglxtdjlnd.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_6dszOZKIdlA57hHf2E3V5Q_VO-ewwtM";
+
+const sb =
+supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
+
+
+/* =========================
+   روابط الألعاب
+========================= */
+
+const GAME_LINKS = {
+
+ mat3amy:
+ "https://samimisk62-byte.github.io/mat3amy/",
+
+ alashra:
+ "https://samimisk62-byte.github.io/Alashra-Gam/",
+
+ saed_al_samak:
+ "https://samimisk62-byte.github.io/saed-Al-samak/"
+
+};
+
+
+/* =========================
+   معلومات الألعاب
+========================= */
+
+const GAME_INFO = {
+
+ mat3amy:{
+  name:"مطعمي",
+  icon:"🍳"
+ },
+
+ alashra:{
+  name:"العشرة",
+  icon:"🎴",
+  note:"156 ورقة"
+ },
+
+ saed_al_samak:{
+  name:"صائد السمك",
+  icon:"🎣"
+ }
+
+};
+
+
+let catalog=[];
+let access=[];
+
+
+/* =========================
+   أدوات
+========================= */
+
+function esc(s){
+
+ return String(s ?? "")
+ .replace(/[&<>"']/g,m=>({
+
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#039;"
+
+ }[m]));
+
+}
+
+
+function egp(n){
+
+ return (
+  Number(n||0)/100
+ ).toFixed(2)+" جنيه";
+
+}
+
+
+function usd(c){
+
+ return (
+  Number(c||0)/100
+ ).toFixed(2)+" دولار";
+
+}
+
+
+function msg(id,t,hide=false){
+
+ const e=document.getElementById(id);
+
+ e.textContent=t;
+
+ e.classList.toggle(
+  "hidden",
+  hide
+ );
+
+}
+
+
+/* =========================
+   تسجيل حساب
+========================= */
+
+async function signup(){
+
+ const email=
+ document.getElementById("email")
+ .value.trim();
+
+ const password=
+ document.getElementById("password")
+ .value;
+
+
+ if(
+  !email ||
+  password.length<6
+ ){
+
+  msg(
+   "authMsg",
+   "اكتب البريد وكلمة مرور من 6 أحرف على الأقل."
+  );
+
+  return;
+ }
+
+
+ const {
+  data,
+  error
+ }=
+ await sb.auth.signUp({
+  email,
+  password
+ });
+
+
+ if(error){
+
+  msg(
+   "authMsg",
+   error.message
+  );
+
+  return;
+ }
+
+
+ if(data.session){
+
+  msg(
+   "authMsg",
+   "تم إنشاء الحساب وتسجيل الدخول.",
+   true
+  );
+
+  await boot();
+
+ }else{
+
+  msg(
+   "authMsg",
+   "تم إنشاء الحساب. إذا طلب منك تأكيد البريد، افتح رسالة التأكيد ثم ارجع للمنصة."
+  );
+
+ }
+
+}
+
+
+/* =========================
+   دخول
+========================= */
+
+async function login(){
+
+ const email=
+ document.getElementById("email")
+ .value.trim();
+
+ const password=
+ document.getElementById("password")
+ .value;
+
+
+ const {
+  error
+ }=
+ await sb.auth.signInWithPassword({
+  email,
+  password
+ });
+
+
+ if(error){
+
+  msg(
+   "authMsg",
+   error.message
+  );
+
+  return;
+ }
+
+
+ await boot();
+
+}
+
+
+/* =========================
+   خروج
+========================= */
+
+async function logout(){
+
+ await sb.auth.signOut();
+
+ location.reload();
+
+}
+
+
+/* =========================
+   تشغيل المنصة
+========================= */
+
+async function boot(){
+
+ const {
+  data:{user}
+ }=
+ await sb.auth.getUser();
+
+
+ if(!user)return;
+
+
+ document
+ .getElementById("authPanel")
+ .classList.add("hidden");
+
+
+ document
+ .getElementById("appPanel")
+ .classList.remove("hidden");
+
+
+ document
+ .getElementById("userEmail")
+ .textContent=
+ user.email || "";
+
+
+ await Promise.all([
+
+  loadCatalog(),
+
+  loadAccess(),
+
+  loadOrders(),
+
+  loadOwner()
+
+ ]);
+
+}
+
+
+/* =========================
+   استدعاء Edge Function
+========================= */
+
+async function fn(
+ name,
+ body={}
+){
+
+ const {
+  data:{session}
+ }=
+ await sb.auth.getSession();
+
+
+ if(!session){
+
+  throw new Error(
+   "انتهت الجلسة، سجّل الدخول مرة أخرى."
+  );
+
+ }
+
+
+ const response=
+ await fetch(
+
+  SUPABASE_URL+
+  "/functions/v1/"+
+  name,
+
+  {
+   method:"POST",
+
+   headers:{
+    "Content-Type":
+    "application/json",
+
+    "Authorization":
+    "Bearer "+
+    session.access_token
+   },
+
+   body:
+   JSON.stringify(body)
+  }
+
+ );
+
+
+ let data={};
+
+ try{
+
+  data=
+  await response.json();
+
+ }catch(e){}
+
+
+ if(!response.ok){
+
+  throw new Error(
+   data.error ||
+   data.message ||
+   ("خطأ "+response.status)
+  );
+
+ }
+
+
+ return data;
+
+}
+
+
+/* =========================
+   الأسعار
+========================= */
+
+async function loadCatalog(){
+
+ try{
+
+  const d=
+  await fn(
+   "store-catalog"
+  );
+
+  catalog=
+  d.catalog || [];
+
+  renderGames();
+
+ }catch(e){
+
+  msg(
+   "gamesMsg",
+   "تعذر تحميل الأسعار: "+
+   e.message
+  );
+
+ }
+
+}
+
+
+/* =========================
+   الاشتراكات
+========================= */
+
+async function loadAccess(){
+
+ try{
+
+  const d=
+  await fn(
+   "account-game-access"
+  );
+
+  access=
+  d.access || [];
+
+  renderGames();
+
+ }catch(e){
+
+  msg(
+   "gamesMsg",
+   "تعذر قراءة اشتراكاتك: "+
+   e.message
+  );
+
+ }
+
+}
+
+
+/* =========================
+   معرفة اللعبة المفعلة
+========================= */
+
+function accessFor(code){
+
+ return access.find(
+  x =>
+   x.game_code===code &&
+   x.active
+ );
+
+}
+
+
+/* =========================
+   عرض الألعاب
+========================= */
+
+function renderGames(){
+
+ const box=
+ document.getElementById("games");
+
+
+ if(!catalog.length){
+
+  box.innerHTML=
+  "<p>لا توجد ألعاب متاحة حاليًا.</p>";
+
+  return;
+
+ }
+
+
+ box.innerHTML=
+
+ catalog
+ .filter(g=>g.is_for_sale)
+ .map(g=>{
+
+  const info=
+  GAME_INFO[g.game_code] ||
+  {
+   name:g.game_code,
+   icon:"🎮"
+  };
+
+
+  const a=
+  accessFor(
+   g.game_code
+  );
+
+
+  const until=
+  a
+   ?
+   new Date(
+    a.expires_at
+   ).toLocaleString("ar-EG")
+   :
+   "";
+
+
+  if(a){
+
+   return `
+
+   <article class="card">
+
+    <div class="icon">
+     ${info.icon}
+    </div>
+
+    <h3>
+     ${esc(info.name)}
+    </h3>
+
+    ${
+     info.note
+     ?
+     `<div class="badge">
+       ${info.note}
+      </div>`
+     :
+     ""
+    }
+
+    <p class="status-paid">
+     ✅ متاحة حتى
+     ${esc(until)}
+    </p>
+
+    <button
+     class="primary"
+     onclick="openGame('${g.game_code}')">
+
+     ▶️ تشغيل اللعبة
+
+    </button>
+
+   </article>
+
+   `;
+
+  }
+
+
+  return `
+
+  <article class="card">
+
+   <div class="icon">
+    ${info.icon}
+   </div>
+
+   <h3>
+    ${esc(info.name)}
+   </h3>
+
+   ${
+    info.note
+    ?
+    `<div class="badge">
+      ${info.note}
+     </div>`
+    :
+    ""
+   }
+
+   <div class="price">
+    ${egp(g.price_egp)}
+    داخل مصر
+   </div>
+
+   <div class="price">
+    ${usd(g.price_usd_cents)}
+    خارج مصر
+   </div>
+
+   <div class="muted">
+    مدة الاشتراك:
+    ${g.subscription_days}
+    يوم
+   </div>
+
+   <button
+    class="primary"
+    onclick="buy('${g.game_code}')">
+
+    🛒 شراء / تفعيل
+
+   </button>
+
+  </article>
+
+  `;
+
+ })
+ .join("");
+
+}
+
+
+/* =========================
+   إنشاء طلب شراء
+========================= */
+
+async function buy(code){
+
+ const ref=
+ prompt(
+  "اكتب رقم مرجع تحويل Vodafone Cash إن كان متاحًا:",
+  ""
+ );
+
+
+ try{
+
+  const d=
+  await fn(
+   "create-game-order",
+   {
+    game_code:code,
+
+    payment_reference:
+     ref || null
+   }
+  );
+
+
+  const amount=
+   d.order.currency==="EGP"
+   ?
+   egp(
+    d.order.amount_minor
+   )
+   :
+   usd(
+    d.order.amount_minor
+   );
+
+
+  alert(
+
+   "تم إنشاء الطلب بنجاح."+
+
+   "\n\nرقم الطلب:"+
+   d.order.id+
+
+   "\nالمبلغ:"+
+   amount+
+
+   "\nالحالة: قيد المراجعة."
+
+  );
+
+
+  await loadOrders();
+
+ }catch(e){
+
+  alert(
+   e.message
+  );
+
+ }
+
+}
+
+
+/* =========================
+   تشغيل اللعبة
+========================= */
+
+function openGame(code){
+
+ const a=
+ accessFor(code);
+
+
+ if(!a){
+
+  alert(
+   "هذه اللعبة غير مفعلة لحسابك."
+  );
+
+  return;
+
+ }
+
+
+ location.href=
+ GAME_LINKS[code];
+
+}
+
+
+/* =========================
+   طلبات المستخدم
+========================= */
+
+async function loadOrders(){
+
+ const box=
+ document.getElementById("orders");
+
+
+ /*
+   في حالة عدم وجود Edge Function
+   الخاصة بطلبات المستخدم، لن تتعطل المنصة.
+ */
+
+ try{
+
+  const d=
+  await fn(
+   "my-game-orders"
+  );
+
+
+  const rows=
+  d.orders || [];
+
+
+  if(!rows.length){
+
+   box.innerHTML=
+   "<p class='muted'>لا توجد طلبات حتى الآن.</p>";
+
+   return;
+
+  }
+
+
+  box.innerHTML=
+
+  `
+  <table>
+
+  <thead>
+
+  <tr>
+
+   <th>رقم الطلب</th>
+   <th>اللعبة</th>
+   <th>المبلغ</th>
+   <th>المرجع</th>
+   <th>الحالة</th>
+   <th>التاريخ</th>
+
+  </tr>
+
+  </thead>
+
+  <tbody>
+
+  ${
+   rows.map(o=>`
+
+   <tr>
+
+    <td>
+     ${esc(o.id)}
+    </td>
+
+    <td>
+     ${
+      esc(
+       GAME_INFO[
+        o.game_code
+       ]?.name ||
+       o.game_code
+      )
+     }
+    </td>
+
+    <td>
+     ${
+      o.currency==="EGP"
+      ?
+      egp(o.amount_minor)
+      :
+      usd(o.amount_minor)
+     }
+    </td>
+
+    <td>
+     ${esc(
+      o.payment_reference ||
+      "—"
+     )}
+    </td>
+
+    <td>
+     ${esc(o.status)}
+    </td>
+
+    <td>
+     ${
+      new Date(
+       o.created_at
+      ).toLocaleString("ar-EG")
+     }
+    </td>
+
+   </tr>
+
+   `).join("")
+  }
+
+  </tbody>
+
+  </table>
+  `;
+
+
+ }catch(e){
+
+  box.innerHTML=
+  `
+  <p class="muted">
+  تم تسجيل طلبات الشراء من المنصة.
+  ويمكن للمالك مراجعة الطلبات من لوحة المالك.
+  </p>
+  `;
+
+ }
+
+}
+
+
+/* =========================
+   لوحة المالك
+========================= */
+
+async function loadOwner(){
+
+ try{
+
+  const d=
+  await fn(
+   "owner-dashboard",
+   {
+    action:"summary"
+   }
+  );
+
+
+  document
+  .getElementById("ownerPanel")
+  .classList.remove("hidden");
+
+
+  renderOwner(d);
+
+ }catch(e){
+
+  /*
+    المستخدم العادي لا تظهر له اللوحة.
+  */
+
+ }
+
+}
+
+
+/* =========================
+   عرض لوحة المالك
+========================= */
+
+function renderOwner(d){
+
+ const c=
+ d.catalog || [];
+
+
+ document
+ .getElementById("ownerCatalog")
+ .innerHTML=
+
+ c.map(g=>`
+
+ <div class="panel">
+
+  <b>
+   ${
+    esc(
+     GAME_INFO[
+      g.game_code
+     ]?.name ||
+     g.game_code
+    )
+   }
+  </b>
+
+  <div class="row">
+
+   <input
+    id="egp_${g.game_code}"
+    type="number"
+    value="${Number(g.price_egp)}"
+    placeholder="السعر بالجنيه">
+
+   <input
+    id="usd_${g.game_code}"
+    type="number"
+    value="${
+     Number(g.price_usd_cents)/100
+    }"
+    step=".01"
+    placeholder="السعر بالدولار">
+
+   <input
+    id="days_${g.game_code}"
+    type="number"
+    value="${Number(g.subscription_days)}"
+    placeholder="عدد الأيام">
+
+   <label>
+
+    <input
+     id="sale_${g.game_code}"
+     type="checkbox"
+     ${
+      g.is_for_sale
+      ?
+      "checked"
+      :
+      ""
+     }>
+
+    متاحة للبيع
+
+   </label>
+
+   <button
+    class="primary"
+    onclick="saveCatalog('${g.game_code}')">
+
+    💾 حفظ
+
+   </button>
+
+  </div>
+
+ </div>
+
+ `).join("");
+
+
+ document
+ .getElementById("ownerOrders")
+ .innerHTML=
+ tableOrders(
+  d.orders || []
+ );
+
+
+ document
+ .getElementById("ownerEntitlements")
+ .innerHTML=
+ tableEnt(
+  d.entitlements || []
+ );
+
+}
+
+
+/* =========================
+   جدول الطلبات
+========================= */
+
+function tableOrders(rows){
+
+ if(!rows.length){
+
+  return "<p>لا توجد طلبات.</p>";
+
+ }
+
+
+ return `
+
+ <table>
+
+ <tr>
+
+  <th>الطلب</th>
+  <th>المستخدم</th>
+  <th>اللعبة</th>
+  <th>المبلغ</th>
+  <th>المرجع</th>
+  <th>الحالة</th>
+  <th>إجراء</th>
+
+ </tr>
+
+ ${
+  rows.map(o=>`
+
+  <tr>
+
+   <td>
+    ${esc(o.id)}
+   </td>
+
+   <td>
+    ${esc(o.user_id)}
+   </td>
+
+   <td>
+    ${
+     esc(
+      GAME_INFO[
+       o.game_code
+      ]?.name ||
+      o.game_code
+     )
+    }
+   </td>
+
+   <td>
+    ${
+     o.currency==="EGP"
+     ?
+     egp(o.amount_minor)
+     :
+     usd(o.amount_minor)
+    }
+   </td>
+
+   <td>
+    ${esc(
+     o.payment_reference ||
+     "—"
+    )}
+   </td>
+
+   <td>
+    ${esc(o.status)}
+   </td>
+
+   <td>
+
+    ${
+     o.status==="pending"
+     ?
+     `
+     <button
+      onclick="setOrder('${o.id}','paid')">
+
+      ✅ تفعيل
+
+     </button>
+
+     <button
+      class="danger"
+      onclick="setOrder('${o.id}','rejected')">
+
+      ❌ رفض
+
+     </button>
+     `
+     :
+     ""
+    }
+
+   </td>
+
+  </tr>
+
+  `).join("")
+ }
+
+ </table>
+
+ `;
+
+}
+
+
+/* =========================
+   جدول الاشتراكات
+========================= */
+
+function tableEnt(rows){
+
+ if(!rows.length){
+
+  return "<p>لا توجد اشتراكات.</p>";
+
+ }
+
+
+ return `
+
+ <table>
+
+ <tr>
+
+  <th>المستخدم</th>
+  <th>اللعبة</th>
+  <th>البداية</th>
+  <th>النهاية</th>
+  <th>الحالة</th>
+
+ </tr>
+
+ ${
+  rows.map(x=>`
+
+  <tr>
+
+   <td>
+    ${esc(x.user_id)}
+   </td>
+
+   <td>
+    ${
+     esc(
+      GAME_INFO[
+       x.game_code
+      ]?.name ||
+      x.game_code
+     )
+    }
+   </td>
+
+   <td>
+    ${
+     new Date(
+      x.starts_at
+     ).toLocaleString("ar-EG")
+    }
+   </td>
+
+   <td>
+    ${
+     new Date(
+      x.expires_at
+     ).toLocaleString("ar-EG")
+    }
+   </td>
+
+   <td>
+    ${esc(x.status)}
+   </td>
+
+  </tr>
+
+  `).join("")
+ }
+
+ </table>
+
+ `;
+
+}
+
+
+/* =========================
+   حفظ أسعار اللعبة
+========================= */
+
+async function saveCatalog(code){
+
+ try{
+
+  await fn(
+
+   "owner-dashboard",
+
+   {
+
+    action:
+     "update_catalog",
+
+    game_code:
+     code,
+
+    price_egp:
+     Number(
+      document.getElementById(
+       "egp_"+code
+      ).value
+     ),
+
+    price_usd_cents:
+     Math.round(
+      Number(
+       document.getElementById(
+        "usd_"+code
+       ).value
+      )*100
+     ),
+
+    subscription_days:
+     Number(
+      document.getElementById(
+       "days_"+code
+      ).value
+     ),
+
+    is_for_sale:
+     document.getElementById(
+      "sale_"+code
+     ).checked
+
+   }
+
+  );
+
+
+  alert(
+   "تم حفظ بيانات اللعبة."
+  );
+
+
+  await loadCatalog();
+
+  await loadOwner();
+
+
+ }catch(e){
+
+  alert(
+   e.message
+  );
+
+ }
+
+}
+
+
+/* =========================
+   تفعيل / رفض الطلب
+========================= */
+
+async function setOrder(
+ id,
+ status
+){
+
+ const question=
+ status==="paid"
+ ?
+ "هل تريد تفعيل هذا الطلب؟"
+ :
+ "هل تريد رفض هذا الطلب؟";
+
+
+ if(!confirm(question))
+ return;
+
+
+ try{
+
+  await fn(
+
+   "owner-dashboard",
+
+   {
+
+    action:
+     "set_order_status",
+
+    order_id:
+     id,
+
+    status:
+     status
+
+   }
+
+  );
+
+
+  alert(
+   "تم تنفيذ العملية."
+  );
+
+
+  await loadOwner();
+
+  await loadAccess();
+
+
+ }catch(e){
+
+  alert(
+   e.message
+  );
+
+ }
+
+}
+
+
+/* =========================
+   مراقبة جلسة الحساب
+========================= */
+
+sb.auth.onAuthStateChange(
+ (event,session)=>{
+
+  if(session){
+
+   boot();
+
+  }
+
+ }
+);
+
+
+/* =========================
+   بداية المنصة
+========================= */
+
+boot();
+
+</script>
+
+</body>
+</html>
