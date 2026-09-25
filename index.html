@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>العشرة - لعبة الإثارة</title>
 
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 *{box-sizing:border-box}
 body{
@@ -233,143 +230,13 @@ box-shadow:0 10px 25px #000;
 pointer-events:none;
 transition:transform .5s,opacity .5s;
 }
-
-/* ================= حماية اللعبة ================= */
-
-#accessGate{
-position:fixed;
-inset:0;
-z-index:999999;
-display:flex;
-align-items:center;
-justify-content:center;
-background:
-radial-gradient(circle at center,#287b5d 0%,#07382e 55%,#011612 100%);
-padding:20px;
-}
-
-.accessCard{
-width:min(470px,95vw);
-background:#001c15f7;
-border:2px solid #ffd83d;
-border-radius:26px;
-padding:25px 18px;
-box-shadow:0 20px 70px #000;
-text-align:center;
-}
-
-.accessLogo{
-font-size:65px;
-}
-
-.accessCard h2{
-color:#ffd83d;
-font-size:32px;
-margin:8px 0;
-}
-
-.accessCard p{
-line-height:1.8;
-color:#ddd;
-}
-
-#loginBox{
-display:none;
-margin-top:15px;
-}
-
-#loginBox input{
-width:100%;
-background:#fff;
-color:#111;
-border:0;
-padding:14px;
-margin:6px 0;
-border-radius:12px;
-}
-
-#loginBox button{
-background:#ffd83d;
-color:#171200;
-font-weight:bold;
-}
-
-.accessBack{
-background:#155b49;
-color:#fff;
-}
-
-/* ================= موبايل ================= */
-
-@media(max-width:600px){
-h1{font-size:32px}
-.box{padding:12px}
-.top{font-size:12px}
-.card{
-min-width:60px;
-height:90px;
-}
-.pile{
-width:115px;
-height:150px;
-}
-}
 </style>
 </head>
 
 <body>
 
-<!-- =====================================================
-     شاشة حماية اللعبة
-===================================================== -->
-
-<div id="accessGate">
-
-<div class="accessCard">
-
-<div class="accessLogo">🎴🔥</div>
-
-<h2>العشرة</h2>
-
-<p id="accessText">
-🔐 جاري التحقق من اشتراكك...
-</p>
-
-<div id="loginBox">
-
-<input
-id="gameEmail"
-type="email"
-autocomplete="email"
-placeholder="البريد الإلكتروني">
-
-<input
-id="gamePassword"
-type="password"
-autocomplete="current-password"
-placeholder="كلمة المرور">
-
-<button onclick="gameLogin()">
-🔓 دخول وتشغيل اللعبة
-</button>
-
-</div>
-
-<button
-class="accessBack"
-onclick="goToPlatform()">
-🏠 العودة إلى منصة ألعابي
-</button>
-
-</div>
-
-</div>
-
-
 <!-- البداية -->
-
-<div id="start" class="page">
-
+<div id="start" class="page show">
 <div class="box">
 
 <h1>🃏 العشرة 🔥</h1>
@@ -381,44 +248,22 @@ onclick="goToPlatform()">
 <label>طريقة اللعب</label>
 
 <select id="mode">
-
-<option value="human">
-👥 لاعبين حقيقيين
-</option>
-
-<option value="computer">
-🤖 لاعب ضد الكمبيوتر
-</option>
-
-<option value="mixed">
-👥 لاعبين + كمبيوتر
-</option>
-
+<option value="human">👥 لاعبين حقيقيين</option>
+<option value="computer">🤖 لاعب ضد الكمبيوتر</option>
+<option value="mixed">👥 لاعبين + كمبيوتر</option>
 </select>
 
 <label>عدد اللاعبين</label>
 
 <select id="count">
-
-<option value="2">
-2 لاعبين
-</option>
-
-<option value="3">
-3 لاعبين
-</option>
-
-<option value="4" selected>
-4 لاعبين
-</option>
-
+<option value="2">2 لاعبين</option>
+<option value="3">3 لاعبين</option>
+<option value="4" selected>4 لاعبين</option>
 </select>
 
 <div id="names"></div>
 
-<button id="startBtn">
-🔥 بداية اللعبة
-</button>
+<button id="startBtn">🔥 بداية اللعبة</button>
 
 <button id="musicStart" class="dark">
 🎵 تشغيل الموسيقى الحماسية
@@ -437,16 +282,12 @@ onclick="goToPlatform()">
 
 
 <!-- اللعبة -->
-
 <div id="game" class="page">
-
 <div class="box">
 
 <div class="top">
 
-<b id="turnName">
-الدور
-</b>
+<b id="turnName">الدور</b>
 
 <div class="target">
 🎯 المطلوب:
@@ -512,7 +353,6 @@ onclick="goToPlatform()">
 
 
 <!-- التسجيل -->
-
 <div class="recordBox">
 
 <div class="recordTitle">
@@ -529,10 +369,7 @@ onclick="goToPlatform()">
 🔴 بدء التسجيل
 </button>
 
-<button
-id="stopRecordBtn"
-class="dark"
-disabled>
+<button id="stopRecordBtn" class="dark" disabled>
 ⏹️ إيقاف
 </button>
 
@@ -546,14 +383,9 @@ disabled>
 
 </div>
 
-<audio
-id="recordAudio"
-controls
-style="display:none">
-</audio>
+<audio id="recordAudio" controls style="display:none"></audio>
 
-<button
-id="downloadRecordBtn"
+<button id="downloadRecordBtn"
 class="dark"
 style="display:none">
 💾 حفظ التسجيل
@@ -566,17 +398,12 @@ style="display:none">
 
 
 <!-- تسليم الدور -->
-
 <div id="pass" class="page">
-
 <div class="box">
 
-<h1 style="font-size:32px">
-🔒 تسليم الدور
-</h1>
+<h1 style="font-size:32px">🔒 تسليم الدور</h1>
 
-<p
-id="passText"
+<p id="passText"
 style="text-align:center;font-size:23px">
 </p>
 
@@ -593,14 +420,10 @@ style="text-align:center;font-size:23px">
 
 
 <!-- النهاية -->
-
 <div id="end" class="page">
-
 <div class="box">
 
-<h1>
-🏁 نهاية اللعبة
-</h1>
+<h1>🏁 نهاية اللعبة</h1>
 
 <div id="winner" class="winner"></div>
 
@@ -620,301 +443,7 @@ style="text-align:center;font-size:23px">
 
 "use strict";
 
-
-/* =====================================================
-   حماية اللعبة - Supabase
-===================================================== */
-
-const SUPABASE_URL =
-"https://auptwgjiivhglxtdjlnd.supabase.co";
-
-const SUPABASE_KEY =
-"sb_publishable_6dszOZKIdlA57hHf2E3V5Q_VO-ewwtM";
-
-const gameSupabase =
-window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
-
-let gameAuthorized=false;
-
-
-/* فتح اللعبة بعد التحقق */
-
-function unlockGame(){
-
-gameAuthorized=true;
-
-const gate=
-document.getElementById("accessGate");
-
-if(gate){
-gate.style.display="none";
-}
-
-page("start");
-
-}
-
-
-/* شاشة الدخول */
-
-function showLoginGate(message){
-
-gameAuthorized=false;
-
-const gate=
-document.getElementById("accessGate");
-
-const text=
-document.getElementById("accessText");
-
-const box=
-document.getElementById("loginBox");
-
-if(gate){
-gate.style.display="flex";
-}
-
-if(text){
-text.textContent=message;
-}
-
-if(box){
-box.style.display="block";
-}
-
-}
-
-
-/* العودة للمنصة */
-
-function goToPlatform(){
-
-window.location.href=
-"https://samimisk62-byte.github.io/samy_gams/";
-
-}
-
-
-/* التحقق من اشتراك لعبة العشرة */
-
-async function checkGameAccess(){
-
-try{
-
-const {data,error}=
-await gameSupabase.auth.getSession();
-
-if(error){
-throw error;
-}
-
-const session=data?.session;
-
-if(!session){
-
-showLoginGate(
-"🔐 يجب تسجيل الدخول بحساب منصة ألعابي أولًا."
-);
-
-return false;
-
-}
-
-
-const response=
-await fetch(
-SUPABASE_URL+
-"/functions/v1/account-game-access",
-{
-method:"POST",
-
-headers:{
-"Authorization":
-"Bearer "+
-session.access_token,
-
-"Content-Type":
-"application/json"
-},
-
-body:"{}"
-}
-);
-
-
-const result=
-await response.json();
-
-
-if(!response.ok){
-
-throw new Error(
-result?.error||
-"تعذر التحقق من الاشتراك"
-);
-
-}
-
-
-const accessList=
-Array.isArray(result.access)
-?result.access
-:[];
-
-
-const access=
-accessList.find(
-item=>
-item.game_code==="alashra" &&
-(
-item.active===true ||
-item.owner===true
-)
-);
-
-
-if(access){
-
-unlockGame();
-
-return true;
-
-}
-
-
-showLoginGate(
-"⛔ اشتراك لعبة العشرة غير نشط أو منتهي. فعّل الاشتراك من منصة ألعابي."
-);
-
-return false;
-
-
-}catch(error){
-
-console.error(
-"Game access error:",
-error
-);
-
-showLoginGate(
-"⚠️ تعذر التحقق من الاشتراك. تأكد من الإنترنت ثم حاول مرة أخرى."
-);
-
-return false;
-
-}
-
-}
-
-
-/* الدخول من داخل اللعبة */
-
-async function gameLogin(){
-
-const email=
-document
-.getElementById("gameEmail")
-?.value
-.trim();
-
-const password=
-document
-.getElementById("gamePassword")
-?.value;
-
-
-if(!email||!password){
-
-document
-.getElementById("accessText")
-.textContent=
-"⚠️ اكتب البريد الإلكتروني وكلمة المرور.";
-
-return;
-
-}
-
-
-const button=
-document.querySelector(
-"#loginBox button"
-);
-
-
-if(button){
-
-button.disabled=true;
-
-button.textContent=
-"⏳ جاري التحقق...";
-
-}
-
-
-try{
-
-const {error}=
-await gameSupabase.auth.signInWithPassword({
-email,
-password
-});
-
-
-if(error){
-
-throw error;
-
-}
-
-
-await checkGameAccess();
-
-
-}catch(error){
-
-document
-.getElementById("accessText")
-.textContent=
-"❌ البريد أو كلمة المرور غير صحيحة، أو الحساب يحتاج تأكيد البريد.";
-
-}
-
-
-if(button){
-
-button.disabled=false;
-
-button.textContent=
-"🔓 دخول وتشغيل اللعبة";
-
-}
-
-}
-
-
-/* مراقبة تسجيل الخروج */
-
-gameSupabase.auth.onAuthStateChange(
-async(event,session)=>{
-
-if(event==="SIGNED_OUT"){
-
-gameAuthorized=false;
-
-goToPlatform();
-
-}
-
-}
-);
-
-
-/* =====================================================
-   المتغيرات
-===================================================== */
+/* ================= المتغيرات ================= */
 
 let players=[];
 let deck=[];
@@ -936,55 +465,37 @@ let recordedURL=null;
 let microphoneStream=null;
 
 
-/* =====================================================
-   الشاشة
-===================================================== */
+/* ================= الشاشة ================= */
 
 function page(id){
 
-document
-.querySelectorAll(".page")
-.forEach(
-x=>x.classList.remove("show")
-);
+document.querySelectorAll(".page")
+.forEach(x=>x.classList.remove("show"));
 
-document
-.getElementById(id)
+document.getElementById(id)
 .classList.add("show");
 
 }
 
 
-/* =====================================================
-   الأسماء
-===================================================== */
+/* ================= الأسماء ================= */
 
 function makeNames(){
 
-let mode=
-document.getElementById("mode").value;
+let mode=document.getElementById("mode").value;
+let count=+document.getElementById("count").value;
 
-let count=
-+document.getElementById("count").value;
+if(mode==="computer") count=2;
 
-
-if(mode==="computer"){
-count=2;
-}
-
-
-let box=
-document.getElementById("names");
+let box=document.getElementById("names");
 
 box.innerHTML="";
-
 
 for(let i=1;i<=count;i++){
 
 let computer=
-(mode==="computer"&&i===2)||
-(mode==="mixed"&&i>1);
-
+(mode==="computer" && i===2) ||
+(mode==="mixed" && i>1);
 
 box.innerHTML+=
 "<label>"+
@@ -1002,7 +513,6 @@ i+
 
 }
 
-
 document.getElementById("mode")
 .onchange=makeNames;
 
@@ -1012,25 +522,15 @@ document.getElementById("count")
 makeNames();
 
 
-/* =====================================================
-   الخلط
-===================================================== */
+/* ================= خلط ================= */
 
 function shuffle(a){
 
-for(
-let i=a.length-1;
-i>0;
-i--
-){
+for(let i=a.length-1;i>0;i--){
 
-let j=
-Math.floor(
-Math.random()*(i+1)
-);
+let j=Math.floor(Math.random()*(i+1));
 
-[a[i],a[j]]=
-[a[j],a[i]];
+[a[i],a[j]]=[a[j],a[i]];
 
 }
 
@@ -1039,9 +539,7 @@ return a;
 }
 
 
-/* =====================================================
-   إنشاء 156 ورقة
-===================================================== */
+/* ================= إنشاء 156 ورقة ================= */
 
 function createDeck(){
 
@@ -1054,7 +552,6 @@ let suits=[
 
 let cards=[];
 let id=0;
-
 
 for(let copy=0;copy<3;copy++){
 
@@ -1075,43 +572,38 @@ red:s[1]
 
 }
 
-
-/* خلط */
-
+/* خلط عدة مرات */
 for(let i=0;i<6;i++){
-
 shuffle(cards);
-
 }
-
 
 return cards;
 
 }
 
 
-/* =====================================================
-   توزيع جولة جديدة
-===================================================== */
+/* ================= توزيع جولة جديدة ================= */
 
 function dealNewRound(){
 
+/*
+قبل التوزيع:
+لا نغير الرقم المطلوب.
+الرقم يظل مختبئًا حتى يظهر.
+*/
+
 round++;
 
-
-let playersCount=
-players.length;
+let playersCount=players.length;
 
 
-/* 6 أوراق لكل لاعب */
+/*
+كل لاعب يأخذ 6
+*/
 
 for(let i=0;i<6;i++){
 
-for(
-let p=0;
-p<playersCount;
-p++
-){
+for(let p=0;p<playersCount;p++){
 
 if(deck.length>0){
 
@@ -1126,7 +618,10 @@ deck.pop()
 }
 
 
-/* 6 أوراق على الأرض */
+/*
+إضافة 6 أوراق جديدة إلى الأرض
+إذا كان هناك ورق متبقٍ.
+*/
 
 for(let i=0;i<6;i++){
 
@@ -1147,11 +642,9 @@ round+
 " بدأت — 6 أوراق لكل لاعب."
 );
 
-
 log(
 "🂠 تمت إضافة أوراق جديدة إلى الأرض."
 );
-
 
 document.getElementById("round")
 .textContent=round;
@@ -1159,52 +652,28 @@ document.getElementById("round")
 }
 
 
-/* =====================================================
-   بداية اللعبة
-===================================================== */
+/* ================= بداية اللعبة ================= */
 
 function startGame(){
 
-if(!gameAuthorized){
+let mode=document.getElementById("mode").value;
+let count=+document.getElementById("count").value;
 
-showLoginGate(
-"🔐 هذه اللعبة متاحة للمشتركين فقط."
-);
-
-return;
-
-}
-
-
-let mode=
-document.getElementById("mode").value;
-
-let count=
-+document.getElementById("count").value;
-
-
-if(mode==="computer"){
-count=2;
-}
-
+if(mode==="computer") count=2;
 
 players=[];
-
 
 for(let i=1;i<=count;i++){
 
 let computer=
-(mode==="computer"&&i===2)||
-(mode==="mixed"&&i>1);
-
+(mode==="computer" && i===2) ||
+(mode==="mixed" && i>1);
 
 players.push({
 
 name:
-document
-.getElementById("name"+i)
-.value
-.trim()||
+document.getElementById("name"+i)
+.value.trim() ||
 "اللاعب "+i,
 
 computer:computer,
@@ -1217,7 +686,6 @@ won:0
 
 }
 
-
 deck=createDeck();
 
 pile=[];
@@ -1228,19 +696,23 @@ round=0;
 lastWinner=-1;
 
 
-/* أول توزيع */
+/*
+أول توزيع
+*/
 
 dealNewRound();
 
 
+/*
+إذا كان هناك عدد قليل من الأوراق
+نتأكد أن الجولة بدأت.
+*/
+
 page("game");
 
-
-document
-.getElementById("message")
+document.getElementById("message")
 .textContent=
 "🔥 بدأت الجولة الأولى! الرقم 1 مختبئ...";
-
 
 render();
 
@@ -1249,56 +721,41 @@ startMusic();
 }
 
 
-/* =====================================================
-   العرض
-===================================================== */
+/* ================= العرض ================= */
 
 function render(){
 
-document
-.getElementById("turnName")
+document.getElementById("turnName")
 .textContent=
 "🎮 الدور: "+
 players[turn].name;
 
-
-document
-.getElementById("target")
+document.getElementById("target")
 .textContent=target;
 
-
-document
-.getElementById("round")
+document.getElementById("round")
 .textContent=round;
 
-
-document
-.getElementById("pileCount")
+document.getElementById("pileCount")
 .textContent=pile.length;
 
-
-document
-.getElementById("deckCount")
+document.getElementById("deckCount")
 .textContent=deck.length;
 
 
 /* اللاعبين */
 
-let pb=
-document.getElementById("players");
+let pb=document.getElementById("players");
 
 pb.innerHTML="";
 
-
 players.forEach((p,i)=>{
 
-let d=
-document.createElement("div");
+let d=document.createElement("div");
 
 d.className=
 "player"+
 (i===turn?" turn":"");
-
 
 d.innerHTML=
 (p.computer?"🤖 ":"👤 ")+
@@ -1307,7 +764,6 @@ p.name+
 "🃏 "+p.hand.length+
 " | 🏆 "+p.won;
 
-
 pb.appendChild(d);
 
 });
@@ -1315,16 +771,13 @@ pb.appendChild(d);
 
 /* اليد */
 
-let hand=
-document.getElementById("hand");
+let hand=document.getElementById("hand");
 
 hand.innerHTML="";
 
-
 if(players[turn].computer){
 
-document
-.getElementById("handTitle")
+document.getElementById("handTitle")
 .textContent=
 "🤖 الكمبيوتر يفكر...";
 
@@ -1332,9 +785,7 @@ return;
 
 }
 
-
-document
-.getElementById("handTitle")
+document.getElementById("handTitle")
 .textContent=
 "🖐️ أوراق "+
 players[turn].name;
@@ -1342,31 +793,24 @@ players[turn].name;
 
 players[turn].hand.forEach((c,i)=>{
 
-let el=
-document.createElement("div");
-
+let el=document.createElement("div");
 
 el.className=
 "card"+
 (c.red?" red":"");
 
-
 let name=c.rank;
 
-
-if(c.rank===11)name="J";
-if(c.rank===12)name="Q";
-if(c.rank===13)name="K";
-
+if(c.rank===11) name="J";
+if(c.rank===12) name="Q";
+if(c.rank===13) name="K";
 
 el.innerHTML=
 "<b>"+name+"</b>"+
 "<span>"+c.suit+"</span>";
 
-
 el.onclick=
 ()=>playCard(i,el);
-
 
 hand.appendChild(el);
 
@@ -1375,55 +819,35 @@ hand.appendChild(el);
 }
 
 
-/* =====================================================
-   حركة الورقة
-===================================================== */
+/* ================= حركة الورقة ================= */
 
 function animateCard(el,card){
 
 if(!el)return;
 
-
-let r=
-el.getBoundingClientRect();
-
-let p=
-document
-.getElementById("pile")
+let r=el.getBoundingClientRect();
+let p=document.getElementById("pile")
 .getBoundingClientRect();
 
+let fly=document.createElement("div");
 
-let fly=
-document.createElement("div");
-
-
-fly.className=
-"fly"+
+fly.className="fly"+
 (card.red?" red":"");
 
-
 let name=card.rank;
-
 
 if(card.rank===11)name="J";
 if(card.rank===12)name="Q";
 if(card.rank===13)name="K";
 
-
 fly.innerHTML=
 "<b>"+name+"</b>"+
 "<span>"+card.suit+"</span>";
 
-
-fly.style.left=
-r.left+"px";
-
-fly.style.top=
-r.top+"px";
-
+fly.style.left=r.left+"px";
+fly.style.top=r.top+"px";
 
 document.body.appendChild(fly);
-
 
 requestAnimationFrame(()=>{
 
@@ -1438,49 +862,24 @@ fly.style.opacity=".2";
 
 });
 
-
-setTimeout(
-()=>fly.remove(),
-550
-);
+setTimeout(()=>fly.remove(),550);
 
 }
 
 
-/* =====================================================
-   لعب الورقة
-===================================================== */
+/* ================= لعب الورقة ================= */
 
 function playCard(index,sourceEl){
-
-if(!gameAuthorized){
-
-showLoginGate(
-"🔐 يجب أن يكون اشتراكك نشطًا لتشغيل اللعبة."
-);
-
-return;
-
-}
-
 
 let player=players[turn];
 
 let card=player.hand[index];
 
-
 if(!card)return;
 
-
 if(sourceEl){
-
-animateCard(
-sourceEl,
-card
-);
-
+animateCard(sourceEl,card);
 }
-
 
 player.hand.splice(index,1);
 
@@ -1488,7 +887,6 @@ cardSound();
 
 
 let name=card.rank;
-
 
 if(card.rank===11)name="الولد J";
 if(card.rank===12)name="البنت Q";
@@ -1503,7 +901,9 @@ name
 );
 
 
-/* الرقم المطلوب */
+/*
+إذا ظهر الرقم المطلوب
+*/
 
 if(card.rank===target){
 
@@ -1516,8 +916,7 @@ pile=[];
 lastWinner=turn;
 
 
-document
-.getElementById("message")
+document.getElementById("message")
 .textContent=
 "💥💥 "+
 player.name+
@@ -1533,15 +932,12 @@ log(
 player.name
 );
 
-
 pileSound();
 
 
-let pe=
-document.getElementById("pile");
+let pe=document.getElementById("pile");
 
 pe.classList.add("pulse");
-
 
 setTimeout(
 ()=>pe.classList.remove("pulse"),
@@ -1549,10 +945,11 @@ setTimeout(
 );
 
 
-/* الرقم التالي */
+/*
+انتقال الرقم
+*/
 
 target++;
-
 
 if(target>10){
 
@@ -1568,17 +965,17 @@ return;
 }
 
 
-/* ورقة عادية */
+/*
+ورقة تفريق
+*/
 
 else{
 
 pile.push(card);
 
-
 if(card.rank===11){
 
-document
-.getElementById("message")
+document.getElementById("message")
 .textContent=
 "🃏 الولد J! الكومة تكبر...";
 
@@ -1586,8 +983,7 @@ document
 
 else if(card.rank===12){
 
-document
-.getElementById("message")
+document.getElementById("message")
 .textContent=
 "👸 البنت Q! الرقم ما زال مختبئًا...";
 
@@ -1595,8 +991,7 @@ document
 
 else if(card.rank===13){
 
-document
-.getElementById("message")
+document.getElementById("message")
 .textContent=
 "👑 الشايب K! إثارة أكثر...";
 
@@ -1604,19 +999,19 @@ document
 
 else{
 
-document
-.getElementById("message")
+document.getElementById("message")
 .textContent=
 "🃏 الورقة لم تكن "+
 target+
 " ... استمر!";
-
 }
 
 }
 
 
-/* انتهت أيدي اللاعبين */
+/*
+إذا انتهت أيدي جميع اللاعبين
+*/
 
 if(allHandsEmpty()){
 
@@ -1632,9 +1027,7 @@ nextPlayer();
 }
 
 
-/* =====================================================
-   نهاية التوزيع
-===================================================== */
+/* ================= نهاية توزيع ================= */
 
 function allHandsEmpty(){
 
@@ -1645,20 +1038,23 @@ p=>p.hand.length===0
 }
 
 
+/*
+هنا السر في تطويل اللعبة:
+لا ننهي اللعبة عند انتهاء الأوراق في اليد.
+نعمل توزيعًا جديدًا إذا كان هناك ورق في الكوتشينة.
+*/
+
 function handleEndOfDistribution(){
 
 if(deck.length>0){
 
-document
-.getElementById("message")
+document.getElementById("message")
 .textContent=
 "🔥 انتهى التوزيع... استعدوا للتوزيع الجديد!";
-
 
 log(
 "⏳ انتهت أوراق الأيدي ولكن اللعبة مستمرة."
 );
-
 
 setTimeout(()=>{
 
@@ -1667,7 +1063,6 @@ dealNewRound();
 turn=0;
 
 render();
-
 
 if(players[turn].computer){
 
@@ -1680,9 +1075,7 @@ computerPlay,
 
 page("pass");
 
-
-document
-.getElementById("passText")
+document.getElementById("passText")
 .innerHTML=
 "🔥 توزيع جديد!<br>"+
 "الدور الآن لـ <b>"+
@@ -1698,14 +1091,18 @@ return;
 }
 
 
+/*
+لا يوجد ورق في الكوتشينة.
+إذا كان الرقم لم يصل إلى 10،
+تنتهي اللعبة بعد آخر توزيع.
+*/
+
 finishGame();
 
 }
 
 
-/* =====================================================
-   الدور التالي
-===================================================== */
+/* ================= الدور التالي ================= */
 
 function nextPlayer(){
 
@@ -1714,22 +1111,18 @@ let n=
 
 let safety=0;
 
-
 while(
 players[n].hand.length===0 &&
 safety<players.length
 ){
 
-n=
-(n+1)%players.length;
+n=(n+1)%players.length;
 
 safety++;
 
 }
 
-
 turn=n;
-
 
 if(players[turn].computer){
 
@@ -1744,8 +1137,7 @@ computerPlay,
 
 page("pass");
 
-document
-.getElementById("passText")
+document.getElementById("passText")
 .innerHTML=
 "🎴 الدور الآن لـ <b>"+
 players[turn].name+
@@ -1756,18 +1148,13 @@ players[turn].name+
 }
 
 
-/* =====================================================
-   الكمبيوتر
-===================================================== */
+/* ================= الكمبيوتر ================= */
 
 function computerPlay(){
 
 if(!players[turn].computer)return;
 
-
-let hand=
-players[turn].hand;
-
+let hand=players[turn].hand;
 
 if(!hand.length){
 
@@ -1778,8 +1165,12 @@ return;
 }
 
 
-let wanted=[];
+/*
+لو لديه الرقم المطلوب:
+أحيانًا يحتفظ به لزيادة التشويق.
+*/
 
+let wanted=[];
 
 hand.forEach((c,i)=>{
 
@@ -1795,10 +1186,12 @@ wanted.push(i);
 let choice;
 
 
-if(
-wanted.length &&
-Math.random()<0.65
-){
+/*
+65% فرصة لعب الرقم المطلوب
+35% فرصة رمي ورقة أخرى
+*/
+
+if(wanted.length && Math.random()<0.65){
 
 choice=
 wanted[
@@ -1816,48 +1209,35 @@ Math.random()*hand.length
 
 }
 
-
-playCard(
-choice,
-null
-);
+playCard(choice,null);
 
 }
 
 
-/* =====================================================
-   تسليم الدور
-===================================================== */
+/* ================= تسليم الدور ================= */
 
 function passTurn(){
 
-let n=
-(turn+1)%players.length;
+let n=(turn+1)%players.length;
 
 let safety=0;
-
 
 while(
 players[n].hand.length===0 &&
 safety<players.length
 ){
 
-n=
-(n+1)%players.length;
+n=(n+1)%players.length;
 
 safety++;
 
 }
 
-
 turn=n;
-
 
 page("pass");
 
-
-document
-.getElementById("passText")
+document.getElementById("passText")
 .innerHTML=
 "🎴 الدور الآن لـ <b>"+
 players[turn].name+
@@ -1866,16 +1246,13 @@ players[turn].name+
 }
 
 
-/* =====================================================
-   استمرار
-===================================================== */
+/* ================= استمرار ================= */
 
 function continueTurn(){
 
 page("game");
 
 render();
-
 
 if(players[turn].computer){
 
@@ -1889,13 +1266,14 @@ computerPlay,
 }
 
 
-/* =====================================================
-   النهاية
-===================================================== */
+/* ================= النهاية ================= */
 
 function finishGame(){
 
-/* آخر كومة */
+/*
+أي أوراق متبقية على الأرض
+تذهب لآخر لاعب حصل على كومة.
+*/
 
 if(pile.length){
 
@@ -1904,9 +1282,7 @@ lastWinner>=0?
 lastWinner:
 turn;
 
-
-players[receiver].won+=
-pile.length;
+players[receiver].won+=pile.length;
 
 pile=[];
 
@@ -1914,15 +1290,13 @@ pile=[];
 
 
 let ranking=
-players
-.slice()
+players.slice()
 .sort(
 (a,b)=>b.won-a.won
 );
 
 
-document
-.getElementById("winner")
+document.getElementById("winner")
 .innerHTML=
 "🏆 الفائز الكبير 🏆"+
 "<br>"+
@@ -1932,8 +1306,7 @@ ranking[0].won+
 " ورقة";
 
 
-document
-.getElementById("score")
+document.getElementById("score")
 .innerHTML=
 ranking.map(
 (p,i)=>
@@ -1954,15 +1327,11 @@ endMusic();
 }
 
 
-/* =====================================================
-   السجل
-===================================================== */
+/* ================= السجل ================= */
 
 function log(text){
 
-let box=
-document.getElementById("log");
-
+let box=document.getElementById("log");
 
 box.innerHTML=
 "<div>"+text+"</div>"+
@@ -1971,19 +1340,15 @@ box.innerHTML;
 }
 
 
-/* =====================================================
-   الصوت
-===================================================== */
+/* ================= الصوت ================= */
 
 function getAudio(){
 
 let AC=
-window.AudioContext||
+window.AudioContext ||
 window.webkitAudioContext;
 
-
 if(!AC)return null;
-
 
 if(!audioCtx){
 
@@ -1991,15 +1356,11 @@ audioCtx=new AC();
 
 }
 
-
-if(
-audioCtx.state==="suspended"
-){
+if(audioCtx.state==="suspended"){
 
 audioCtx.resume();
 
 }
-
 
 return audioCtx;
 
@@ -2012,13 +1373,9 @@ let c=getAudio();
 
 if(!c)return;
 
+let o=c.createOscillator();
 
-let o=
-c.createOscillator();
-
-let g=
-c.createGain();
-
+let g=c.createGain();
 
 o.type="sawtooth";
 
@@ -2026,27 +1383,22 @@ o.frequency.value=f;
 
 g.gain.value=v||.05;
 
-
 o.connect(g);
 
 g.connect(c.destination);
 
 o.start();
 
-o.stop(
-c.currentTime+d
-);
+o.stop(c.currentTime+d);
 
 }
 
 
+/* صوت الورقة */
+
 function cardSound(){
 
-tone(
-130,
-.07,
-.13
-);
+tone(130,.07,.13);
 
 setTimeout(
 ()=>tone(380,.08,.09),
@@ -2056,17 +1408,15 @@ setTimeout(
 }
 
 
+/* صوت أخذ الكومة */
+
 function pileSound(){
 
 [
-392,
-494,
-587,
-659,
-784,
-988,
-1175
-].forEach(
+392,494,587,659,
+784,988,1175
+]
+.forEach(
 (n,i)=>
 setTimeout(
 ()=>tone(n,.16,.12),
@@ -2077,20 +1427,15 @@ i*80
 }
 
 
-/* =====================================================
-   الموسيقى
-===================================================== */
+/* الموسيقى */
 
 function startMusic(){
 
 getAudio();
 
-
 if(music)return;
 
-
 music=true;
-
 
 let notes=[
 262,330,392,523,
@@ -2101,18 +1446,14 @@ let notes=[
 784,659,523,392
 ];
 
-
 let pos=0;
 
-
-musicTimer=
-setInterval(
+musicTimer=setInterval(
 ()=>{
 
 tone(
 notes[
-pos++%
-notes.length
+pos++%notes.length
 ],
 .16,
 .045
@@ -2121,7 +1462,6 @@ notes.length
 },
 190
 );
-
 
 updateMusic();
 
@@ -2132,21 +1472,17 @@ function toggleMusic(){
 
 getAudio();
 
-
 if(music){
 
 music=false;
 
-clearInterval(
-musicTimer
-);
+clearInterval(musicTimer);
 
 }else{
 
 startMusic();
 
 }
-
 
 updateMusic();
 
@@ -2156,12 +1492,7 @@ updateMusic();
 function updateMusic(){
 
 let b=
-document.getElementById(
-"musicBtn"
-);
-
-
-if(b){
+document.getElementById("musicBtn");
 
 b.textContent=
 music?
@@ -2170,25 +1501,16 @@ music?
 
 }
 
-}
-
 
 function endMusic(){
 
 music=false;
 
-clearInterval(
-musicTimer
-);
-
+clearInterval(musicTimer);
 
 [
-523,
-659,
-784,
-988,
-1175,
-1318
+523,659,784,
+988,1175,1318
 ].forEach(
 (n,i)=>
 setTimeout(
@@ -2200,32 +1522,28 @@ i*150
 }
 
 
-/* =====================================================
-   القواعد
-===================================================== */
+/* ================= القواعد ================= */
 
 function rules(){
 
 alert(
-"🃏🔥 قواعد العشرة 🔥🃏\n\n"+
-"156 ورقة = 3 مجموعات.\n\n"+
-"6 أوراق لكل لاعب في كل توزيع.\n\n"+
-"6 أوراق على الأرض مع كل توزيع.\n\n"+
-"إذا انتهت أوراق اللاعبين، يبدأ توزيع جديد تلقائيًا طالما توجد كوتشينة.\n\n"+
-"الرقم المطلوب يبدأ من 1 إلى 10.\n\n"+
-"J الولد و Q البنت و K الشايب أوراق تفريق.\n\n"+
-"الرقم لا يتغير حتى تظهر ورقة الرقم المطلوب.\n\n"+
-"من يظهر الرقم المطلوب يأخذ الكومة كاملة.\n\n"+
-"بعد الرقم 10 تنتهي اللعبة.\n\n"+
+"🃏🔥 قواعد العشرة 🔥🃏\\n\\n"+
+"156 ورقة = 3 مجموعات.\\n\\n"+
+"6 أوراق لكل لاعب في كل توزيع.\\n\\n"+
+"6 أوراق على الأرض مع كل توزيع.\\n\\n"+
+"إذا انتهت أوراق اللاعبين، يبدأ توزيع جديد تلقائيًا طالما توجد كوتشينة.\\n\\n"+
+"الرقم المطلوب يبدأ من 1 إلى 10.\\n\\n"+
+"J الولد و Q البنت و K الشايب أوراق تفريق.\\n\\n"+
+"الرقم لا يتغير حتى تظهر ورقة الرقم المطلوب.\\n\\n"+
+"من يظهر الرقم المطلوب يأخذ الكومة كاملة.\\n\\n"+
+"بعد الرقم 10 تنتهي اللعبة.\\n\\n"+
 "الأكثر أوراقًا هو الفائز."
 );
 
 }
 
 
-/* =====================================================
-   التسجيل
-===================================================== */
+/* ================= التسجيل ================= */
 
 async function startRecording(){
 
@@ -2244,10 +1562,7 @@ return;
 
 }
 
-
-if(
-typeof MediaRecorder==="undefined"
-){
+if(typeof MediaRecorder==="undefined"){
 
 alert(
 "المتصفح لا يدعم التسجيل."
@@ -2256,7 +1571,6 @@ alert(
 return;
 
 }
-
 
 microphoneStream=
 await navigator.mediaDevices
@@ -2267,9 +1581,7 @@ audio:true
 
 recordedChunks=[];
 
-
 let options={};
-
 
 if(
 MediaRecorder.isTypeSupported(
@@ -2294,9 +1606,7 @@ recorder.ondataavailable=e=>{
 
 if(e.data.size){
 
-recordedChunks.push(
-e.data
-);
+recordedChunks.push(e.data);
 
 }
 
@@ -2318,9 +1628,7 @@ recorder.mimeType||
 
 if(recordedURL){
 
-URL.revokeObjectURL(
-recordedURL
-);
+URL.revokeObjectURL(recordedURL);
 
 }
 
@@ -2336,35 +1644,24 @@ document.getElementById(
 "recordAudio"
 );
 
-
-audio.src=
-recordedURL;
-
-audio.style.display=
-"block";
+audio.src=recordedURL;
+audio.style.display="block";
 
 
-document
-.getElementById(
+document.getElementById(
 "downloadRecordBtn"
-)
-.style.display=
-"block";
+).style.display="block";
 
 
-document
-.getElementById(
+document.getElementById(
 "recordStatus"
-)
-.textContent=
+).textContent=
 "✅ تم حفظ التسجيل";
 
 
-document
-.getElementById(
+document.getElementById(
 "recordStatus"
-)
-.classList
+).classList
 .remove("recording");
 
 };
@@ -2373,41 +1670,33 @@ document
 recorder.start();
 
 
-document
-.getElementById(
+document.getElementById(
 "recordStatus"
-)
-.textContent=
+).textContent=
 "🔴 التسجيل يعمل الآن...";
 
 
-document
-.getElementById(
+document.getElementById(
 "recordStatus"
-)
-.classList
+).classList
 .add("recording");
 
 
-document
-.getElementById(
+document.getElementById(
 "recordBtn"
-)
-.disabled=true;
+).disabled=true;
 
 
-document
-.getElementById(
+document.getElementById(
 "stopRecordBtn"
-)
-.disabled=false;
+).disabled=false;
 
 }
 
 catch(e){
 
 alert(
-"لم يتم السماح بالميكروفون. افتح اللعبة في Chrome عبر HTTPS واضغط سماح."
+"لم يتم السماح بالميكروفون. افتح اللعبة في Chrome عبر HTTPS واضغط Allow / سماح."
 );
 
 }
@@ -2418,7 +1707,7 @@ alert(
 function stopRecording(){
 
 if(
-recorder&&
+recorder &&
 recorder.state!=="inactive"
 ){
 
@@ -2426,32 +1715,23 @@ recorder.stop();
 
 }
 
-
 if(microphoneStream){
 
 microphoneStream
 .getTracks()
-.forEach(
-t=>t.stop()
-);
+.forEach(t=>t.stop());
 
 microphoneStream=null;
 
 }
 
-
-document
-.getElementById(
+document.getElementById(
 "recordBtn"
-)
-.disabled=false;
+).disabled=false;
 
-
-document
-.getElementById(
+document.getElementById(
 "stopRecordBtn"
-)
-.disabled=true;
+).disabled=true;
 
 }
 
@@ -2460,20 +1740,15 @@ function playRecording(){
 
 if(!recordedURL){
 
-alert(
-"لا يوجد تسجيل."
-);
+alert("لا يوجد تسجيل.");
 
 return;
 
 }
 
-
-document
-.getElementById(
+document.getElementById(
 "recordAudio"
-)
-.play();
+).play();
 
 }
 
@@ -2488,39 +1763,26 @@ recordedURL
 
 }
 
-
 recordedURL=null;
 recordedBlob=null;
 recordedChunks=[];
-
 
 let a=
 document.getElementById(
 "recordAudio"
 );
 
-
 a.pause();
-
 a.src="";
+a.style.display="none";
 
-a.style.display=
-"none";
-
-
-document
-.getElementById(
+document.getElementById(
 "downloadRecordBtn"
-)
-.style.display=
-"none";
+).style.display="none";
 
-
-document
-.getElementById(
+document.getElementById(
 "recordStatus"
-)
-.textContent=
+).textContent=
 "🎙️ التسجيل متوقف";
 
 }
@@ -2530,125 +1792,69 @@ function downloadRecording(){
 
 if(!recordedURL){
 
-alert(
-"لا يوجد تسجيل."
-);
+alert("لا يوجد تسجيل.");
 
 return;
 
 }
 
-
 let a=
 document.createElement("a");
 
-
-a.href=
-recordedURL;
-
+a.href=recordedURL;
 
 a.download=
 "تسجيل_لعبة_العشرة.webm";
-
 
 a.click();
 
 }
 
 
-/* =====================================================
-   الأزرار
-===================================================== */
+/* ================= الأزرار ================= */
 
-document
-.getElementById("startBtn")
+document.getElementById("startBtn")
 .onclick=startGame;
 
-
-document
-.getElementById("musicStart")
+document.getElementById("musicStart")
 .onclick=startMusic;
 
-
-document
-.getElementById("musicBtn")
+document.getElementById("musicBtn")
 .onclick=toggleMusic;
 
-
-document
-.getElementById("passBtn")
+document.getElementById("passBtn")
 .onclick=passTurn;
 
-
-document
-.getElementById("continueBtn")
+document.getElementById("continueBtn")
 .onclick=continueTurn;
 
-
-document
-.getElementById("rulesBtn")
+document.getElementById("rulesBtn")
 .onclick=rules;
 
-
-document
-.getElementById("endBtn")
+document.getElementById("endBtn")
 .onclick=()=>{
-
-if(
-confirm(
-"🏁 هل تريد إنهاء اللعبة الآن؟"
-)
-){
-
+if(confirm("🏁 هل تريد إنهاء اللعبة الآن؟")){
 finishGame();
-
 }
-
 };
 
-
-document
-.getElementById("newBtn")
+document.getElementById("newBtn")
 .onclick=()=>location.reload();
 
-
-document
-.getElementById("recordBtn")
+document.getElementById("recordBtn")
 .onclick=startRecording;
 
-
-document
-.getElementById("stopRecordBtn")
+document.getElementById("stopRecordBtn")
 .onclick=stopRecording;
 
-
-document
-.getElementById("playRecordBtn")
+document.getElementById("playRecordBtn")
 .onclick=playRecording;
 
-
-document
-.getElementById("deleteRecordBtn")
+document.getElementById("deleteRecordBtn")
 .onclick=deleteRecording;
 
-
-document
-.getElementById("downloadRecordBtn")
+document.getElementById("downloadRecordBtn")
 .onclick=downloadRecording;
-
-
-/* =====================================================
-   بداية الصفحة
-===================================================== */
-
-window.addEventListener(
-"load",
-async function(){
-
-await checkGameAccess();
-
-}
-);
 
 </script>
 
