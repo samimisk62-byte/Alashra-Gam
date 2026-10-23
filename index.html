@@ -266,6 +266,18 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
 .shopBalance{text-align:center;color:#ffdf73;font-weight:bold;margin:8px}
 @media(max-width:420px){h1{font-size:32px}.table{min-height:275px;padding:12px 6px;border-width:6px}.card{min-width:57px;height:88px}.shopGrid{grid-template-columns:1fr 1fr}.box{padding:11px}}
 
+
+/* عرض أوراق الأرض كأوراق فعلية متراكبة مع حركة قلب */
+.tableSpread{direction:ltr;display:flex;align-items:center;justify-content:center;gap:0;max-width:100%;min-height:82px;margin:0 auto 8px;padding:5px 4px;overflow:hidden;perspective:700px}
+.tableCard{width:43px;height:65px;flex:0 1 43px;min-width:0;margin-left:-12px;border:2px solid #f5ead1;border-radius:7px;background:linear-gradient(145deg,#fff,#eee4cf);color:#151515;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:17px;font-weight:bold;box-shadow:0 4px 0 #87613e,0 7px 9px #0008;transform:rotate(var(--tilt,0deg)) rotateY(0deg);animation:tableCardDeal .38s cubic-bezier(.2,.8,.2,1) both;position:relative}
+.tableCard:first-child{margin-left:0}
+.tableCard.red{color:#c52236}
+.tableCard:nth-child(2n){--tilt:-5deg}.tableCard:nth-child(2n+1){--tilt:4deg}
+.tableCard span{font-size:21px;line-height:1}
+@keyframes tableCardDeal{from{opacity:0;transform:translateY(-24px) rotateY(85deg) rotate(var(--tilt,0deg)) scale(.7)}to{opacity:1;transform:translateY(0) rotateY(0) rotate(var(--tilt,0deg)) scale(1)}}
+.fly{transform-style:preserve-3d;backface-visibility:hidden}
+@media(max-width:380px){.tableCard{width:37px;height:57px;flex-basis:37px;margin-left:-14px;font-size:15px}.tableSpread{min-height:70px}}
+
 </style>
 </head>
 
@@ -348,6 +360,8 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
 <div id="pile" class="pile">
 🂠
 </div>
+
+<div id="tableSpread" class="tableSpread" aria-label="الأوراق المكشوفة على الأرض"></div>
 
 <div>
 🃏 أوراق الأرض:
@@ -789,8 +803,26 @@ document.getElementById("round")
 document.getElementById("pileCount")
 .textContent=pile.length;
 
+
 document.getElementById("deckCount")
 .textContent=deck.length;
+
+/* عرض آخر أوراق الأرض مكشوفة مع تراكب وحركة قلب */
+const spread=document.getElementById("tableSpread");
+spread.innerHTML="";
+pile.slice(-6).forEach((c,i)=>{
+ const el=document.createElement("div");
+ el.className="tableCard"+(c.red?" red":"");
+ let label=c.rank;
+ if(c.rank===1)label="A";
+ if(c.rank===11)label="J";
+ if(c.rank===12)label="Q";
+ if(c.rank===13)label="K";
+ el.innerHTML="<b>"+label+"</b><span>"+c.suit+"</span>";
+ el.style.animationDelay=(i*45)+"ms";
+ spread.appendChild(el);
+});
+
 
 
 /* اللاعبين */
