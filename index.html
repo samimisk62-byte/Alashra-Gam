@@ -869,6 +869,7 @@ function resolvePlay(handIndex,slotIndex){
  if(same){
   const captured=stack.length+1;
   player.won+=captured;
+  lastWinner=turn;
   styleCoins+=Math.max(1,Math.ceil(captured/3));
   saveCosmetics();
   groundStacks.splice(slotIndex,1);
@@ -882,6 +883,11 @@ function resolvePlay(handIndex,slotIndex){
   log("🃏 "+player.name+" كشف ورقتين غير متطابقتين؛ بقيتا على الأرض.");
  }
  syncPile();
+ if(groundStacks.length===0 && deck.length>0){
+  for(let i=0;i<6 && deck.length;i++) groundStacks.push([deck.pop()]);
+  syncPile();
+  log("🂠 تم وضع أوراق جديدة مقلوبة على الأرض.");
+ }
  if(allHandsEmpty()){
   handleEndOfDistribution();
   return;
