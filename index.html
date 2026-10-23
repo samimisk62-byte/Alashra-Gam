@@ -162,6 +162,26 @@ cursor:pointer;
 flex-shrink:0;
 }
 .card.red{color:#c52236}
+
+/* توزيع أوراق اليد واحدة تلو الأخرى */
+.hand .card{
+ transform-origin:bottom center;
+ animation:handCardDeal .38s cubic-bezier(.2,.8,.2,1) both;
+}
+.hand .card:nth-child(1){animation-delay:.02s}
+.hand .card:nth-child(2){animation-delay:.07s}
+.hand .card:nth-child(3){animation-delay:.12s}
+.hand .card:nth-child(4){animation-delay:.17s}
+.hand .card:nth-child(5){animation-delay:.22s}
+.hand .card:nth-child(6){animation-delay:.27s}
+@keyframes handCardDeal{
+ from{opacity:0;transform:translateY(18px) rotateY(75deg) scale(.82)}
+ to{opacity:1;transform:translateY(0) rotateY(0) scale(1)}
+}
+@media(prefers-reduced-motion:reduce){
+ .hand .card{animation:none}
+ .tableCard{animation:none}
+}
 .log{
 height:85px;
 overflow:auto;
@@ -938,7 +958,7 @@ fly.style.transform=
 (p.left-r.left)+
 "px,"+
 (p.top-r.top)+
-"px) rotate(12deg) scale(.7)";
+"px) rotateY(360deg) rotate(28deg) scale(.72)";
 
 fly.style.opacity=".2";
 
