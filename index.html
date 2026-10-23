@@ -230,6 +230,42 @@ box-shadow:0 10px 25px #000;
 pointer-events:none;
 transition:transform .5s,opacity .5s;
 }
+
+/* ===== تطوير بصري: ترابيزة وأوراق بعمق ثلاثي الأبعاد ===== */
+body{--felt1:#176b4c;--felt2:#06402f;--felt3:#03251d;--card-back1:#1e3fa1;--card-back2:#b5233b;perspective:1200px}
+body.table-blue{--felt1:#1f5e91;--felt2:#123d67;--felt3:#071d36}
+body.table-burgundy{--felt1:#8b2440;--felt2:#55152c;--felt3:#2a0916}
+body.table-wood{--felt1:#95613a;--felt2:#59351e;--felt3:#27170e}
+body.table-emerald{--felt1:#176b4c;--felt2:#06402f;--felt3:#03251d}
+body{background:radial-gradient(ellipse at 50% 10%,var(--felt1),var(--felt2) 55%,var(--felt3));background-attachment:fixed}
+.box{background:linear-gradient(145deg,#09271fee,#00130fee);border:1px solid #e6c77b66;box-shadow:0 22px 55px #000b,inset 0 1px 0 #ffffff1c}
+.table{position:relative;isolation:isolate;margin:12px 0;padding:18px 10px;min-height:310px;border:8px solid #7a4c2a;border-radius:34px;background:radial-gradient(ellipse at 50% 35%,var(--felt1),var(--felt2) 68%,var(--felt3));box-shadow:inset 0 0 0 3px #d5ad6d,inset 0 12px 25px #ffffff13,0 15px 25px #0009;transform:rotateX(2deg)}
+.table:before{content:"";position:absolute;inset:10px;border:1px solid #ffffff22;border-radius:24px;pointer-events:none;z-index:-1}
+.pile{position:relative;border:5px solid #e9d8ad;background:repeating-linear-gradient(45deg,var(--card-back1) 0 7px,#f5e8ce 7px 10px,var(--card-back2) 10px 17px);box-shadow:0 14px 0 #7b4a2a,0 18px 28px #000b,inset 0 0 0 3px #ffffff55;transform:rotate(-3deg) rotateX(5deg);transition:transform .25s}
+.pile:after{content:"";position:absolute;inset:5px;border:1px solid #ffffff88;border-radius:9px}
+.card,.fly{border:1px solid #f9f0dc;background:linear-gradient(145deg,#fff 0%,#f7f3e8 70%,#d9d0bc 100%);border-radius:10px;box-shadow:0 5px 0 #b8ad97,0 9px 15px #0008,inset 0 0 0 2px #ffffff;transform-style:preserve-3d;transition:transform .18s,box-shadow .18s;position:relative}
+.card:before{content:"";position:absolute;inset:4px;border:1px solid #d4c7a8;border-radius:6px;pointer-events:none}
+.card:active{transform:translateY(-9px) rotateY(8deg) scale(1.04);box-shadow:0 9px 0 #b8ad97,0 15px 20px #0009}
+.card.red{color:#c52236}
+body.cards-ruby .card{background:linear-gradient(145deg,#fff8f8,#f2d6dc 80%,#d8aab5)}
+body.cards-gold .card{background:linear-gradient(145deg,#fff9dc,#f0d98a 75%,#b99135);border-color:#f8e4a0}
+body.cards-midnight .card{background:linear-gradient(145deg,#e5ebff,#b8c8ef 75%,#788cb8);color:#14234d}
+body.cards-ruby{--card-back1:#7c1433;--card-back2:#e04b64}
+body.cards-gold{--card-back1:#8a5c10;--card-back2:#f4d777}
+body.cards-midnight{--card-back1:#101d42;--card-back2:#526ca8}
+body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
+#shopBtn{background:linear-gradient(135deg,#f5d46d,#b77b23);color:#241700}
+.shopModal{display:none;position:fixed;inset:0;z-index:2000;background:#000c;padding:14px;align-items:center;justify-content:center}
+.shopModal.open{display:flex}
+.shopPanel{width:min(100%,650px);max-height:90vh;overflow:auto;background:linear-gradient(145deg,#12392d,#031710);border:2px solid #d7b76b;border-radius:22px;padding:16px;box-shadow:0 20px 70px #000}
+.shopPanel h2{text-align:center;color:#ffdc67;margin:4px 0 10px}
+.shopGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.shopItem{padding:12px;border-radius:14px;background:#ffffff10;border:1px solid #ffffff24;text-align:center}
+.shopSwatch{height:48px;border-radius:10px;margin-bottom:8px;box-shadow:inset 0 2px 7px #ffffff44,0 5px 9px #0005}
+.shopItem button{font-size:14px;padding:9px}
+.shopBalance{text-align:center;color:#ffdf73;font-weight:bold;margin:8px}
+@media(max-width:420px){h1{font-size:32px}.table{min-height:275px;padding:12px 6px;border-width:6px}.card{min-width:57px;height:88px}.shopGrid{grid-template-columns:1fr 1fr}.box{padding:11px}}
+
 </style>
 </head>
 
@@ -341,6 +377,8 @@ transition:transform .5s,opacity .5s;
 👁️ تسليم الدور
 </button>
 
+<button id="shopBtn">🏪 المتجر</button>
+
 <button id="rulesBtn" class="blue">
 📖 القواعد
 </button>
@@ -438,6 +476,18 @@ style="text-align:center;font-size:23px">
 </div>
 </div>
 
+
+<!-- متجر المظاهر: لا يغيّر قواعد اللعب -->
+<div id="shopModal" class="shopModal" role="dialog" aria-modal="true" aria-label="متجر المظاهر">
+ <div class="shopPanel">
+  <h2>🏪 متجر الكوتشينة والترابيزات</h2>
+  <div id="shopBalance" class="shopBalance">🪙 الرصيد: 100</div>
+  <p class="small">المظاهر تغيّر الشكل فقط ولا تغيّر قواعد العشرة.</p>
+  <h3>🎴 تصميم الأوراق</h3><div id="cardShop" class="shopGrid"></div>
+  <h3>🟩 لون الترابيزة</h3><div id="tableShop" class="shopGrid"></div>
+  <button id="closeShop" class="red">إغلاق المتجر</button>
+ </div>
+</div>
 
 <script>
 
@@ -910,6 +960,8 @@ if(card.rank===target){
 let amount=pile.length;
 
 player.won+=amount;
+styleCoins+=Math.max(1,Math.ceil(amount/3));
+saveCosmetics();
 
 pile=[];
 
@@ -1810,6 +1862,72 @@ a.click();
 
 }
 
+
+
+/* ================= متجر المظاهر ================= */
+const cosmeticCatalog = {
+ cards:[
+  {id:"classic",name:"الكوتشينة الكلاسيكية",price:0,swatch:"repeating-linear-gradient(45deg,#1e3fa1 0 8px,#eee 8px 12px,#b5233b 12px 20px)"},
+  {id:"ruby",name:"الياقوت الأحمر",price:20,swatch:"linear-gradient(135deg,#7c1433,#e04b64)"},
+  {id:"gold",name:"الذهبي الملكي",price:35,swatch:"linear-gradient(135deg,#8a5c10,#f4d777)"},
+  {id:"midnight",name:"الأزرق الليلي",price:25,swatch:"linear-gradient(135deg,#101d42,#526ca8)"}
+ ],
+ tables:[
+  {id:"emerald",name:"ترابيزة الزمرد",price:0,swatch:"radial-gradient(ellipse,#176b4c,#03251d)"},
+  {id:"table-blue",name:"ترابيزة المحيط",price:20,swatch:"radial-gradient(ellipse,#1f5e91,#071d36)"},
+  {id:"table-burgundy",name:"ترابيزة العنابي",price:25,swatch:"radial-gradient(ellipse,#8b2440,#2a0916)"},
+  {id:"table-wood",name:"ترابيزة الخشب",price:35,swatch:"radial-gradient(ellipse,#95613a,#27170e)"}
+ ]
+};
+let styleCoins = Number(localStorage.getItem("alashra_style_coins"));
+if(!Number.isFinite(styleCoins)) styleCoins=100;
+let ownedCosmetics = {};
+try{ownedCosmetics=JSON.parse(localStorage.getItem("alashra_owned_cosmetics")||'{"cards":["classic"],"tables":["emerald"]}')}catch(e){ownedCosmetics={cards:["classic"],tables:["emerald"]}}
+if(!Array.isArray(ownedCosmetics.cards))ownedCosmetics.cards=["classic"];
+if(!Array.isArray(ownedCosmetics.tables))ownedCosmetics.tables=["emerald"];
+let activeCardSkin=localStorage.getItem("alashra_card_skin")||"classic";
+let activeTableSkin=localStorage.getItem("alashra_table_skin")||"emerald";
+function saveCosmetics(){
+ localStorage.setItem("alashra_style_coins",String(styleCoins));
+ localStorage.setItem("alashra_owned_cosmetics",JSON.stringify(ownedCosmetics));
+ localStorage.setItem("alashra_card_skin",activeCardSkin);
+ localStorage.setItem("alashra_table_skin",activeTableSkin);
+}
+function applyCosmetics(){
+ document.body.classList.remove("cards-classic","cards-ruby","cards-gold","cards-midnight","table-emerald","table-blue","table-burgundy","table-wood");
+ document.body.classList.add("cards-"+activeCardSkin,"table-"+activeTableSkin);
+}
+function drawShop(){
+ document.getElementById("shopBalance").textContent="🪙 الرصيد: "+styleCoins;
+ const draw=(kind,targetId,active)=> {
+  const root=document.getElementById(targetId);root.innerHTML="";
+  cosmeticCatalog[kind].forEach(item=>{
+   const owned=ownedCosmetics[kind].includes(item.id);
+   const selected=active===item.id;
+   const el=document.createElement("div");el.className="shopItem";
+   el.innerHTML='<div class="shopSwatch" style="background:'+item.swatch+'"></div><b>'+item.name+'</b><div style="font-size:13px;margin:5px">🪙 '+(item.price===0?"مجاني":item.price)+'</div>';
+   const b=document.createElement("button");b.className=selected?"dark":"";
+   b.textContent=selected?"✅ مستخدم":owned?"اختيار":item.price===0?"اختيار مجاني":"شراء";
+   b.onclick=()=>{
+    if(!owned){
+     if(styleCoins<item.price){alert("رصيدك غير كافٍ. تكسب عملات شكلية عند الفوز بالأكوام.");return;}
+     styleCoins-=item.price;ownedCosmetics[kind].push(item.id);
+    }
+    if(kind==="cards")activeCardSkin=item.id;else activeTableSkin=item.id;
+    saveCosmetics();applyCosmetics();drawShop();
+   };
+   el.appendChild(b);root.appendChild(el);
+  });
+ };
+ draw("cards","cardShop",activeCardSkin);
+ draw("tables","tableShop",activeTableSkin);
+}
+function openShop(){drawShop();document.getElementById("shopModal").classList.add("open")}
+function closeShop(){document.getElementById("shopModal").classList.remove("open")}
+applyCosmetics();
+document.getElementById("shopBtn").addEventListener("click",openShop);
+document.getElementById("closeShop").addEventListener("click",closeShop);
+document.getElementById("shopModal").addEventListener("click",e=>{if(e.target.id==="shopModal")closeShop()});
 
 /* ================= الأزرار ================= */
 
