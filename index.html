@@ -297,7 +297,7 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
 .tableSlot{cursor:pointer;touch-action:manipulation;position:relative}
 .tableSlot.faceDown{background:repeating-linear-gradient(45deg,#17358e 0 6px,#f4eee1 6px 8px,#b22238 8px 14px);color:#fff;border-color:#fff}
 .tableSlot.slotAvailable{outline:3px solid #ffd83d;box-shadow:0 0 16px #ffd83d99}
-.tableSlot small{position:absolute;bottom:1px;right:3px;font-size:10px;background:#07382e;color:#fff;border-radius:4px;padding:1px 3px}
+.tableSlot small{position:absolute;bottom:1px;right:3px;font-size:9px;background:#07382e;color:#fff;border-radius:4px;padding:1px 3px}.underCard{position:absolute;left:2px;top:2px;width:26px;height:35px;border:1px solid #d9caa9;border-radius:4px;background:#fff;color:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:translate(-5px,5px) rotate(-9deg);box-shadow:0 2px 4px #0008;font-size:10px}.underCard span{font-size:12px}.underCard b{font-size:11px}
 .selectedCard{outline:3px solid #ffd83d;transform:translateY(-8px)}
 @keyframes tableCardDeal{from{opacity:0;transform:translateY(-24px) rotateY(85deg) rotate(var(--tilt,0deg)) scale(.7)}to{opacity:1;transform:translateY(0) rotateY(0) rotate(var(--tilt,0deg)) scale(1)}}
 .fly{transform-style:preserve-3d;backface-visibility:hidden}
@@ -804,7 +804,9 @@ function render(){
    el.innerHTML="<span>🂠</span>";
   }else{
    const label=top.rank===1?"A":top.rank===11?"J":top.rank===12?"Q":top.rank===13?"K":top.rank;
-   el.innerHTML="<b>"+label+"</b><span>"+top.suit+"</span>"+(stack.length>1?"<small>+"+(stack.length-1)+"</small>":"");
+   const below=stack.length>1?stack[stack.length-2]:null;
+   const belowLabel=below?(below.rank===1?"A":below.rank===11?"J":below.rank===12?"Q":below.rank===13?"K":below.rank):"";
+   el.innerHTML=(below?'<div class="underCard"><b>'+belowLabel+'</b><span>'+below.suit+'</span></div>':"")+"<b>"+label+"</b><span>"+top.suit+"</span>"+(stack.length>2?"<small>+"+(stack.length-2)+" أخرى</small>":"");
   }
   el.onclick=()=>chooseGroundSlot(i);
   spread.appendChild(el);
@@ -1000,60 +1002,34 @@ p=>p.hand.length===0
 */
 
 function handleEndOfDistribution(){
-
-if(deck.length>0){
-
-document.getElementById("message").textContent="انتهت أوراق الأيدي؛ يجري توزيع 6 ورقات جديدة لكل لاعب.";
-
-log("⏳ انتهت أوراق الأيدي، وسيستمر اللعب.");
-
-setTimeout(()=>{
-
-dealNewRound();
-
-turn=0;
-
-render();
-
-setTimeout(animateDealToPlayers,120);
-
-if(players[turn].computer){
-
-setTimeout(
-computerPlay,
-900
-);
-
-}else{
-
-page("pass");
-
-document.getElementById("passText")
-.innerHTML=
-"🔥 توزيع جديد!<br>"+
-"الدور الآن لـ <b>"+
-players[turn].name+
-"</b>";
-
+ /* الأوراق المتبقية على الأرض تذهب لآخر لاعب طابق ورقة؛ وإن لم يحدث تطابق تذهب لآخر لاعب لعب. */
+ if(pile.length){
+  const receiver=lastWinner>=0?lastWinner:turn;
+  players[receiver].won+=pile.length;
+  log("🏆 أوراق الأرض المتبقية أُضيفت إلى رصيد "+players[receiver].name+".");
+  groundStacks=[];
+  syncPile();
+ }
+ if(deck.length>0){
+  document.getElementById("message").textContent="انتهت أوراق الأيدي؛ يجري توزيع 6 ورقات جديدة لكل لاعب و6 على الأرض.";
+  log("⏳ بدأت دورة توزيع جديدة.");
+  setTimeout(()=>{
+   dealNewRound();
+   turn=0;
+   selectedHandIndex=null;
+   render();
+   setTimeout(animateDealToPlayers,120);
+   if(players[turn].computer){
+    setTimeout(computerPlay,900);
+   }else{
+    page("pass");
+    document.getElementById("passText").innerHTML="🎴 توزيع جديد!<br>الدور الآن لـ <b>"+players[turn].name+"</b>";
+   }
+  },900);
+  return;
+ }
+ finishGame();
 }
-
-},1000);
-
-return;
-
-}
-
-
-/*
-لا يوجد ورق في الكوتشينة.
-إذا كان الرقم لم يصل إلى 10،
-تنتهي اللعبة بعد آخر توزيع.
-*/
-
-finishGame();
-
-}
-
 
 /* ================= الدور التالي ================= */
 
