@@ -888,6 +888,7 @@ function resolvePlay(handIndex,slotIndex){
   syncPile();
   log("🂠 تم وضع أوراق جديدة مقلوبة على الأرض.");
  }
+ if(groundStacks.length===0 && deck.length===0){finishGame();return;}
  if(allHandsEmpty()){
   handleEndOfDistribution();
   return;
