@@ -296,6 +296,18 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
 .tableCard span{font-size:21px;line-height:1}
 @keyframes tableCardDeal{from{opacity:0;transform:translateY(-24px) rotateY(85deg) rotate(var(--tilt,0deg)) scale(.7)}to{opacity:1;transform:translateY(0) rotateY(0) rotate(var(--tilt,0deg)) scale(1)}}
 .fly{transform-style:preserve-3d;backface-visibility:hidden}
+
+/* توزيع الكوتشينة: ست ورقات لكل لاعب بالتتابع */
+.dealFly{
+ position:fixed;z-index:2000;width:34px;height:49px;border:2px solid #f7e7c0;
+ border-radius:6px;background:repeating-linear-gradient(45deg,#17358e 0 5px,#f4eee1 5px 7px,#b22238 7px 12px);
+ box-shadow:0 5px 12px #000b;pointer-events:none;left:0;top:0;
+ transition:transform .34s cubic-bezier(.2,.75,.25,1),opacity .34s;
+ transform-origin:center center;
+}
+.player{position:relative}
+.player.deal-highlight{outline:2px solid #ffd83d;box-shadow:0 0 14px #ffd83d88}
+@media(prefers-reduced-motion:reduce){.dealFly{transition:none}}
 @media(max-width:380px){.tableCard{width:37px;height:57px;flex-basis:37px;margin-left:-14px;font-size:15px}.tableSpread{min-height:70px}}
 
 </style>
@@ -800,6 +812,8 @@ document.getElementById("message")
 
 render();
 
+setTimeout(animateDealToPlayers,120);
+
 startMusic();
 
 }
@@ -858,6 +872,7 @@ let d=document.createElement("div");
 d.className=
 "player"+
 (i===turn?" turn":"");
+d.dataset.playerIndex=i;
 
 d.innerHTML=
 (p.computer?"🤖 ":"👤 ")+
@@ -920,6 +935,41 @@ hand.appendChild(el);
 
 }
 
+
+/* ================= توزيع الكوتشينة على اللاعبين ================= */
+function animateDealToPlayers(){
+ const game=document.getElementById("game");
+ if(!game || !game.classList.contains("show")) return;
+ const source=document.getElementById("pile");
+ const seats=[...document.querySelectorAll("#players .player")];
+ if(!source || !seats.length) return;
+ const sr=source.getBoundingClientRect();
+ const sx=sr.left+sr.width/2-17, sy=sr.top+sr.height/2-24;
+ seats.forEach(el=>el.classList.remove("deal-highlight"));
+ /* ست لفات: ورقة لكل لاعب في كل لفة، مثل توزيع الكوتشينة المعتاد */
+ for(let cardNo=0;cardNo<6;cardNo++){
+  seats.forEach((seat,playerNo)=>{
+   const delay=(cardNo*seats.length+playerNo)*105;
+   setTimeout(()=>{
+    if(!document.getElementById("game").classList.contains("show")) return;
+    const r=seat.getBoundingClientRect();
+    const card=document.createElement("div");
+    card.className="dealFly";
+    card.setAttribute("aria-hidden","true");
+    card.style.left=sx+"px";
+    card.style.top=sy+"px";
+    document.body.appendChild(card);
+    seat.classList.add("deal-highlight");
+    requestAnimationFrame(()=>{
+     card.style.transform="translate("+(r.left+r.width/2-17-sx)+"px,"+(r.top+r.height/2-24-sy)+"px) rotateY(360deg) rotate("+(playerNo%2?8:-8)+"deg) scale(.85)";
+     card.style.opacity=".25";
+    });
+    setTimeout(()=>card.remove(),430);
+    setTimeout(()=>seat.classList.remove("deal-highlight"),470);
+   },delay);
+  });
+ }
+}
 
 /* ================= حركة الورقة ================= */
 
@@ -1167,6 +1217,8 @@ dealNewRound();
 turn=0;
 
 render();
+
+setTimeout(animateDealToPlayers,120);
 
 if(players[turn].computer){
 
