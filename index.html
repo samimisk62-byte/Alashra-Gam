@@ -551,6 +551,7 @@ let deck=[];
 let pile=[];
 let groundStacks=[];
 let selectedHandIndex=null;
+let resolving=false;
 
 let target=1;
 let turn=0;
@@ -747,6 +748,7 @@ deck=createDeck();
 pile=[];
 groundStacks=[];
 selectedHandIndex=null;
+resolving=false;
 
 target=1;
 turn=0;
@@ -855,47 +857,61 @@ function chooseGroundSlot(slotIndex){
 }
 
 function resolvePlay(handIndex,slotIndex){
+ if(resolving) return;
  const player=players[turn];
- const card=player.hand[handIndex];
+ const card=player && player.hand[handIndex];
  const stack=groundStacks[slotIndex];
- if(!card || !stack) return;
+ if(!card || !stack || player.computer) return;
+
+ resolving=true;
  const groundCard=stack[stack.length-1];
  const label=x=>x.rank===1?"A":x.rank===11?"J":x.rank===12?"Q":x.rank===13?"K":x.rank;
- player.hand.splice(handIndex,1);
- selectedHandIndex=null;
- cardSound();
  const same=card.rank===groundCard.rank && card.suit===groundCard.suit;
  const pairText=label(card)+card.suit+" و "+label(groundCard)+groundCard.suit;
- if(same){
-  const captured=stack.length+1;
-  player.won+=captured;
-  lastWinner=turn;
-  styleCoins+=Math.max(1,Math.ceil(captured/3));
-  saveCosmetics();
-  groundStacks.splice(slotIndex,1);
-  document.getElementById("message").textContent="🎉 تطابق مطابق للصورة! "+player.name+" أخذ "+captured+" ورقة.";
-  log("🏆 "+player.name+" طابق "+pairText+" وجمع "+captured+" ورقة.");
-  pileSound();
- }else{
-  stack.revealed=true;
-  stack.push(card);
-  document.getElementById("message").textContent="لم تتطابق "+pairText+"؛ بقيت الورقتان على الأرض.";
-  log("🃏 "+player.name+" كشف ورقتين غير متطابقتين؛ بقيتا على الأرض.");
- }
- syncPile();
- if(groundStacks.length===0 && deck.length>0){
-  for(let i=0;i<6 && deck.length;i++) groundStacks.push([deck.pop()]);
-  syncPile();
-  log("🂠 تم وضع أوراق جديدة مقلوبة على الأرض.");
- }
- if(groundStacks.length===0 && deck.length===0){finishGame();return;}
- if(allHandsEmpty()){
-  handleEndOfDistribution();
-  return;
- }
- nextPlayer();
-}
 
+ /* اكشف الورقتين أولًا أمام الجميع، ثم احسم المطابقة بعد لحظة قصيرة. */
+ player.hand.splice(handIndex,1);
+ selectedHandIndex=null;
+ stack.revealed=true;
+ stack.push(card);
+ syncPile();
+ cardSound();
+ document.getElementById("message").textContent=
+  "👀 كشف الورقتين: "+pairText+" — "+(same?"تطابق!":"لا يوجد تطابق.");
+ render();
+
+ setTimeout(()=>{
+  if(same){
+   const captured=stack.length;
+   player.won+=captured;
+   lastWinner=turn;
+   styleCoins+=Math.max(1,Math.ceil(captured/3));
+   saveCosmetics();
+   const currentIndex=groundStacks.indexOf(stack);
+   if(currentIndex>=0) groundStacks.splice(currentIndex,1);
+   document.getElementById("message").textContent=
+    "🎉 تطابق كامل! "+player.name+" أخذ "+captured+" ورقة.";
+   log("🏆 "+player.name+" طابق "+pairText+" وجمع "+captured+" ورقة.");
+   pileSound();
+  }else{
+   document.getElementById("message").textContent=
+    "لم تتطابق الورقتان؛ بقيتا مكشوفتين على الأرض.";
+   log("🃏 "+player.name+" كشف ورقتين غير متطابقتين؛ بقيتا على الأرض.");
+  }
+
+  syncPile();
+  if(groundStacks.length===0 && deck.length>0){
+   for(let i=0;i<6 && deck.length;i++) groundStacks.push([deck.pop()]);
+   syncPile();
+   log("🂠 تم وضع أوراق جديدة مقلوبة على الأرض.");
+  }
+
+  resolving=false;
+  if(groundStacks.length===0 && deck.length===0){finishGame();return;}
+  if(allHandsEmpty()){handleEndOfDistribution();return;}
+  nextPlayer();
+ },650);
+}
 /* ================= توزيع الكوتشينة على اللاعبين ================= */
 function animateDealToPlayers(){
  const game=document.getElementById("game");
@@ -1365,23 +1381,19 @@ i*150
 /* ================= القواعد ================= */
 
 function rules(){
-
-alert(
-"🃏🔥 قواعد العشرة 🔥🃏\\n\\n"+
-"156 ورقة = 3 مجموعات.\\n\\n"+
-"6 أوراق لكل لاعب في كل توزيع.\\n\\n"+
-"6 أوراق على الأرض مع كل توزيع.\\n\\n"+
-"إذا انتهت أوراق اللاعبين، يبدأ توزيع جديد تلقائيًا طالما توجد كوتشينة.\\n\\n"+
-"الرقم المطلوب يبدأ من 1 إلى 10.\\n\\n"+
-"J الولد و Q البنت و K الشايب أوراق تفريق.\\n\\n"+
-"الرقم لا يتغير حتى تظهر ورقة الرقم المطلوب.\\n\\n"+
-"من يظهر الرقم المطلوب يأخذ الكومة كاملة.\\n\\n"+
-"بعد الرقم 10 تنتهي اللعبة.\\n\\n"+
-"الأكثر أوراقًا هو الفائز."
-);
-
+ alert(
+  "🎴 قواعد لعبة الـ٦ ورقات\n\n"+
+  "• الكوتشينة 156 ورقة: 3 مجموعات من 52 ورقة.\n"+
+  "• الكمبيوتر يوزّع 6 ورقات لكل لاعب و6 ورقات مقلوبة على الأرض.\n"+
+  "• في دورك اختار ورقة من يدك، ثم اختار كومة من الأرض.\n"+
+  "• تُكشف الورقتان للجميع قبل حسم النتيجة.\n"+
+  "• التطابق لازم يكون في القيمة والعلامة معًا: 7♥ تطابق 7♥ فقط.\n"+
+  "• عند التطابق تأخذ ورقتك وكل أوراق الكومة المختارة.\n"+
+  "• عند عدم التطابق تبقى الورقتان مكشوفتين فوق الكومة.\n"+
+  "• تستمر التوزيعات حتى تنتهي الكوتشينة؛ الأوراق المتبقية تذهب لآخر لاعب طابق.\n"+
+  "• الفائز هو صاحب أكبر عدد من الأوراق المجموعة."
+ );
 }
-
 
 /* ================= التسجيل ================= */
 
