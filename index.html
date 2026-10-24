@@ -861,7 +861,7 @@ function resolvePlay(handIndex,slotIndex){
  const player=players[turn];
  const card=player && player.hand[handIndex];
  const stack=groundStacks[slotIndex];
- if(!card || !stack || player.computer) return;
+ if(!card || !stack) return;
 
  resolving=true;
  const groundCard=stack[stack.length-1];
@@ -1029,6 +1029,7 @@ function handleEndOfDistribution(){
  if(pile.length){
   const receiver=lastWinner>=0?lastWinner:turn;
   players[receiver].won+=pile.length;
+  lastWinner=-1;
   log("🏆 أوراق الأرض المتبقية أُضيفت إلى رصيد "+players[receiver].name+".");
   groundStacks=[];
   syncPile();
