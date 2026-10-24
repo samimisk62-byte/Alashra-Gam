@@ -141,8 +141,10 @@ animation:pulse .4s;
 display:flex;
 gap:7px;
 overflow-x:auto;
+width:100%;min-width:0;
 padding:10px 2px 14px;
-min-height:120px;
+min-height:125px;
+visibility:visible;opacity:1;
 }
 .card{
 min-width:65px;
@@ -288,8 +290,8 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
 
 
 /* عرض أوراق الأرض كأوراق فعلية متراكبة مع حركة قلب */
-.tableSpread{direction:ltr;display:flex;align-items:center;justify-content:center;gap:0;max-width:100%;min-height:82px;margin:0 auto 8px;padding:5px 4px;overflow:hidden;perspective:700px}
-.tableCard{width:43px;height:65px;flex:0 1 43px;min-width:0;margin-left:-12px;border:2px solid #f5ead1;border-radius:7px;background:linear-gradient(145deg,#fff,#eee4cf);color:#151515;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:17px;font-weight:bold;box-shadow:0 4px 0 #87613e,0 7px 9px #0008;transform:rotate(var(--tilt,0deg)) rotateY(0deg);animation:tableCardDeal .38s cubic-bezier(.2,.8,.2,1) both;position:relative}
+.tableSpread{direction:ltr;display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;width:100%;max-width:100%;min-height:90px;margin:0 auto 8px;padding:8px 4px;overflow:visible;perspective:700px}
+.tableCard{width:43px;height:65px;flex:0 0 43px;min-width:43px;margin-left:0;border:2px solid #f5ead1;border-radius:7px;background:linear-gradient(145deg,#fff,#eee4cf);color:#151515;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:17px;font-weight:bold;box-shadow:0 4px 0 #87613e,0 7px 9px #0008;transform:rotate(var(--tilt,0deg)) rotateY(0deg);animation:tableCardDeal .38s cubic-bezier(.2,.8,.2,1) both;position:relative}
 .tableCard:first-child{margin-left:0}
 .tableCard.red{background:linear-gradient(145deg,#fff 0%,#f7f3e8 70%,#d9d0bc 100%);color:#c52236}
 .tableCard:nth-child(2n){--tilt:-5deg}.tableCard:nth-child(2n+1){--tilt:4deg}
@@ -744,6 +746,12 @@ won:0
 }
 
 deck=createDeck();
+/* تحقق احتياطي حتى لا تبدأ اللعبة بكوتشينة فارغة */
+if(!Array.isArray(deck) || deck.length!==156){
+ deck=[]; let id=0;
+ for(let copy=0;copy<3;copy++) for(const suit of [["♠",false],["♥",true],["♦",true],["♣",false]]) for(let rank=1;rank<=13;rank++) deck.push({id:id++,rank,suit:suit[0],red:suit[1]});
+ shuffle(deck);
+}
 
 pile=[];
 groundStacks=[];
@@ -761,7 +769,13 @@ lastWinner=-1;
 */
 
 dealNewRound();
-
+/* تأكيد توزيع ست ورقات لكل لاعب في بداية اللعبة */
+if(players.some(p=>p.hand.length!==6) || groundStacks.length!==6){
+ deck=createDeck(); pile=[]; groundStacks=[]; players.forEach(p=>p.hand=[]);
+ for(let i=0;i<6;i++) for(const p of players) p.hand.push(deck.pop());
+ for(let i=0;i<6;i++) groundStacks.push([deck.pop()]);
+ syncPile();
+}
 
 /*
 إذا كان هناك عدد قليل من الأوراق
@@ -793,6 +807,8 @@ function render(){
  document.getElementById("deckCount").textContent=deck.length;
 
  const spread=document.getElementById("tableSpread");
+ if(!Array.isArray(deck)) deck=[];
+ if(!Array.isArray(groundStacks)) groundStacks=[];
  spread.innerHTML="";
  groundStacks.forEach((stack,i)=>{
   const top=stack[stack.length-1];
@@ -828,6 +844,7 @@ function render(){
  hand.innerHTML="";
  if(players[turn].computer){
   document.getElementById("handTitle").textContent="🤖 الكمبيوتر يلعب...";
+  players[turn].hand.forEach(()=>{const back=document.createElement("div");back.className="card faceDown";back.innerHTML="<span>🂠</span>";hand.appendChild(back);});
   return;
  }
  document.getElementById("handTitle").textContent=selectedHandIndex===null
