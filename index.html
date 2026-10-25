@@ -315,7 +315,7 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
 .player{position:relative}
 .player.deal-highlight{outline:2px solid #ffd83d;box-shadow:0 0 14px #ffd83d88}
 @media(prefers-reduced-motion:reduce){.dealFly{transition:none}}
-@media(max-width:380px){.tableCard{width:37px;height:57px;flex-basis:37px;margin-left:-14px;font-size:15px}.tableSpread{min-height:70px}}
+@media(max-width:380px){.tableCard{width:39px;height:59px;flex:0 0 39px;min-width:39px;margin-left:0!important;font-size:15px}.tableSpread{min-height:76px;gap:4px;padding:8px 2px;justify-content:space-evenly}.hand{gap:6px}.hand .card{flex-basis:58px!important;min-width:58px}}
 
 </style>
 </head>
@@ -779,6 +779,7 @@ function render(){
  document.getElementById("round").textContent=round;
  document.getElementById("pileCount").textContent=pile.length;
  document.getElementById("deckCount").textContent=deck.length;
+ document.getElementById("deckCount").parentElement.title="عدد الأوراق التي لم تُوزع بعد من أصل 156 ورقة.";
  const spread=document.getElementById("tableSpread");
  spread.innerHTML="";
  groundStacks.forEach((stack,i)=>{
@@ -788,6 +789,8 @@ function render(){
   el.className="tableCard tableSlot"+(top&&top.red?" red":"");
   el.style.margin="3px";
   el.style.flex="0 0 43px";
+  el.style.margin="0";
+  el.style.flexShrink="0";
   el.setAttribute("aria-label","اختيار ورقة الأرض رقم "+(i+1));
   if(selectedHandIndex!==null) el.classList.add("slotAvailable");
   if(!stack.revealed&&stack.length===1) {el.classList.add("faceDown");el.innerHTML="<span>🂠</span>";}
