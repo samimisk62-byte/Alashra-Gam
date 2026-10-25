@@ -317,6 +317,22 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
 @media(prefers-reduced-motion:reduce){.dealFly{transition:none}}
 @media(max-width:380px){.tableCard{width:39px;height:59px;flex:0 0 39px;min-width:39px;margin-left:0!important;font-size:15px}.tableSpread{min-height:76px;gap:4px;padding:8px 2px;justify-content:space-evenly}.hand{gap:6px}.hand .card{flex-basis:58px!important;min-width:58px}}
 
+
+/* إصلاح عرض اللعب على الهاتف: إخفاء رمز الرزمة القديم وإظهار البطاقات الفعلية */
+#game .box{overflow:visible;min-width:0}
+#game .table{display:flex;flex-direction:column;gap:8px;overflow:visible;min-width:0}
+#game #pile{display:none!important}
+#game #tableSpread{display:flex!important;visibility:visible!important;opacity:1!important;width:100%;min-height:92px;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;gap:7px;overflow:visible}
+#game #tableSpread .tableCard{display:flex!important;visibility:visible!important;opacity:1!important;width:43px!important;height:65px!important;min-width:43px!important;flex:0 0 43px!important;margin:0!important;padding:2px!important}
+#game #hand{display:flex!important;visibility:visible!important;opacity:1!important;width:100%;min-height:125px;flex-direction:row;flex-wrap:nowrap;align-items:flex-end;gap:7px;overflow-x:auto;overflow-y:visible}
+#game #hand .card{display:flex!important;visibility:visible!important;opacity:1!important;position:relative;flex:0 0 58px!important;width:58px!important;min-width:58px!important;height:88px!important;margin:0!important;padding:4px!important;z-index:1}
+#game #handTitle{display:block!important;visibility:visible!important;min-height:24px;margin-top:8px}
+@media(max-width:380px){
+ #game #tableSpread{gap:4px;padding:8px 0}
+ #game #tableSpread .tableCard{width:38px!important;min-width:38px!important;flex-basis:38px!important;height:58px!important}
+ #game #hand .card{width:54px!important;min-width:54px!important;flex-basis:54px!important;height:82px!important}
+}
+
 </style>
 </head>
 
