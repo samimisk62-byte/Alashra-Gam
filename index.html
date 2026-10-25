@@ -714,147 +714,116 @@ function dealNewRound(){
 /* ================= بداية اللعبة ================= */
 
 function startGame(){
-
-let mode=document.getElementById("mode").value;
-let count=+document.getElementById("count").value;
-
-if(mode==="computer") count=2;
-
-players=[];
-
-for(let i=1;i<=count;i++){
-
-let computer=
-(mode==="computer" && i===2) ||
-(mode==="mixed" && i>1);
-
-players.push({
-
-name:
-document.getElementById("name"+i)
-.value.trim() ||
-"اللاعب "+i,
-
-computer:computer,
-
-hand:[],
-
-won:0
-
-});
-
-}
-
-deck=createDeck();
-/* تحقق احتياطي حتى لا تبدأ اللعبة بكوتشينة فارغة */
-if(!Array.isArray(deck) || deck.length!==156){
- deck=[]; let id=0;
- for(let copy=0;copy<3;copy++) for(const suit of [["♠",false],["♥",true],["♦",true],["♣",false]]) for(let rank=1;rank<=13;rank++) deck.push({id:id++,rank,suit:suit[0],red:suit[1]});
+ const mode=document.getElementById("mode").value;
+ let count=Number(document.getElementById("count").value)||4;
+ if(mode==="computer") count=2;
+ players=[];
+ for(let i=1;i<=count;i++){
+  const computer=(mode==="computer"&&i===2)||(mode==="mixed"&&i>1);
+  const nameInput=document.getElementById("name"+i);
+  players.push({name:(nameInput&&nameInput.value.trim())||(computer?"الكمبيوتر "+i:"اللاعب "+i),computer,hand:[],won:0});
+ }
+ /* إنشاء كوتشينة جديدة مستقلة ومضمونة */
+ deck=[];
+ let cardId=0;
+ for(let copy=0;copy<3;copy++){
+  for(const suit of [["♠",false],["♥",true],["♦",true],["♣",false]]){
+   for(let rank=1;rank<=13;rank++) deck.push({id:cardId++,rank,suit:suit[0],red:suit[1]});
+  }
+ }
  shuffle(deck);
-}
-
-pile=[];
-groundStacks=[];
-selectedHandIndex=null;
-resolving=false;
-
-target=1;
-turn=0;
-round=0;
-lastWinner=-1;
-
-
-/*
-أول توزيع
-*/
-
-dealNewRound();
-/* تأكيد توزيع ست ورقات لكل لاعب في بداية اللعبة */
-if(players.some(p=>p.hand.length!==6) || groundStacks.length!==6){
- deck=createDeck(); pile=[]; groundStacks=[]; players.forEach(p=>p.hand=[]);
- for(let i=0;i<6;i++) for(const p of players) p.hand.push(deck.pop());
- for(let i=0;i<6;i++) groundStacks.push([deck.pop()]);
+ pile=[];
+ groundStacks=[];
+ selectedHandIndex=null;
+ resolving=false;
+ target=1;
+ turn=0;
+ round=1;
+ lastWinner=-1;
+ /* ست ورقات لكل لاعب ثم ست ورقات أرض */
+ for(let pass=0;pass<6;pass++){
+  for(const player of players) player.hand.push(deck.pop());
+ }
+ for(let n=0;n<6;n++) groundStacks.push([deck.pop()]);
  syncPile();
+ page("game");
+ document.getElementById("message").textContent="🎴 بدأت اللعبة! اختار ورقة من يدك، ثم اختار ورقة من الأرض.";
+ document.getElementById("round").textContent=round;
+ document.getElementById("deckCount").textContent=deck.length;
+ document.getElementById("pileCount").textContent=pile.length;
+ render();
+ log("تم توزيع 6 ورقات لكل لاعب. الكوتشينة المتبقية: "+deck.length+" ورقة.");
+ setTimeout(animateDealToPlayers,120);
+ startMusic();
 }
-
-/*
-إذا كان هناك عدد قليل من الأوراق
-نتأكد أن الجولة بدأت.
-*/
-
-page("game");
-
-document.getElementById("message")
-.textContent=
-"🎴 بدأت اللعبة! اختار ورقة من يدك، ثم اختار ورقة من الأرض.";
-
-render();
-
-setTimeout(animateDealToPlayers,120);
-
-startMusic();
-
-}
-
 
 /* ================= العرض ================= */
 
 function render(){
+ if(!players.length) return;
+ /* لا تسمح بعرض بداية فارغة؛ أصلح التوزيع إذا وصلنا لحالة تالفة */
+ if(deck.length===0 && round===1 && players.every(p=>p.won===0) && players.some(p=>p.hand.length===0)){
+  deck=[];
+  let repairId=0;
+  for(let copy=0;copy<3;copy++) for(const suit of [["♠",false],["♥",true],["♦",true],["♣",false]]) for(let rank=1;rank<=13;rank++) deck.push({id:repairId++,rank,suit:suit[0],red:suit[1]});
+  shuffle(deck);
+  players.forEach(p=>p.hand=[]);
+  groundStacks=[];
+  for(let pass=0;pass<6;pass++) for(const p of players) p.hand.push(deck.pop());
+  for(let n=0;n<6;n++) groundStacks.push([deck.pop()]);
+  selectedHandIndex=null;
+  syncPile();
+ }
  document.getElementById("turnName").textContent="🎮 الدور: "+players[turn].name;
- document.getElementById("target").textContent="مطابقة";
+ document.getElementById("target").textContent="مطابقة الورقة";
  document.getElementById("round").textContent=round;
  document.getElementById("pileCount").textContent=pile.length;
  document.getElementById("deckCount").textContent=deck.length;
-
  const spread=document.getElementById("tableSpread");
- if(!Array.isArray(deck)) deck=[];
- if(!Array.isArray(groundStacks)) groundStacks=[];
  spread.innerHTML="";
  groundStacks.forEach((stack,i)=>{
   const top=stack[stack.length-1];
-  const el=document.createElement("div");
-  el.className="tableCard tableSlot"+(top && top.red?" red":"");
-  el.setAttribute("role","button");
+  const el=document.createElement("button");
+  el.type="button";
+  el.className="tableCard tableSlot"+(top&&top.red?" red":"");
+  el.style.margin="3px";
+  el.style.flex="0 0 43px";
   el.setAttribute("aria-label","اختيار ورقة الأرض رقم "+(i+1));
   if(selectedHandIndex!==null) el.classList.add("slotAvailable");
-  if(!stack.revealed && stack.length===1){
-   el.classList.add("faceDown");
-   el.innerHTML="<span>🂠</span>";
-  }else{
-   const label=top.rank===1?"A":top.rank===11?"J":top.rank===12?"Q":top.rank===13?"K":top.rank;
+  if(!stack.revealed&&stack.length===1) {el.classList.add("faceDown");el.innerHTML="<span>🂠</span>";}
+  else {
+   const label=x=>x.rank===1?"A":x.rank===11?"J":x.rank===12?"Q":x.rank===13?"K":x.rank;
    const below=stack.length>1?stack[stack.length-2]:null;
-   const belowLabel=below?(below.rank===1?"A":below.rank===11?"J":below.rank===12?"Q":below.rank===13?"K":below.rank):"";
-   el.innerHTML=(below?'<div class="underCard"><b>'+belowLabel+'</b><span>'+below.suit+'</span></div>':"")+"<b>"+label+"</b><span>"+top.suit+"</span>"+(stack.length>2?"<small>+"+(stack.length-2)+" أخرى</small>":"");
+   el.innerHTML=(below?'<div class="underCard"><b>'+label(below)+'</b><span>'+below.suit+'</span></div>':"")+"<b>"+label(top)+"</b><span>"+top.suit+"</span>"+(stack.length>2?"<small>+"+(stack.length-2)+" أخرى</small>":"");
   }
   el.onclick=()=>chooseGroundSlot(i);
   spread.appendChild(el);
  });
-
- let pb=document.getElementById("players");
+ const pb=document.getElementById("players");
  pb.innerHTML="";
  players.forEach((p,i)=>{
-  let d=document.createElement("div");
+  const d=document.createElement("div");
   d.className="player"+(i===turn?" turn":"");
   d.dataset.playerIndex=i;
-  d.innerHTML=(p.computer?"🤖 ":"👤 ")+p.name+"<br>🃏 "+p.hand.length+" | 🏆 "+p.won;
+  d.innerHTML=(p.computer?"🤖 ":"👤 ")+p.name+"<br>🃏 في اليد: "+p.hand.length+" | 🏆 جمع: "+p.won;
   pb.appendChild(d);
  });
-
- let hand=document.getElementById("hand");
+ const hand=document.getElementById("hand");
  hand.innerHTML="";
+ hand.style.display="flex";hand.style.visibility="visible";hand.style.opacity="1";hand.style.minHeight="125px";
  if(players[turn].computer){
   document.getElementById("handTitle").textContent="🤖 الكمبيوتر يلعب...";
   players[turn].hand.forEach(()=>{const back=document.createElement("div");back.className="card faceDown";back.innerHTML="<span>🂠</span>";hand.appendChild(back);});
   return;
  }
- document.getElementById("handTitle").textContent=selectedHandIndex===null
-  ?"🖐️ اختار ورقة من يد "+players[turn].name
-  :"☝️ اختار الآن ورقة من الأرض للمطابقة";
+ document.getElementById("handTitle").textContent=selectedHandIndex===null?"🖐️ اختار ورقة من يد "+players[turn].name:"☝️ اختار الآن ورقة من الأرض للمطابقة";
  players[turn].hand.forEach((card,i)=>{
-  let el=document.createElement("div");
+  const el=document.createElement("button");
+  el.type="button";
   el.className="card"+(card.red?" red":"")+(selectedHandIndex===i?" selectedCard":"");
   const label=card.rank===1?"A":card.rank===11?"J":card.rank===12?"Q":card.rank===13?"K":card.rank;
   el.innerHTML="<b>"+label+"</b><span>"+card.suit+"</span>";
+  el.style.display="flex";el.style.visibility="visible";el.style.opacity="1";el.style.flex="0 0 65px";
   el.onclick=()=>selectHandCard(i);
   hand.appendChild(el);
  });
