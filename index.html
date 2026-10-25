@@ -333,6 +333,81 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
  #game #hand .card{width:54px!important;min-width:54px!important;flex-basis:54px!important;height:82px!important}
 }
 
+
+/* إصلاح نهائي لواجهة الكروت: ست خانات واضحة على الأرض ووجوه كروت حقيقية */
+#game #tableSpread{
+ display:grid!important;
+ grid-template-columns:repeat(6,minmax(0,1fr))!important;
+ align-items:center!important;
+ justify-items:center!important;
+ gap:6px!important;
+ width:100%!important;
+ max-width:390px!important;
+ min-height:90px!important;
+ margin:6px auto 12px!important;
+ padding:8px 5px!important;
+ direction:ltr!important;
+}
+#game #tableSpread .tableCard{
+ display:flex!important;
+ position:relative!important;
+ width:100%!important;
+ max-width:49px!important;
+ min-width:0!important;
+ height:72px!important;
+ flex:none!important;
+ margin:0!important;
+ padding:3px!important;
+ border:2px solid #fff8e8!important;
+ border-radius:8px!important;
+ box-shadow:0 3px 0 #6b492a,0 6px 10px #0008!important;
+ overflow:visible!important;
+ font-family:Georgia,serif!important;
+ font-size:19px!important;
+}
+#game #tableSpread .tableCard:not(.faceDown){
+ background:linear-gradient(145deg,#fff 0%,#fffdf7 65%,#e9e0d0 100%)!important;
+}
+#game #tableSpread .tableCard b{font-size:19px!important;line-height:1.05!important}
+#game #tableSpread .tableCard span{font-size:25px!important;line-height:1.05!important}
+#game #tableSpread .tableCard.faceDown{
+ background:repeating-linear-gradient(45deg,#123c8a 0 5px,#f8f0dc 5px 7px,#a71e37 7px 12px)!important;
+ color:#fff!important;
+ border:3px double #fff4d7!important;
+}
+#game #tableSpread .tableCard.faceDown span{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ width:100%!important;height:100%!important;border-radius:4px!important;
+ background:linear-gradient(135deg,#173d8b88,#a71e3788)!important;
+ color:#fff!important;text-shadow:0 2px 4px #000!important;font-size:27px!important;
+}
+#game #hand{gap:7px!important;padding:12px 4px 18px!important}
+#game #hand .card{
+ background:linear-gradient(145deg,#fff 0%,#fffdf7 70%,#e5dac5 100%)!important;
+ border:2px solid #fff3d7!important;
+ border-radius:10px!important;
+ box-shadow:0 4px 0 #b7a27f,0 8px 13px #0008!important;
+ color:#141414!important;
+ position:relative!important;
+ overflow:hidden!important;
+}
+#game #hand .card.red{color:#c52236!important}
+#game #hand .card b{font-family:Georgia,serif!important;font-size:25px!important;line-height:1!important}
+#game #hand .card span{font-size:34px!important;line-height:1.05!important}
+#game #hand .card.selectedCard{
+ outline:3px solid #ffd83d!important;
+ transform:translateY(-9px)!important;
+ box-shadow:0 0 0 3px #ffd83d66,0 10px 18px #0009!important;
+}
+#game #players .player.turn{border:2px solid #ffd83d!important;box-shadow:0 0 12px #ffd83d55!important}
+@media(max-width:380px){
+ #game #tableSpread{gap:4px!important;padding:7px 2px!important}
+ #game #tableSpread .tableCard{height:64px!important;font-size:16px!important}
+ #game #tableSpread .tableCard b{font-size:17px!important}
+ #game #tableSpread .tableCard span{font-size:22px!important}
+ #game #hand .card{flex-basis:54px!important;width:54px!important;min-width:54px!important;height:84px!important}
+}
+
 </style>
 </head>
 
