@@ -1005,7 +1005,7 @@ function resolvePlay(handIndex,groundIndex){
   selectedHandIndex=null;
   syncPile();
   render();
-  const match=handCard.rank===groundCard.rank && handCard.suit===groundCard.suit;
+  const match=handCard.rank===groundCard.rank; // المطابقة بالرقم/القيمة مع الورقة العليا فقط، وليس بالنوع أو الأوراق السفلية
   if(match){
    pileSound();
    setTimeout(()=>{
@@ -1199,7 +1199,7 @@ function computerPlay(){
  const matchIndices=[];
  hand.forEach((card,i)=>groundStacks.forEach((stack,j)=>{
   const top=stack[stack.length-1];
-  if(card.rank===top.rank && card.suit===top.suit)matchIndices.push([i,j]);
+  if(card.rank===top.rank)matchIndices.push([i,j]);
  }));
  let choice;
  const matchChance=Math.min(0.98,0.65+stage*0.04);
