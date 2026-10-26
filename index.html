@@ -474,7 +474,8 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
 <label>عدد اللاعبين</label>
 
 <select id="count">
-<option value="2">2 لاعبين</option>
+<option value="1">لاعب واحد</option>
+<option value="2">لاعبان</option>
 <option value="3">3 لاعبين</option>
 <option value="4" selected>4 لاعبين</option>
 </select>
@@ -728,6 +729,7 @@ let mode=document.getElementById("mode").value;
 let count=+document.getElementById("count").value;
 
 if(mode==="computer") count=2;
+if(mode==="mixed" && count===1) count=2;
 
 let box=document.getElementById("names");
 
@@ -737,7 +739,7 @@ for(let i=1;i<=count;i++){
 
 let computer=
 (mode==="computer" && i===2) ||
-(mode==="mixed" && i>1);
+(mode==="mixed" && (i>1 || count===1 && i===2));
 
 box.innerHTML+=
 "<label>"+
@@ -851,13 +853,54 @@ function dealNewRound(){
 
 function showShuffleAnimation(done){
  const old=document.getElementById("shuffleOverlay");if(old)old.remove();
+ let mode=document.getElementById("mode").value;
+ let count=Number(document.getElementById("count").value)||4;
+ if(mode==="computer" || (mode==="mixed"&&count===1))count=2;
+ const labels=[];
+ for(let i=1;i<=count;i++){
+  const isAI=(mode==="computer"&&i===2)||(mode==="mixed"&&i>1);
+  labels.push((isAI?"🤖 ":"👤 ")+(document.getElementById("name"+i)?.value|| (isAI?"الكمبيوتر ":"اللاعب ")+i));
+ }
  const overlay=document.createElement("div");overlay.id="shuffleOverlay";
- overlay.innerHTML='<div class="shuffleTitle">🃏 بنفَنط الكوتشينة</div><div class="shuffleDeck">'+Array.from({length:7},()=>'<div class="shuffleCard"></div>').join("")+'</div><div class="shuffleHint">خلط الورق… وبعدها التوزيع تلقائيًا</div>';
+ overlay.innerHTML='<div class="shuffleTitle">🃏 بنفَنط الكوتشينة</div><div class="shuffleDeck" id="shuffleDeck">'+Array.from({length:7},()=>'<div class="shuffleCard"></div>').join("")+'</div><div class="shuffleHint">خلط الورق…</div><div class="dealTable" id="dealTable"><div class="dealPlayers">'+labels.map((name,i)=>'<div class="dealPlayer"><b>'+name.replace(/</g,"&lt;").replace(/>/g,"&gt;")+'</b><div class="dealHand" id="dealHand'+i+'"></div></div>').join("")+'</div><div class="dealGroundTitle">🟩 أوراق الأرض — ٦ ورقات</div><div class="dealGround" id="dealGround">'+Array.from({length:6},(_,i)=>'<div class="dealSpot" id="dealGround'+i+'"></div>').join("")+'</div></div>';
  document.body.appendChild(overlay);
- setTimeout(()=>{overlay.querySelector(".shuffleTitle").textContent="🎴 بنوزّع الورق على اللاعبين والأرض";overlay.querySelector(".shuffleHint").textContent="ورقة لكل لاعب بالتتابع، زي الكوتشينة الحقيقية";overlay.classList.add("dealing");},1450);
- setTimeout(()=>{overlay.remove();done();},2700);
+ const table=overlay.querySelector("#dealTable");
+ table.style.display="none";
+ setTimeout(()=>{
+  overlay.querySelector(".shuffleTitle").textContent="🎴 التوزيع على الترابيزة";
+  overlay.querySelector(".shuffleHint").textContent="٦ ورقات لكل لاعب، ثم ٦ ورقات على الأرض";
+  overlay.querySelector("#shuffleDeck").style.display="none";
+  table.style.display="block";
+  const source=overlay.getBoundingClientRect();
+  const targets=[];
+  for(let roundNo=0;roundNo<6;roundNo++){
+   for(let p=0;p<count;p++)targets.push(overlay.querySelector("#dealHand"+p));
+  }
+  for(let g=0;g<6;g++)targets.push(overlay.querySelector("#dealGround"+g));
+  let k=0;
+  const dealOne=()=>{
+   if(k>=targets.length){setTimeout(()=>{overlay.remove();done();},650);return;}
+   const target=targets[k];
+   const card=document.createElement("div");card.className="dealingCard";
+   const sr=overlay.querySelector("#shuffleDeck")?.getBoundingClientRect();
+   const tr=target.getBoundingClientRect();
+   const centerX=window.innerWidth/2-19, centerY=window.innerHeight/2-27;
+   card.style.left=centerX+"px";card.style.top=centerY+"px";
+   overlay.appendChild(card);
+   requestAnimationFrame(()=>{
+    const slot=document.createElement("div");slot.className="dealMiniCard";
+    target.appendChild(slot);
+    const rr=slot.getBoundingClientRect();
+    card.style.left=rr.left+"px";card.style.top=rr.top+"px";
+    card.style.transform="rotate("+((k%5)-2)*4+"deg) scale(.8)";
+    card.style.opacity="0.25";
+    setTimeout(()=>card.remove(),330);
+    k++;setTimeout(dealOne,75);
+   });
+  };
+  dealOne();
+ },1400);
 }
-
 function startGame(){
  if(!window._shuffleReady){
   window._shuffleReady=true;
@@ -867,7 +910,7 @@ function startGame(){
 
  const mode=document.getElementById("mode").value;
  let count=Number(document.getElementById("count").value)||4;
- if(mode==="computer") count=2;
+ if(mode==="computer" || (mode==="mixed"&&count===1)) count=2;
  players=[];
  for(let i=1;i<=count;i++){
   const computer=(mode==="computer"&&i===2)||(mode==="mixed"&&i>1);
@@ -892,7 +935,7 @@ function startGame(){
  round=1;
  stage=1;
  lastWinner=-1;
- /* ست ورقات لكل لاعب ثم ست ورقات أرض */
+ /* توزيع بالتتابع: ورقة لكل لاعب في كل لفة، ٦ لفات، ثم ٦ ورقات على الأرض */
  for(let pass=0;pass<6;pass++){
   for(const player of players) player.hand.push(deck.pop());
  }
