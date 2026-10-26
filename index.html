@@ -938,6 +938,55 @@ function render(){
  if(groundStacks.length===0) spread.innerHTML="<div style='grid-column:1/-1;color:white;padding:16px'>لا توجد أوراق على الأرض حاليًا.</div>";
 }
 
+/* ================= تفاعل اللعب الفعلي ================= */
+function selectHandCard(index){
+ if(!players[turn] || players[turn].computer || resolving) return;
+ if(index<0 || index>=players[turn].hand.length) return;
+ selectedHandIndex=index;
+ const card=players[turn].hand[index];
+ const msg=document.getElementById("message");
+ if(msg) msg.textContent="اخترت "+(card.rank===1?"A":card.rank===11?"J":card.rank===12?"Q":card.rank===13?"K":card.rank)+card.suit+" — اضغط الآن على ورقة من الأرض.";
+ cardSound();
+ render();
+}
+function chooseGroundSlot(index){
+ if(resolving || selectedHandIndex===null || !players[turn] || players[turn].computer) return;
+ if(index<0 || index>=groundStacks.length) return;
+ resolvePlay(selectedHandIndex,index);
+}
+function resolvePlay(handIndex,groundIndex){
+ if(resolving || !players[turn] || handIndex<0 || handIndex>=players[turn].hand.length || groundIndex<0 || groundIndex>=groundStacks.length) return;
+ resolving=true;
+ const player=players[turn], handCard=player.hand[handIndex], stack=groundStacks[groundIndex], top=stack[stack.length-1];
+ const handEl=document.querySelectorAll("#hand .card")[handIndex];
+ animateCard(handEl,handCard);
+ const match=handCard.rank===top.rank && handCard.suit===top.suit;
+ player.hand.splice(handIndex,1);
+ if(match){
+  const captured=stack.length+1;
+  player.won+=captured;
+  lastWinner=turn;
+  groundStacks.splice(groundIndex,1);
+  log("✅ تطابق صحيح! "+player.name+" جمع "+captured+" ورقة.");
+  document.getElementById("message").textContent="✅ تطابق! "+player.name+" جمع "+captured+" ورقة.";
+  pileSound();
+ }else{
+  stack.push(handCard);
+  stack.revealed=true;
+  log("↪️ لم تتطابق الورقتان؛ بقيتا مكشوفتين في كومة الأرض.");
+  document.getElementById("message").textContent="لم تتطابق الورقتان. بقيت الورقتان مكشوفتين فوق كومة الأرض.";
+  cardSound();
+ }
+ selectedHandIndex=null;
+ syncPile();
+ render();
+ setTimeout(()=>{
+  resolving=false;
+  if(players.every(p=>p.hand.length===0)){handleEndOfDistribution();return;}
+  nextPlayer();
+ },match?650:450);
+}
+
 /* ================= حركة الورقة ================= */
 
 function animateCard(el,card){
