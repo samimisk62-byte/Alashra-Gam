@@ -893,7 +893,8 @@ function render(){
   selectedHandIndex=null;syncPile();
  }
  document.getElementById("turnName").textContent="🎮 الدور: "+players[turn].name;
- document.getElementById("target").textContent="مطابقة الورقة";
+ const targetLabel=game.querySelector(".target span");
+ if(targetLabel) targetLabel.textContent="مطابقة الورقة";
  document.getElementById("round").textContent=round;
  document.getElementById("pileCount").textContent=pile.length;
  document.getElementById("deckCount").textContent=deck.length;
