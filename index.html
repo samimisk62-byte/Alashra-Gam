@@ -431,6 +431,23 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
 
 /* وضع اللعب الصامت: إخفاء الرسائل النصية وسجل الأحداث وإرشادات الحركة */
 #message,#log,#handTitle{display:none!important;}
+
+/* خلط وتوزيع الكوتشينة */
+#shuffleOverlay{position:fixed;inset:0;z-index:99999;background:radial-gradient(circle,#17674d,#00150f 78%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:20px}
+#shuffleOverlay .shuffleTitle{font-size:25px;font-weight:bold;color:#ffe27a;text-shadow:0 3px 8px #000;text-align:center}
+#shuffleOverlay .shuffleDeck{position:relative;width:100px;height:142px;perspective:700px}
+#shuffleOverlay .shuffleCard{position:absolute;inset:0;border:3px solid #fff4d2;border-radius:12px;background:repeating-linear-gradient(45deg,#17358e 0 7px,#f4eee1 7px 9px,#b22238 9px 16px);box-shadow:0 6px 14px #0009;animation:shuffleFly 1.05s ease-in-out infinite}
+#shuffleOverlay .shuffleCard:nth-child(2){animation-delay:-.15s}
+#shuffleOverlay .shuffleCard:nth-child(3){animation-delay:-.3s}
+#shuffleOverlay .shuffleCard:nth-child(4){animation-delay:-.45s}
+#shuffleOverlay .shuffleCard:nth-child(5){animation-delay:-.6s}
+#shuffleOverlay .shuffleCard:nth-child(6){animation-delay:-.75s}
+#shuffleOverlay .shuffleCard:nth-child(7){animation-delay:-.9s}
+@keyframes shuffleFly{0%,100%{transform:translate(0,0) rotate(0deg)}20%{transform:translate(-48px,-15px) rotate(-18deg)}45%{transform:translate(44px,-9px) rotate(16deg)}70%{transform:translate(-18px,8px) rotate(-7deg)}}
+#shuffleOverlay .shuffleHint{color:#fff;font-size:16px;text-align:center}
+.dealIn{animation:dealIn .42s cubic-bezier(.2,.8,.2,1) both}
+@keyframes dealIn{from{opacity:.15;transform:translateY(-35px) rotate(-8deg) scale(.88)}to{opacity:1;transform:translateY(0) rotate(0) scale(1)}}
+
 </style>
 </head>
 
@@ -832,7 +849,22 @@ function dealNewRound(){
 
 /* ================= بداية اللعبة ================= */
 
+function showShuffleAnimation(done){
+ const old=document.getElementById("shuffleOverlay");if(old)old.remove();
+ const overlay=document.createElement("div");overlay.id="shuffleOverlay";
+ overlay.innerHTML='<div class="shuffleTitle">🃏 بنفَنط الكوتشينة</div><div class="shuffleDeck">'+Array.from({length:7},()=>'<div class="shuffleCard"></div>').join("")+'</div><div class="shuffleHint">خلط الورق… وبعدها التوزيع تلقائيًا</div>';
+ document.body.appendChild(overlay);
+ setTimeout(()=>{overlay.querySelector(".shuffleTitle").textContent="🎴 بنوزّع الورق على اللاعبين والأرض";overlay.querySelector(".shuffleHint").textContent="ورقة لكل لاعب بالتتابع، زي الكوتشينة الحقيقية";overlay.classList.add("dealing");},1450);
+ setTimeout(()=>{overlay.remove();done();},2700);
+}
+
 function startGame(){
+ if(!window._shuffleReady){
+  window._shuffleReady=true;
+  showShuffleAnimation(()=>{window._shuffleReady=false;startGame();});
+  return;
+ }
+
  const mode=document.getElementById("mode").value;
  let count=Number(document.getElementById("count").value)||4;
  if(mode==="computer") count=2;
@@ -873,6 +905,9 @@ function startGame(){
  document.getElementById("deckCount").textContent=deck.length;
  document.getElementById("pileCount").textContent=pile.length;
  render();
+ /* حركة توزيع متتابعة بعد الخلط: ورقة ورقة على اللاعبين ثم الأرض */
+ const dealt=[...document.querySelectorAll("#hand .card"),...document.querySelectorAll("#tableSpread .tableSlot")];
+ dealt.forEach((el,i)=>{el.classList.remove("dealIn");el.style.animationDelay=(i*75)+"ms";void el.offsetWidth;el.classList.add("dealIn");});
  log("تم توزيع 6 ورقات لكل لاعب. الكوتشينة المتبقية: "+deck.length+" ورقة.");
  /* لا نعرض مربعات طائرة مؤقتة؛ نُبقي أوراق اليد والأرض الحقيقية ظاهرة. */
  startMusic();
