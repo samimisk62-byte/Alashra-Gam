@@ -728,8 +728,7 @@ function makeNames(){
 let mode=document.getElementById("mode").value;
 let count=+document.getElementById("count").value;
 
-if(mode==="computer") count=2;
-if(mode==="mixed" && count===1) count=2;
+if(mode==="computer" || count===1) count=2;
 
 let box=document.getElementById("names");
 
@@ -739,7 +738,7 @@ for(let i=1;i<=count;i++){
 
 let computer=
 (mode==="computer" && i===2) ||
-(mode==="mixed" && (i>1 || count===1 && i===2));
+((mode==="mixed" || +document.getElementById("count").value===1) && i>1);
 
 box.innerHTML+=
 "<label>"+
@@ -855,7 +854,7 @@ function showShuffleAnimation(done){
  const old=document.getElementById("shuffleOverlay");if(old)old.remove();
  let mode=document.getElementById("mode").value;
  let count=Number(document.getElementById("count").value)||4;
- if(mode==="computer" || (mode==="mixed"&&count===1))count=2;
+ if(mode==="computer" || count===1)count=2;
  const labels=[];
  for(let i=1;i<=count;i++){
   const isAI=(mode==="computer"&&i===2)||(mode==="mixed"&&i>1);
@@ -910,10 +909,10 @@ function startGame(){
 
  const mode=document.getElementById("mode").value;
  let count=Number(document.getElementById("count").value)||4;
- if(mode==="computer" || (mode==="mixed"&&count===1)) count=2;
+ if(mode==="computer" || count===1) count=2;
  players=[];
  for(let i=1;i<=count;i++){
-  const computer=(mode==="computer"&&i===2)||(mode==="mixed"&&i>1);
+  const computer=(mode==="computer"&&i===2)||((mode==="mixed"||Number(document.getElementById("count").value)===1)&&i>1);
   const nameInput=document.getElementById("name"+i);
   players.push({name:(nameInput&&nameInput.value.trim())||(computer?"الكمبيوتر "+i:"اللاعب "+i),computer,hand:[],won:0});
  }
