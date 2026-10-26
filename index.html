@@ -872,179 +872,69 @@ function startGame(){
 
 function render(){
  if(!players.length) return;
- /* لا تسمح بعرض بداية فارغة؛ أصلح التوزيع إذا وصلنا لحالة تالفة */
+ const hand=document.getElementById("hand");
+ const spread=document.getElementById("tableSpread");
+ const title=document.getElementById("handTitle");
+ const game=document.getElementById("game");
+ if(!hand||!spread||!title||!game) return;
+ game.style.setProperty("display","block","important");
+ game.style.setProperty("visibility","visible","important");
+ game.style.setProperty("opacity","1","important");
+ const box=game.querySelector(".box");
+ if(box){box.style.setProperty("display","block","important");box.style.setProperty("visibility","visible","important");box.style.setProperty("overflow","visible","important");}
+ const table=game.querySelector(".table");
+ if(table){table.style.setProperty("display","flex","important");table.style.setProperty("flex-direction","column","important");table.style.setProperty("align-items","stretch","important");table.style.setProperty("justify-content","flex-start","important");table.style.setProperty("min-height","0","important");table.style.setProperty("overflow","visible","important");}
  if(deck.length===0 && round===1 && players.every(p=>p.won===0) && players.some(p=>p.hand.length===0)){
-  deck=[];
-  let repairId=0;
+  deck=[];let repairId=0;
   for(let copy=0;copy<3;copy++) for(const suit of [["♠",false],["♥",true],["♦",true],["♣",false]]) for(let rank=1;rank<=13;rank++) deck.push({id:repairId++,rank,suit:suit[0],red:suit[1]});
-  shuffle(deck);
-  players.forEach(p=>p.hand=[]);
-  groundStacks=[];
+  shuffle(deck);players.forEach(p=>p.hand=[]);groundStacks=[];
   for(let pass=0;pass<6;pass++) for(const p of players) p.hand.push(deck.pop());
   for(let n=0;n<6;n++) groundStacks.push([deck.pop()]);
-  selectedHandIndex=null;
-  syncPile();
+  selectedHandIndex=null;syncPile();
  }
  document.getElementById("turnName").textContent="🎮 الدور: "+players[turn].name;
  document.getElementById("target").textContent="مطابقة الورقة";
  document.getElementById("round").textContent=round;
  document.getElementById("pileCount").textContent=pile.length;
  document.getElementById("deckCount").textContent=deck.length;
- document.getElementById("deckCount").parentElement.title="عدد الأوراق التي لم تُوزع بعد من أصل 156 ورقة.";
- const spread=document.getElementById("tableSpread");
+ const label=x=>x.rank===1?"A":x.rank===11?"J":x.rank===12?"Q":x.rank===13?"K":x.rank;
  spread.innerHTML="";
+ spread.style.setProperty("display","grid","important");
+ spread.style.setProperty("grid-template-columns","repeat(6,minmax(0,1fr))","important");
+ spread.style.setProperty("visibility","visible","important");
+ spread.style.setProperty("opacity","1","important");
+ spread.style.setProperty("width","100%","important");
+ spread.style.setProperty("min-height","94px","important");
+ spread.style.setProperty("overflow","visible","important");
  groundStacks.forEach((stack,i)=>{
-  const top=stack[stack.length-1];
-  const el=document.createElement("button");
-  el.type="button";
-  el.className="tableCard tableSlot"+(top&&top.red?" red":"");
-  el.style.margin="3px";
-  el.style.flex="0 0 43px";
-  el.style.margin="0";
-  el.style.flexShrink="0";
+  const top=stack[stack.length-1],el=document.createElement("button");
+  el.type="button";el.className="tableCard tableSlot"+(top&&top.red?" red":"");
+  el.style.cssText="display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;box-sizing:border-box!important;width:100%!important;min-width:0!important;height:72px!important;min-height:72px!important;flex:none!important;margin:0!important;padding:3px!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;border:2px solid #fff8e8!important;border-radius:8px!important;background:"+(stack.revealed?"#fffdf7":"repeating-linear-gradient(45deg,#17358e 0 6px,#f4eee1 6px 8px,#b22238 8px 14px)")+"!important;color:"+(top&&top.red?"#c52236":"#171717")+"!important;font-size:18px!important;z-index:2!important";
   el.setAttribute("aria-label","اختيار ورقة الأرض رقم "+(i+1));
   if(selectedHandIndex!==null) el.classList.add("slotAvailable");
-  if(!stack.revealed&&stack.length===1) {el.classList.add("faceDown");el.innerHTML="<span>🂠</span>";}
-  else {
-   const label=x=>x.rank===1?"A":x.rank===11?"J":x.rank===12?"Q":x.rank===13?"K":x.rank;
-   const below=stack.length>1?stack[stack.length-2]:null;
-   el.innerHTML=(below?'<div class="underCard"><b>'+label(below)+'</b><span>'+below.suit+'</span></div>':"")+"<b>"+label(top)+"</b><span>"+top.suit+"</span>"+(stack.length>2?"<small>+"+(stack.length-2)+" أخرى</small>":"");
-  }
-  el.onclick=()=>chooseGroundSlot(i);
-  spread.appendChild(el);
+  if(!stack.revealed&&stack.length===1) el.innerHTML="<span style='font-size:27px;color:white'>🂠</span>";
+  else el.innerHTML="<b style='font-size:19px'>"+label(top)+"</b><span style='font-size:23px'>"+top.suit+"</span>"+(stack.length>1?"<small>"+stack.length+" ورقات في الرزمة</small>":"");
+  el.onclick=()=>chooseGroundSlot(i);spread.appendChild(el);
  });
- const pb=document.getElementById("players");
- pb.innerHTML="";
- players.forEach((p,i)=>{
-  const d=document.createElement("div");
-  d.className="player"+(i===turn?" turn":"");
-  d.dataset.playerIndex=i;
-  d.innerHTML=(p.computer?"🤖 ":"👤 ")+p.name+"<br>🃏 في اليد: "+p.hand.length+" | 🏆 جمع: "+p.won;
-  pb.appendChild(d);
- });
- const hand=document.getElementById("hand");
+ const pb=document.getElementById("players");pb.innerHTML="";
+ players.forEach((p,i)=>{const d=document.createElement("div");d.className="player"+(i===turn?" turn":"");d.dataset.playerIndex=i;d.innerHTML=(p.computer?"🤖 ":"👤 ")+p.name+"<br>🃏 في اليد: "+p.hand.length+" | 🏆 جمع: "+p.won;pb.appendChild(d);});
  hand.innerHTML="";
- hand.style.display="flex";hand.style.visibility="visible";hand.style.opacity="1";hand.style.minHeight="125px";
+ hand.style.setProperty("display","flex","important");hand.style.setProperty("visibility","visible","important");hand.style.setProperty("opacity","1","important");hand.style.setProperty("min-height","120px","important");hand.style.setProperty("width","100%","important");hand.style.setProperty("overflow-x","auto","important");hand.style.setProperty("overflow-y","visible","important");hand.style.setProperty("gap","7px","important");hand.style.setProperty("padding","12px 4px 18px","important");
  if(players[turn].computer){
-  document.getElementById("handTitle").textContent="🤖 الكمبيوتر يلعب...";
-  players[turn].hand.forEach(()=>{const back=document.createElement("div");back.className="card faceDown";back.innerHTML="<span>🂠</span>";hand.appendChild(back);});
-  return;
- }
- document.getElementById("handTitle").textContent=selectedHandIndex===null?"🖐️ اختار ورقة من يد "+players[turn].name:"☝️ اختار الآن ورقة من الأرض للمطابقة";
- players[turn].hand.forEach((card,i)=>{
-  const el=document.createElement("button");
-  el.type="button";
-  el.className="card"+(card.red?" red":"")+(selectedHandIndex===i?" selectedCard":"");
-  const label=card.rank===1?"A":card.rank===11?"J":card.rank===12?"Q":card.rank===13?"K":card.rank;
-  el.innerHTML="<b>"+label+"</b><span>"+card.suit+"</span>";
-  el.style.display="flex";el.style.visibility="visible";el.style.opacity="1";el.style.flex="0 0 65px";
-  el.onclick=()=>selectHandCard(i);
-  hand.appendChild(el);
- });
-}
-
-function selectHandCard(index){
- if(players[turn].computer || selectedHandIndex!==null) return;
- if(!players[turn].hand[index]) return;
- selectedHandIndex=index;
- document.getElementById("message").textContent="اختار ورقة من الأرض لمقارنة الورقتين.";
-	render();
-}
-
-function chooseGroundSlot(slotIndex){
- if(selectedHandIndex===null || players[turn].computer) return;
- resolvePlay(selectedHandIndex,slotIndex);
-}
-
-function resolvePlay(handIndex,slotIndex){
- if(resolving) return;
- const player=players[turn];
- const card=player && player.hand[handIndex];
- const stack=groundStacks[slotIndex];
- if(!card || !stack) return;
-
- resolving=true;
- const groundCard=stack[stack.length-1];
- const label=x=>x.rank===1?"A":x.rank===11?"J":x.rank===12?"Q":x.rank===13?"K":x.rank;
- const same=card.rank===groundCard.rank && card.suit===groundCard.suit;
- const pairText=label(card)+card.suit+" و "+label(groundCard)+groundCard.suit;
-
- /* اكشف الورقتين أولًا أمام الجميع، ثم احسم المطابقة بعد لحظة قصيرة. */
- player.hand.splice(handIndex,1);
- selectedHandIndex=null;
- stack.revealed=true;
- stack.push(card);
- syncPile();
- cardSound();
- document.getElementById("message").textContent=
-  "👀 كشف الورقتين: "+pairText+" — "+(same?"تطابق!":"لا يوجد تطابق.");
- render();
-
- setTimeout(()=>{
-  if(same){
-   const captured=stack.length;
-   player.won+=captured;
-   lastWinner=turn;
-   styleCoins+=Math.max(1,Math.ceil(captured/3));
-   saveCosmetics();
-   const currentIndex=groundStacks.indexOf(stack);
-   if(currentIndex>=0) groundStacks.splice(currentIndex,1);
-   document.getElementById("message").textContent=
-    "🎉 تطابق كامل! "+player.name+" أخذ "+captured+" ورقة.";
-   log("🏆 "+player.name+" طابق "+pairText+" وجمع "+captured+" ورقة.");
-   pileSound();
-  }else{
-   document.getElementById("message").textContent=
-    "لم تتطابق الورقتان؛ بقيتا مكشوفتين على الأرض.";
-   log("🃏 "+player.name+" كشف ورقتين غير متطابقتين؛ بقيتا على الأرض.");
-  }
-
-  syncPile();
-  if(groundStacks.length===0 && deck.length>0){
-   for(let i=0;i<6 && deck.length;i++) groundStacks.push([deck.pop()]);
-   syncPile();
-   log("🂠 تم وضع أوراق جديدة مقلوبة على الأرض.");
-  }
-
-  resolving=false;
-  if(groundStacks.length===0 && deck.length===0){finishGame();return;}
-  if(allHandsEmpty()){handleEndOfDistribution();return;}
-  nextPlayer();
- },650);
-}
-/* ================= توزيع الكوتشينة على اللاعبين ================= */
-function animateDealToPlayers(){
- const game=document.getElementById("game");
- if(!game || !game.classList.contains("show")) return;
- const source=document.getElementById("pile");
- const seats=[...document.querySelectorAll("#players .player")];
- if(!source || !seats.length) return;
- const sr=source.getBoundingClientRect();
- const sx=sr.left+sr.width/2-17, sy=sr.top+sr.height/2-24;
- seats.forEach(el=>el.classList.remove("deal-highlight"));
- /* ست لفات: ورقة لكل لاعب في كل لفة، مثل توزيع الكوتشينة المعتاد */
- for(let cardNo=0;cardNo<6;cardNo++){
-  seats.forEach((seat,playerNo)=>{
-   const delay=(cardNo*seats.length+playerNo)*105;
-   setTimeout(()=>{
-    if(!document.getElementById("game").classList.contains("show")) return;
-    const r=seat.getBoundingClientRect();
-    const card=document.createElement("div");
-    card.className="dealFly";
-    card.setAttribute("aria-hidden","true");
-    card.style.left=sx+"px";
-    card.style.top=sy+"px";
-    document.body.appendChild(card);
-    seat.classList.add("deal-highlight");
-    requestAnimationFrame(()=>{
-     card.style.transform="translate("+(r.left+r.width/2-17-sx)+"px,"+(r.top+r.height/2-24-sy)+"px) rotateY(360deg) rotate("+(playerNo%2?8:-8)+"deg) scale(.85)";
-     card.style.opacity=".25";
-    });
-    setTimeout(()=>card.remove(),430);
-    setTimeout(()=>seat.classList.remove("deal-highlight"),470);
-   },delay);
+  title.textContent="🤖 الكمبيوتر يلعب...";
+  players[turn].hand.forEach(()=>{const back=document.createElement("div");back.className="card faceDown";back.textContent="🂠";back.style.cssText="display:flex!important;visibility:visible!important;opacity:1!important;flex:0 0 56px!important;width:56px!important;min-width:56px!important;height:84px!important;align-items:center!important;justify-content:center!important;background:repeating-linear-gradient(45deg,#17358e 0 6px,#f4eee1 6px 8px,#b22238 8px 14px)!important;color:white!important;border:2px solid #fff!important;border-radius:9px!important";hand.appendChild(back);});
+ }else{
+  title.textContent=selectedHandIndex===null?"🖐️ اختار ورقة من يد "+players[turn].name:"☝️ اختار الآن ورقة من الأرض للمطابقة";
+  title.style.cssText="display:block!important;visibility:visible!important;opacity:1!important;min-height:28px!important;margin:10px 0 0!important;color:#ffdf73!important;font-size:17px!important";
+  players[turn].hand.forEach((card,i)=>{
+   const el=document.createElement("button");el.type="button";el.className="card"+(card.red?" red":"")+(selectedHandIndex===i?" selectedCard":"");
+   el.innerHTML="<b style='font-size:24px;line-height:1'>"+label(card)+"</b><span style='font-size:31px;line-height:1.1'>"+card.suit+"</span>";
+   el.style.cssText="display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;flex:0 0 57px!important;width:57px!important;min-width:57px!important;height:88px!important;min-height:88px!important;margin:0!important;padding:4px!important;box-sizing:border-box!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;background:linear-gradient(145deg,#fff 0%,#fffdf7 70%,#e5dac5 100%)!important;color:"+(card.red?"#c52236":"#141414")+"!important;border:2px solid #fff3d7!important;border-radius:9px!important;box-shadow:0 4px 0 #b7a27f,0 8px 13px #0008!important;z-index:3!important";
+   el.onclick=()=>selectHandCard(i);hand.appendChild(el);
   });
  }
+ if(!players[turn].computer && hand.children.length===0) title.textContent="لم تُوزَّع أوراق في اليد — اضغط بداية اللعبة من جديد.";
+ if(groundStacks.length===0) spread.innerHTML="<div style='grid-column:1/-1;color:white;padding:16px'>لا توجد أوراق على الأرض حاليًا.</div>";
 }
 
 /* ================= حركة الورقة ================= */
