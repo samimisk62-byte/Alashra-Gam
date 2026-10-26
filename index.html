@@ -927,17 +927,15 @@ function render(){
   if(!stack.revealed){
    el.innerHTML="<span style='font-size:27px;color:white'>🂠</span>";
   }else{
-   /* اعرض آخر الأوراق متراكبة بحيث يظل رقم الورقة السفلية ظاهرًا مع الورقة التي فوقها. */
-   const visibleCards=stack.slice(-3);
-   el.style.setProperty("height",visibleCards.length>1?"98px":"72px","important");
-   el.style.setProperty("min-height",visibleCards.length>1?"98px":"72px","important");
+   const visibleCards=stack;
+   const step=15, cardHeight=68;
+   el.style.setProperty("height",Math.max(72,cardHeight+(visibleCards.length-1)*step)+"px","important");
+   el.style.setProperty("min-height",Math.max(72,cardHeight+(visibleCards.length-1)*step)+"px","important");
    el.style.setProperty("overflow","visible","important");
    el.innerHTML=visibleCards.map((card,j)=>{
-    const layerIndex=j;
-    const offset=visibleCards.length===1?0:j*22;
     const color=card.red?"#c52236":"#171717";
-    return "<div style='position:absolute;left:2px;right:2px;top:"+offset+"px;height:68px;box-sizing:border-box;border:2px solid #fff3d7;border-radius:7px;background:linear-gradient(145deg,#fff 0%,#fffdf7 70%,#e5dac5 100%);color:"+color+";display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:3px;box-shadow:0 2px 4px #0005;z-index:"+(j+2)+"'><b style=\"font-size:17px;line-height:18px\">"+label(card)+"</b><span style=\"font-size:20px;line-height:22px\">"+card.suit+"</span></div>";
-   }).join("")+(stack.length>3?"<small style='position:absolute;bottom:-3px;right:1px;z-index:10;background:#fff;padding:1px 3px;border-radius:4px'>+"+(stack.length-3)+"</small>":"");
+    return '<div style="position:absolute;left:2px;right:2px;top:'+(j*step)+'px;height:'+cardHeight+'px;box-sizing:border-box;border:2px solid #fff3d7;border-radius:7px;background:#fffdf7;color:'+color+';display:flex;flex-direction:column;align-items:center;padding-top:3px;box-shadow:0 2px 4px #0005;z-index:'+(j+2)+'"><b style="font-size:17px">'+label(card)+'</b><span style="font-size:20px">'+card.suit+'</span></div>';
+   }).join("");
   }
   el.onclick=()=>chooseGroundSlot(i);spread.appendChild(el);
  });
@@ -978,6 +976,17 @@ function chooseGroundSlot(index){
  if(index<0 || index>=groundStacks.length) return;
  resolvePlay(selectedHandIndex,index);
 }
+
+function refillGroundWithDiscard(player){
+ while(groundStacks.length<6 && player.hand.length>0){
+  const card=player.hand.pop();
+  const stack=[card];
+  stack.revealed=false;
+  groundStacks.push(stack);
+ }
+ syncPile();
+}
+
 function resolvePlay(handIndex,groundIndex){
  if(resolving || !players[turn] || handIndex<0 || handIndex>=players[turn].hand.length || groundIndex<0 || groundIndex>=groundStacks.length) return;
  resolving=true;
@@ -985,35 +994,26 @@ function resolvePlay(handIndex,groundIndex){
  const handCard=player.hand[handIndex];
  const stack=groundStacks[groundIndex];
  const groundCard=stack[stack.length-1];
- const originalStackCount=stack.length;
- const handEl=document.querySelectorAll("#hand .card")[handIndex];
- const groundEl=document.querySelectorAll("#tableSpread .tableSlot")[groundIndex];
-
- /* تنزل ورقة اليد فوق الورقة المغطاة أولًا. بعد الحركة نكشف ورقة الأرض ونقارن. */
+ const handEl=document.querySelectorAll('#hand .card')[handIndex];
+ const groundEl=document.querySelectorAll('#tableSpread .tableSlot')[groundIndex];
  animateCard(handEl,handCard,groundEl);
- const msg=document.getElementById("message");
  setTimeout(()=>{
-  if(!players[turn] || players[turn]!==player || !groundStacks.includes(stack)){
-   resolving=false;
-   return;
-  }
+  if(players[turn]!==player || !groundStacks.includes(stack)){resolving=false;return;}
   player.hand.splice(handIndex,1);
   stack.push(handCard);
   stack.revealed=true;
   selectedHandIndex=null;
   syncPile();
   render();
-
-  /* المقارنة تحصل بعد كشف ورقة الأرض، وتظل الورقتان ظاهرتين أثناء لحظة المقارنة. */
   const match=handCard.rank===groundCard.rank && handCard.suit===groundCard.suit;
   if(match){
    pileSound();
    setTimeout(()=>{
-    const captured=originalStackCount+1;
-    player.won+=captured;
+    player.won+=stack.length;
     lastWinner=turn;
     const stackIndex=groundStacks.indexOf(stack);
     if(stackIndex>=0) groundStacks.splice(stackIndex,1);
+    refillGroundWithDiscard(player);
     syncPile();
     render();
     resolving=false;
