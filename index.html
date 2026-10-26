@@ -924,8 +924,21 @@ function render(){
   el.style.cssText="display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;box-sizing:border-box!important;width:100%!important;min-width:0!important;height:72px!important;min-height:72px!important;flex:none!important;margin:0!important;padding:3px!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;border:2px solid #fff8e8!important;border-radius:8px!important;background:"+(stack.revealed?"#fffdf7":"repeating-linear-gradient(45deg,#17358e 0 6px,#f4eee1 6px 8px,#b22238 8px 14px)")+"!important;color:"+(top&&top.red?"#c52236":"#171717")+"!important;font-size:18px!important;z-index:2!important";
   el.setAttribute("aria-label","اختيار ورقة الأرض رقم "+(i+1));
   if(selectedHandIndex!==null) el.classList.add("slotAvailable");
-  if(!stack.revealed&&stack.length===1) el.innerHTML="<span style='font-size:27px;color:white'>🂠</span>";
-  else el.innerHTML="<b style='font-size:19px'>"+label(top)+"</b><span style='font-size:23px'>"+top.suit+"</span>"+(stack.length>1?"<small>"+stack.length+" ورقات في الرزمة</small>":"");
+  if(!stack.revealed){
+   el.innerHTML="<span style='font-size:27px;color:white'>🂠</span>";
+  }else{
+   /* اعرض آخر الأوراق متراكبة بحيث يظل رقم الورقة السفلية ظاهرًا مع الورقة التي فوقها. */
+   const visibleCards=stack.slice(-3);
+   el.style.setProperty("height",visibleCards.length>1?"98px":"72px","important");
+   el.style.setProperty("min-height",visibleCards.length>1?"98px":"72px","important");
+   el.style.setProperty("overflow","visible","important");
+   el.innerHTML=visibleCards.map((card,j)=>{
+    const layerIndex=j;
+    const offset=visibleCards.length===1?0:j*22;
+    const color=card.red?"#c52236":"#171717";
+    return "<div style='position:absolute;left:2px;right:2px;top:"+offset+"px;height:68px;box-sizing:border-box;border:2px solid #fff3d7;border-radius:7px;background:linear-gradient(145deg,#fff 0%,#fffdf7 70%,#e5dac5 100%);color:"+color+";display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:3px;box-shadow:0 2px 4px #0005;z-index:"+(j+2)+"'><b style=\"font-size:17px;line-height:18px\">"+label(card)+"</b><span style=\"font-size:20px;line-height:22px\">"+card.suit+"</span></div>";
+   }).join("")+(stack.length>3?"<small style='position:absolute;bottom:-3px;right:1px;z-index:10;background:#fff;padding:1px 3px;border-radius:4px'>+"+(stack.length-3)+"</small>":"");
+  }
   el.onclick=()=>chooseGroundSlot(i);spread.appendChild(el);
  });
  const pb=document.getElementById("players");pb.innerHTML="";
@@ -973,17 +986,12 @@ function resolvePlay(handIndex,groundIndex){
  const stack=groundStacks[groundIndex];
  const groundCard=stack[stack.length-1];
  const originalStackCount=stack.length;
- const match=handCard.rank===groundCard.rank && handCard.suit===groundCard.suit;
  const handEl=document.querySelectorAll("#hand .card")[handIndex];
  const groundEl=document.querySelectorAll("#tableSpread .tableSlot")[groundIndex];
 
- /* أولاً: نكشف ورقة الأرض المختارة، ثم تتحرك ورقة اللاعب فوقها. */
+ /* تنزل ورقة اليد فوق الورقة المغطاة أولًا. بعد الحركة نكشف ورقة الأرض ونقارن. */
  animateCard(handEl,handCard,groundEl);
- stack.revealed=true;
- syncPile();
- render();
  const msg=document.getElementById("message");
- if(msg) msg.textContent="👁️ انكشفت ورقة الأرض... ورقة اللاعب في طريقها لتستقر فوقها.";
  setTimeout(()=>{
   if(!players[turn] || players[turn]!==player || !groundStacks.includes(stack)){
    resolving=false;
@@ -995,8 +1003,10 @@ function resolvePlay(handIndex,groundIndex){
   selectedHandIndex=null;
   syncPile();
   render();
+
+  /* المقارنة تحصل بعد كشف ورقة الأرض، وتظل الورقتان ظاهرتين أثناء لحظة المقارنة. */
+  const match=handCard.rank===groundCard.rank && handCard.suit===groundCard.suit;
   if(match){
-   if(msg) msg.textContent="🎉 تطابق! جاري جمع الورقتين والكومة.";
    pileSound();
    setTimeout(()=>{
     const captured=originalStackCount+1;
@@ -1006,24 +1016,19 @@ function resolvePlay(handIndex,groundIndex){
     if(stackIndex>=0) groundStacks.splice(stackIndex,1);
     syncPile();
     render();
-    log("✅ تطابق صحيح! "+player.name+" جمع "+captured+" ورقة.");
-    const currentMessage=document.getElementById("message");
-    if(currentMessage) currentMessage.textContent="✅ تطابق! "+player.name+" جمع "+captured+" ورقة.";
     resolving=false;
     if(players.every(p=>p.hand.length===0)){handleEndOfDistribution();return;}
     nextPlayer();
-   },500);
+   },700);
   }else{
-   log("↪️ لم تتطابق الورقتان؛ بقيت ورقة اللاعب فوق ورقة الأرض مكشوفتين.");
-   if(msg) msg.textContent="↪️ لم تتطابقا؛ ورقة اللاعب أصبحت فوق ورقة الأرض، والورقتان مكشوفتان.";
    cardSound();
    setTimeout(()=>{
     resolving=false;
     if(players.every(p=>p.hand.length===0)){handleEndOfDistribution();return;}
     nextPlayer();
-   },450);
+   },650);
   }
- },280);
+ },360);
 }
 
 /* ================= حركة الورقة ================= */
