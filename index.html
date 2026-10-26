@@ -957,81 +957,88 @@ function chooseGroundSlot(index){
 function resolvePlay(handIndex,groundIndex){
  if(resolving || !players[turn] || handIndex<0 || handIndex>=players[turn].hand.length || groundIndex<0 || groundIndex>=groundStacks.length) return;
  resolving=true;
- const player=players[turn], handCard=player.hand[handIndex], stack=groundStacks[groundIndex], top=stack[stack.length-1];
+ const player=players[turn];
+ const handCard=player.hand[handIndex];
+ const stack=groundStacks[groundIndex];
+ const groundCard=stack[stack.length-1];
+ const originalStackCount=stack.length;
+ const match=handCard.rank===groundCard.rank && handCard.suit===groundCard.suit;
  const handEl=document.querySelectorAll("#hand .card")[handIndex];
- animateCard(handEl,handCard);
- const match=handCard.rank===top.rank && handCard.suit===top.suit;
- player.hand.splice(handIndex,1);
- if(match){
-  const captured=stack.length+1;
-  player.won+=captured;
-  lastWinner=turn;
-  groundStacks.splice(groundIndex,1);
-  log("✅ تطابق صحيح! "+player.name+" جمع "+captured+" ورقة.");
-  document.getElementById("message").textContent="✅ تطابق! "+player.name+" جمع "+captured+" ورقة.";
-  pileSound();
- }else{
-  stack.push(handCard);
-  stack.revealed=true;
-  log("↪️ لم تتطابق الورقتان؛ بقيتا مكشوفتين في كومة الأرض.");
-  document.getElementById("message").textContent="لم تتطابق الورقتان. بقيت الورقتان مكشوفتين فوق كومة الأرض.";
-  cardSound();
- }
- selectedHandIndex=null;
+ const groundEl=document.querySelectorAll("#tableSpread .tableSlot")[groundIndex];
+
+ /* أولاً: نكشف ورقة الأرض المختارة، ثم تتحرك ورقة اللاعب فوقها. */
+ animateCard(handEl,handCard,groundEl);
+ stack.revealed=true;
  syncPile();
  render();
+ const msg=document.getElementById("message");
+ if(msg) msg.textContent="👁️ انكشفت ورقة الأرض... ورقة اللاعب في طريقها لتستقر فوقها.";
  setTimeout(()=>{
-  resolving=false;
-  if(players.every(p=>p.hand.length===0)){handleEndOfDistribution();return;}
-  nextPlayer();
- },match?650:450);
+  if(!players[turn] || players[turn]!==player || !groundStacks.includes(stack)){
+   resolving=false;
+   return;
+  }
+  player.hand.splice(handIndex,1);
+  stack.push(handCard);
+  stack.revealed=true;
+  selectedHandIndex=null;
+  syncPile();
+  render();
+  if(match){
+   if(msg) msg.textContent="🎉 تطابق! جاري جمع الورقتين والكومة.";
+   pileSound();
+   setTimeout(()=>{
+    const captured=originalStackCount+1;
+    player.won+=captured;
+    lastWinner=turn;
+    const stackIndex=groundStacks.indexOf(stack);
+    if(stackIndex>=0) groundStacks.splice(stackIndex,1);
+    syncPile();
+    render();
+    log("✅ تطابق صحيح! "+player.name+" جمع "+captured+" ورقة.");
+    const currentMessage=document.getElementById("message");
+    if(currentMessage) currentMessage.textContent="✅ تطابق! "+player.name+" جمع "+captured+" ورقة.";
+    resolving=false;
+    if(players.every(p=>p.hand.length===0)){handleEndOfDistribution();return;}
+    nextPlayer();
+   },500);
+  }else{
+   log("↪️ لم تتطابق الورقتان؛ بقيت ورقة اللاعب فوق ورقة الأرض مكشوفتين.");
+   if(msg) msg.textContent="↪️ لم تتطابقا؛ ورقة اللاعب أصبحت فوق ورقة الأرض، والورقتان مكشوفتان.";
+   cardSound();
+   setTimeout(()=>{
+    resolving=false;
+    if(players.every(p=>p.hand.length===0)){handleEndOfDistribution();return;}
+    nextPlayer();
+   },450);
+  }
+ },280);
 }
 
 /* ================= حركة الورقة ================= */
 
-function animateCard(el,card){
-
-if(!el)return;
-
-let r=el.getBoundingClientRect();
-let p=document.getElementById("pile")
-.getBoundingClientRect();
-
-let fly=document.createElement("div");
-
-fly.className="fly"+
-(card.red?" red":"");
-
-let name=card.rank;
-
-if(card.rank===11)name="J";
-if(card.rank===12)name="Q";
-if(card.rank===13)name="K";
-
-fly.innerHTML=
-"<b>"+name+"</b>"+
-"<span>"+card.suit+"</span>";
-
-fly.style.left=r.left+"px";
-fly.style.top=r.top+"px";
-
-document.body.appendChild(fly);
-
-requestAnimationFrame(()=>{
-
-fly.style.transform=
-"translate("+
-(p.left-r.left)+
-"px,"+
-(p.top-r.top)+
-"px) rotateY(360deg) rotate(28deg) scale(.72)";
-
-fly.style.opacity=".2";
-
-});
-
-setTimeout(()=>fly.remove(),550);
-
+function animateCard(el,card,targetEl){
+ if(!el)return;
+ const r=el.getBoundingClientRect();
+ const target=targetEl||document.getElementById("pile");
+ if(!target)return;
+ const p=target.getBoundingClientRect();
+ const fly=document.createElement("div");
+ fly.className="fly"+(card.red?" red":"");
+ let name=card.rank;
+ if(card.rank===1)name="A";
+ if(card.rank===11)name="J";
+ if(card.rank===12)name="Q";
+ if(card.rank===13)name="K";
+ fly.innerHTML="<b>"+name+"</b><span>"+card.suit+"</span>";
+ fly.style.left=r.left+"px";
+ fly.style.top=r.top+"px";
+ document.body.appendChild(fly);
+ requestAnimationFrame(()=>{
+  fly.style.transform="translate("+(p.left-r.left)+"px,"+(p.top-r.top)+"px) rotateY(360deg) rotate(18deg) scale(.82)";
+  fly.style.opacity=".15";
+ });
+ setTimeout(()=>fly.remove(),550);
 }
 
 
