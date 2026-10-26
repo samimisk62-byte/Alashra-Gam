@@ -428,6 +428,9 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
  #game #hand .card{flex-basis:54px!important;width:54px!important;min-width:54px!important;height:84px!important}
 }
 
+
+/* وضع اللعب الصامت: إخفاء الرسائل النصية وسجل الأحداث وإرشادات الحركة */
+#message,#log,#handTitle{display:none!important;}
 </style>
 </head>
 
@@ -1234,13 +1237,9 @@ function finishGame(){
 /* ================= السجل ================= */
 
 function log(text){
-
-let box=document.getElementById("log");
-
-box.innerHTML=
-"<div>"+text+"</div>"+
-box.innerHTML;
-
+ /* وضع اللعب الصامت: لا نعرض رسائل نصية أثناء اللعب. */
+ const box=document.getElementById("log");
+ if(box) box.innerHTML="";
 }
 
 
