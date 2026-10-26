@@ -334,6 +334,26 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
 }
 
 
+/* إصلاح ظهور الكروت على الهاتف: لا تقطع أعلى الشاشة ولا تخفي اليد أسفل مساحة طويلة */
+#game.page.show{
+ align-items:flex-start!important;
+ justify-content:center!important;
+ overflow-y:auto!important;
+ overflow-x:hidden!important;
+ -webkit-overflow-scrolling:touch;
+ padding-top:8px!important;
+ padding-bottom:24px!important;
+}
+#game .box{margin:0 auto!important;overflow:visible!important}
+#game .table{min-height:0!important;justify-content:flex-start!important;gap:6px!important;padding:8px 4px!important}
+#game #message{min-height:0!important;font-size:15px!important;line-height:1.5!important;padding:4px 0!important}
+#game #tableSpread{min-height:82px!important}
+#game #handTitle{display:block!important;min-height:28px!important;margin:10px 0 0!important;font-size:17px!important;color:#ffdf73!important}
+#game #hand{min-height:112px!important;max-height:none!important;overflow-x:auto!important;overflow-y:visible!important;padding-top:12px!important;padding-bottom:18px!important}
+#game #hand .card{opacity:1!important;visibility:visible!important;display:flex!important}
+#game #tableSpread .tableCard{opacity:1!important;visibility:visible!important;display:flex!important}
+
+
 /* إصلاح نهائي لواجهة الكروت: ست خانات واضحة على الأرض ووجوه كروت حقيقية */
 #game #tableSpread{
  display:grid!important;
@@ -844,7 +864,7 @@ function startGame(){
  document.getElementById("pileCount").textContent=pile.length;
  render();
  log("تم توزيع 6 ورقات لكل لاعب. الكوتشينة المتبقية: "+deck.length+" ورقة.");
- setTimeout(animateDealToPlayers,120);
+ /* لا نعرض مربعات طائرة مؤقتة؛ نُبقي أوراق اليد والأرض الحقيقية ظاهرة. */
  startMusic();
 }
 
