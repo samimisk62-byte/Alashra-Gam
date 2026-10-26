@@ -902,11 +902,11 @@ function showShuffleAnimation(done){
  },1400);
 }
 function startGame(){
- if(!window._shuffleReady){
-  window._shuffleReady=true;
-  showShuffleAnimation(()=>{window._shuffleReady=false;startGame();});
+ if(!window._shuffleComplete){
+  showShuffleAnimation(()=>{window._shuffleComplete=true;startGame();});
   return;
  }
+ window._shuffleComplete=false;
 
  const mode=document.getElementById("mode").value;
  let count=Number(document.getElementById("count").value)||4;
