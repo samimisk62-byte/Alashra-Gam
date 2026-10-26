@@ -448,6 +448,20 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
 .dealIn{animation:dealIn .42s cubic-bezier(.2,.8,.2,1) both}
 @keyframes dealIn{from{opacity:.15;transform:translateY(-35px) rotate(-8deg) scale(.88)}to{opacity:1;transform:translateY(0) rotate(0) scale(1)}}
 
+ 
+.stageCards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0}
+.stageCard{background:linear-gradient(145deg,#17634b,#063326);border:3px solid #d9b56a;border-radius:15px;padding:10px;box-shadow:0 5px 0 #392711;text-align:center;min-width:0}
+.stageCard .stagePlayingCards{height:72px;display:flex;align-items:center;justify-content:center;direction:ltr;margin-bottom:5px}
+.stagePlayingCards span{width:37px;height:55px;background:#fffdf4;color:#b22238;border:2px solid #f3dfb4;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 4px #0008}
+.stagePlayingCards span+span{margin-left:-17px;transform:rotate(8deg)}
+.stageCard strong{display:block;color:#ffe27a;margin:5px 0}
+.stageCard button{padding:9px 5px;font-size:14px;margin-top:5px}
+.stagePager{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;margin-top:10px;text-align:center}
+.stagePager button{font-size:13px;padding:10px 3px}
+#stageResume{margin-top:12px}
+#game .stageExitBtn{background:#a62d3d;color:#fff}
+@media(max-width:360px){.stageCards{gap:6px}.stageCard{padding:7px}.stageCard button{font-size:12px}.stagePager{grid-template-columns:1fr 1fr}.stagePager b{grid-column:1/-1;grid-row:1}}
+
 </style>
 </head>
 
@@ -499,6 +513,22 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
 </div>
 </div>
 
+
+<!-- قائمة المراحل المفتوحة بلا نهاية -->
+<div id="stages" class="page">
+ <div class="box stageBox">
+  <h1>🃏 مراحل لعبة الـ٦ ورقات</h1>
+  <p style="text-align:center">اختار مرحلة، افتحها، أو انتقل للمرحلة التالية. المراحل مستمرة بلا نهاية.</p>
+  <div id="stageCards" class="stageCards"></div>
+  <div class="stagePager">
+   <button id="stagePrev" class="dark">◀ السابق</button>
+   <b id="stagePageLabel">المراحل ١–١٢</b>
+   <button id="stagePageNext">التالي ▶</button>
+  </div>
+  <button id="stageResume" class="dark">▶ فتح المرحلة الحالية</button>
+  <button id="stageExit" class="red">✕ خروج إلى شاشة البداية</button>
+ </div>
+</div>
 
 <!-- اللعبة -->
 <div id="game" class="page">
@@ -572,6 +602,8 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
 📖 القواعد
 </button>
 
+<button id="nextStageBtn">➡️ المرحلة التالية</button>
+<button id="exitStageBtn" class="red">✕ المراحل</button>
 <button id="endBtn" class="red">
 🏁 نهاية اللعبة
 </button>
@@ -696,6 +728,8 @@ let turn=0;
 let round=1;
 let stage=1;
 let lastWinner=-1;
+let stagePrepared=false;
+let stagePageIndex=0;
 
 let music=false;
 let musicTimer=null;
@@ -900,6 +934,53 @@ function showShuffleAnimation(done){
   dealOne();
  },1400);
 }
+function createLongStageDeck(){
+ let cards=[];
+ /* ثلاث كوتشينات كاملة في كل مرحلة لإطالة اللعب */
+ for(let i=0;i<3;i++) cards=cards.concat(createDeck());
+ shuffle(cards);
+ return cards;
+}
+
+function showStageMenu(){
+ stagePageIndex=Math.max(0,Math.floor((Math.max(1,stage)-1)/12));
+ renderStageCards();
+ page("stages");
+}
+
+function renderStageCards(){
+ const root=document.getElementById("stageCards");
+ if(!root)return;
+ root.innerHTML="";
+ const first=stagePageIndex*12+1,last=first+11;
+ for(let n=first;n<=last;n++){
+  const card=document.createElement("div");card.className="stageCard";
+  const suits=["♠","♥","♦","♣"];
+  card.innerHTML='<div class="stagePlayingCards"><span>'+((n%13)||"A")+suits[n%4]+'</span><span>'+(((n+4)%13)||"K")+suits[(n+1)%4]+'</span><span>'+(((n+8)%13)||"Q")+suits[(n+2)%4]+'</span></div><strong>المرحلة '+n+'</strong><div style="font-size:12px;color:#e6f1e9">٣ كوتشينات • لعب مطوّل</div>';
+  const open=document.createElement("button");open.textContent="OPEN";open.onclick=()=>openStage(n);
+  const next=document.createElement("button");next.className="dark";next.textContent="NEXT ⏭";next.onclick=()=>openStage(n+1);
+  card.append(open,next);root.appendChild(card);
+ }
+ document.getElementById("stagePageLabel").textContent="المراحل "+first+"–"+last;
+ document.getElementById("stagePrev").disabled=stagePageIndex===0;
+}
+function openStage(n){
+ if(!players.length){page("start");return;}
+ if(n===stage && stagePrepared){
+  page("game");render();
+  if(players[turn]&&players[turn].computer)setTimeout(computerPlay,700);
+  return;
+ }
+ stage=n;round=1;deck=createLongStageDeck();groundStacks=[];pile=[];
+ selectedHandIndex=null;resolving=false;lastWinner=-1;turn=0;
+ players.forEach(p=>p.hand=[]);
+ for(let pass=0;pass<6;pass++)for(const player of players)if(deck.length)player.hand.push(deck.pop());
+ for(let i=0;i<6&&deck.length;i++)groundStacks.push([deck.pop()]);
+ stagePrepared=true;syncPile();page("game");render();setTimeout(animateDealToPlayers,120);
+ if(players[turn]&&players[turn].computer)setTimeout(computerPlay,900);
+ else {page("pass");document.getElementById("passText").innerHTML="🎴 المرحلة "+stage+" جاهزة<br>الدور لـ <b>"+players[turn].name+"</b>";}
+}
+
 function startGame(){
  if(!window._shuffleComplete){
   showShuffleAnimation(()=>{window._shuffleComplete=true;startGame();});
@@ -916,15 +997,8 @@ function startGame(){
   const nameInput=document.getElementById("name"+i);
   players.push({name:(nameInput&&nameInput.value.trim())||(computer?"الكمبيوتر "+i:"اللاعب "+i),computer,hand:[],won:0});
  }
- /* إنشاء كوتشينة جديدة مستقلة ومضمونة */
- deck=[];
- let cardId=0;
- for(let copy=0;copy<3;copy++){
-  for(const suit of [["♠",false],["♥",true],["♦",true],["♣",false]]){
-   for(let rank=1;rank<=13;rank++) deck.push({id:cardId++,rank,suit:suit[0],red:suit[1]});
-  }
- }
- shuffle(deck);
+ /* ثلاث كوتشينات كاملة للمرحلة الطويلة */
+ deck=createLongStageDeck();
  pile=[];
  groundStacks=[];
  selectedHandIndex=null;
@@ -940,16 +1014,14 @@ function startGame(){
  }
  for(let n=0;n<6;n++) groundStacks.push([deck.pop()]);
  syncPile();
- page("game");
+ stagePrepared=true;
+ showStageMenu();
  document.getElementById("message").textContent="🎴 بدأت اللعبة! اختار ورقة من يدك، ثم اختار ورقة من الأرض.";
  document.getElementById("round").textContent=round;
  document.getElementById("stage").textContent=stage;
  document.getElementById("deckCount").textContent=deck.length;
  document.getElementById("pileCount").textContent=pile.length;
- render();
- /* حركة توزيع متتابعة بعد الخلط: ورقة ورقة على اللاعبين ثم الأرض */
- const dealt=[...document.querySelectorAll("#hand .card"),...document.querySelectorAll("#tableSpread .tableSlot")];
- dealt.forEach((el,i)=>{el.classList.remove("dealIn");el.style.animationDelay=(i*75)+"ms";void el.offsetWidth;el.classList.add("dealIn");});
+ /* التوزيع المتحرك يظهر عند فتح المرحلة */
  log("تم توزيع 6 ورقات لكل لاعب. الكوتشينة المتبقية: "+deck.length+" ورقة.");
  /* لا نعرض مربعات طائرة مؤقتة؛ نُبقي أوراق اليد والأرض الحقيقية ظاهرة. */
  startMusic();
@@ -1189,33 +1261,11 @@ function handleEndOfDistribution(){
   },500);
   return;
  }
- startNextStage();
+ stagePrepared=false;
+ showStageMenu();
 }
 
-function startNextStage(){
- stage++;
- round=1;
- deck=createDeck();
- groundStacks=[];
- pile=[];
- selectedHandIndex=null;
- resolving=false;
- lastWinner=-1;
- turn=0;
- for(let pass=0;pass<6;pass++){
-  for(const player of players) if(deck.length) player.hand.push(deck.pop());
- }
- for(let n=0;n<6 && deck.length;n++) groundStacks.push([deck.pop()]);
- syncPile();
- render();
- setTimeout(animateDealToPlayers,120);
- if(players[turn].computer){
-  setTimeout(computerPlay,900);
- }else{
-  page("pass");
-  document.getElementById("passText").innerHTML="🏆 المرحلة "+stage+" بدأت<br>الدور لـ <b>"+players[turn].name+"</b>";
- }
-}
+function startNextStage(){openStage(stage+1);}
 
 /* ================= الدور التالي ================= */
 
@@ -1918,6 +1968,13 @@ finishGame();
 
 document.getElementById("newBtn")
 .onclick=()=>location.reload();
+
+document.getElementById("stagePageNext").onclick=()=>{stagePageIndex++;renderStageCards();};
+document.getElementById("stagePrev").onclick=()=>{stagePageIndex=Math.max(0,stagePageIndex-1);renderStageCards();};
+document.getElementById("stageResume").onclick=()=>openStage(stage);
+document.getElementById("stageExit").onclick=()=>{if(confirm("الخروج إلى شاشة البداية؟")){location.reload();}};
+document.getElementById("nextStageBtn").onclick=()=>openStage(stage+1);
+document.getElementById("exitStageBtn").onclick=showStageMenu;
 
 document.getElementById("recordBtn")
 .onclick=startRecording;
