@@ -2272,5 +2272,184 @@ document.addEventListener("change",function(e){
 })();
 
 </script>
+
+<script id="localArabicEnglishTranslation">
+(function(){
+"use strict";
+var phrases = {
+"🎮 منصة ألعابي":"🎮 My Games Platform","ألعابك كلها في مكان واحد":"All your games in one place",
+"🔐 تسجيل الدخول":"🔐 Log in","🔑 دخول":"🔑 Log in","📝 إنشاء حساب":"📝 Create account",
+"🔁 نسيت كلمة المرور؟":"🔁 Forgot password?","🔁 استعادة كلمة المرور":"🔁 Reset password",
+"اكتب البريد الإلكتروني المسجل في حسابك، ثم اضغط إرسال رابط الاستعادة.":"Enter your account email, then send the recovery link.",
+"📧 إرسال رابط الاستعادة":"📧 Send recovery link","📝 إنشاء حساب جديد":"📝 Create a new account",
+"✅ إنشاء الحساب":"✅ Create account","قد تحتاج إلى فتح رسالة تأكيد البريد الإلكتروني قبل تسجيل الدخول.":"You may need to confirm your email before logging in.",
+"🔐 تعيين كلمة مرور جديدة":"🔐 Set a new password","اكتب كلمة المرور الجديدة مرتين. بعد الحفظ يمكنك تسجيل الدخول بها.":"Enter your new password twice. Then log in with it.",
+"✅ حفظ كلمة المرور الجديدة":"✅ Save new password","👤 الحساب":"👤 Account","🔒 حالة الحساب":"🔒 Account status",
+"🔄 تحديث الاشتراكات":"🔄 Refresh subscriptions","🔐 لوحة الإدارة":"🔐 Admin panel","🚪 خروج":"🚪 Log out",
+"🌐 الإنترنت والتواصل الاجتماعي":"🌐 Internet & social media","🔎 بحث في الإنترنت":"🔎 Search the web",
+"🌐 متصفح الإنترنت":"🌐 Web browser","🛍️ المتجر الشامل للبيع والشراء":"🛍️ Marketplace",
+"📘 فيسبوك":"📘 Facebook","🟢 واتساب ويب":"🟢 WhatsApp Web","📸 إنستجرام":"📸 Instagram","▶️ يوتيوب":"▶️ YouTube","🎵 تيك توك":"🎵 TikTok","✈️ تيليجرام":"✈️ Telegram",
+"🛠️ لوحة إدارة الاشتراكات":"🛠️ Subscription admin panel","🔄 تحديث الطلبات":"🔄 Refresh orders","إغلاق اللوحة":"Close panel","اضغط تحديث الطلبات لعرض الطلبات.":"Tap Refresh Orders to view orders.",
+"🎮 ألعاب المنصة":"🎮 Platform games","اختر اللعبة التي تريد تشغيلها.":"Choose a game to play.","الحائط الصعب":"The Hard Wall","لعبة الكرة والمضرب. العب ضد الكمبيوتر أو لاعب آخر وتحدى المراحل.":"A ball-and-paddle game. Play against the computer or another player and beat the stages.",
+"30 جنيه / 30 يوم":"30 EGP / 30 days","أو 5 دولار":"or $5","🔄 حالة الاشتراك: جاري الفحص":"🔄 Subscription status: Checking",
+"💳 اشتراك / تجديد":"💳 Subscribe / Renew","▶️ تشغيل اللعبة":"▶️ Play game","📤 مشاركة اللعبة":"📤 Share game",
+"لعبة الـ٦ ورقات":"The Six-Card Game","صائد السمك":"Fish Hunter","رحلة صيد في البحر، أسماك متعددة ومراحل وأخطار أثناء اللعب.":"A sea fishing adventure with many fish, stages, and hazards.",
+"مطعمي":"My Restaurant","أدر مطعمك، واستقبل الزبائن واطبخ الطلبات وطوّر مطعمك.":"Manage your restaurant, serve customers, cook orders, and upgrade your restaurant.",
+"🎣 صائد السمك — اللعب داخل المنصة":"🎣 Fish Hunter — Play inside the platform","✖ إغلاق اللعبة والعودة للقائمة":"✖ Close game and return to menu",
+"🍔 مطعمي — اللعب داخل منصة ألعابي":"🍔 My Restaurant — Play inside My Games Platform","✖ إغلاق مطعمي والعودة للقائمة":"✖ Close My Restaurant and return to menu",
+"💰 الاشتراك":"💰 Subscription","داخل مصر:":"Inside Egypt:","30 جنيه":"30 EGP","لمدة 30 يومًا لكل لعبة.":"For 30 days per game.","خارج مصر:":"Outside Egypt:","5 دولار":"$5",
+"📱 الدفع عبر فودافون كاش، ولا يتم تفعيل الاشتراك إلا بعد مراجعة الإدارة.":"📱 Pay via Vodafone Cash. Subscriptions activate only after admin review.",
+"💳 الاشتراك في لعبة":"💳 Subscribe to a game","اختر مكان الدفع ثم أنشئ طلب الاشتراك. بعد التحويل، اكتب رقم العملية. لن يتفعّل الاشتراك إلا بعد تأكيد الإدارة.":"Choose your payment location and create a subscription request. After transferring, enter the transaction number. The subscription activates only after admin confirmation.",
+"🌍 اختار مكان الدفع (اضغط على المربع لاختيار العملة)":"🌍 Choose payment location (tap a box to choose currency)",
+"🇪🇬 داخل مصر — 30 جنيهًا لمدة 30 يومًا":"🇪🇬 Inside Egypt — 30 EGP for 30 days","🌎 خارج مصر — 5 دولارات لمدة 30 يومًا":"🌎 Outside Egypt — $5 for 30 days",
+"🧾 إنشاء طلب اشتراك":"🧾 Create subscription request","إغلاق":"Close","حوّل المبلغ إلى رقم فودافون كاش التالي:":"Transfer the amount to this Vodafone Cash number:",
+"📱 نسخ رقم فودافون كاش":"📱 Copy Vodafone Cash number","رقم فودافون كاش:":"Vodafone Cash number:","رقم طلب الاشتراك:":"Subscription request number:",
+"رقم عملية التحويل":"Transfer transaction number","✅ إرسال رقم التحويل للمراجعة":"✅ Submit transfer number for review","📋 طلبات اشتراكي":"📋 My subscriptions",
+"ستظهر طلباتك هنا بعد تسجيل الدخول.":"Your requests will appear here after you log in.","🎮 منصة ألعابي © 2026":"🎮 My Games Platform © 2026",
+"⚙️ ضبط المنصة واللعبة":"⚙️ Platform and game settings","🎨 شكل الألوان":"🎨 Color theme","داكن (الأصلي)":"Dark (default)","فاتح":"Light",
+"🔤 حجم الكتابة":"🔤 Text size","عادي":"Normal","كبير":"Large","كبير جدًا":"Extra large","🔍 تكبير وتصغير الصفحة:":"🔍 Zoom in/out:",
+"تقليل الحركة والمؤثرات البصرية":"Reduce motion and visual effects","⛶ ملء الشاشة":"⛶ Full screen","إعادة الضبط":"Reset",
+"🎮 إعدادات اللعبة الحالية":"🎮 Current game settings","اختصارات للإعدادات الموجودة داخل اللعبة نفسها.":"Shortcuts to settings inside the game.",
+"🌐 ترجمة المنصة واللعبة":"🌐 Platform and game language","اختر اللغة التي تريد عرض النصوص بها. تتوفر لغات كثيرة حسب خدمة الترجمة.":"Choose the language for the text. More languages may be available through the translation service.",
+"🇪🇬 العربية":"🇪🇬 Arabic","🇬🇧 English":"🇬🇧 English","جارٍ تحميل أداة الترجمة...":"Loading language options…",
+"تحتاج الترجمة إلى اتصال بالإنترنت. اختيار العربية يعيد النص الأصلي، واختيار English يستخدم خدمة الترجمة.":"Language selection is available offline for the built-in Arabic-English translations.",
+"تعذر تحميل أداة الترجمة.":"External translation tool unavailable. Built-in translations are still available.",
+"قائمة اختيار اللغة وحدها لا تترجم الصفحة. اضغط إعادة المحاولة، وتأكد من اتصال الإنترنت.":"The built-in language buttons translate supported text without the external tool.",
+"🔄 إعادة تحميل أداة الترجمة":"🔄 Reload external translation tool",
+"🎴 لعبة الـ٦ ورقات":"🎴 The Six-Card Game","طابق الورقة واجمع أكبر عدد من الأوراق 🏆":"Match cards and collect as many as you can 🏆",
+"طريقة اللعب":"How to play","👥 لاعبين حقيقيين":"👥 Human players","🤖 لاعب ضد الكمبيوتر":"🤖 Player vs computer","👥 لاعبين + كمبيوتر":"👥 Players + computer",
+"عدد اللاعبين":"Number of players","لاعب واحد":"One player","لاعبان":"Two players","3 لاعبين":"3 players","4 لاعبين":"4 players",
+"🔥 بداية اللعبة":"🔥 Start game","🎵 تشغيل الموسيقى الحماسية":"🎵 Play music","156 ورقة • 3 مجموعات • مطابقة الصورة الأصلية":"156 cards • 3 decks • Match the original image",
+"6 أوراق لكل لاعب في كل جولة":"6 cards per player each round","6 أوراق جديدة على الأرض مع كل توزيع":"6 new cards on the table per deal",
+"🃏 مراحل لعبة الـ٦ ورقات":"🃏 Six-Card Game stages","اختار مرحلة، افتحها، أو انتقل للمرحلة التالية. المراحل مستمرة بلا نهاية.":"Choose a stage, unlock it, or move to the next. Stages continue endlessly.",
+"◀ السابق":"◀ Previous","التالي ▶":"Next ▶","▶ فتح المرحلة الحالية":"▶ Unlock current stage","✕ خروج إلى شاشة البداية":"✕ Exit to start screen",
+"الدور":"Turn","🎴 نظام اللعب:":"🎴 Game mode:","مطابقة الورقة":"Card matching","🏆 المرحلة:":"🏆 Stage:","🔄 الجولة:":"🔄 Round:",
+"اللعبة بدأت":"Game started","🃏 أوراق الأرض:":"🃏 Table cards:","📦 المتبقي:":"📦 Remaining:","🎵 إيقاف الموسيقى":"🎵 Stop music",
+"👁️ تسليم الدور":"👁️ Pass turn","🏪 المتجر":"🏪 Store","📖 القواعد":"📖 Rules","➡️ المرحلة التالية":"➡️ Next stage","✕ المراحل":"✕ Stages",
+"🏁 نهاية اللعبة":"🏁 Game over","🎙️ التسجيل الصوتي":"🎙️ Voice recording","التسجيل متوقف":"Recording stopped","🔴 بدء التسجيل":"🔴 Start recording",
+"⏹️ إيقاف":"⏹️ Stop","▶️ تشغيل":"▶️ Play","🗑️ حذف":"🗑️ Delete","💾 حفظ التسجيل":"💾 Save recording",
+"🔒 تسليم الدور":"🔒 Pass turn","سلّم الهاتف للاعب الجديد ولا تنظر إلى أوراق اللاعب السابق.":"Pass the phone to the next player. Do not look at the previous player's cards.",
+"▶ استمرار":"▶ Continue","🔄 لعبة جديدة":"🔄 New game","🏪 متجر الكوتشينة والترابيزات":"🏪 Cards and tables store","🪙 الرصيد: 100":"🪙 Balance: 100",
+"المظاهر تغيّر الشكل فقط ولا تغيّر قواعد العشرة.":"Themes change appearance only, not the game rules.","🎴 تصميم الأوراق":"🎴 Card design","🟩 لون الترابيزة":"🟩 Table color","إغلاق المتجر":"Close store",
+"🎣 صائد السمك":"🎣 Fish Hunter","🎯 المرحلة:":"🎯 Stage:","❤️ الطاقة:":"❤️ Energy:","🐟 النقاط:":"🐟 Score:","🎣 الرميات:":"🎣 Throws:","🏆 الهدف:":"🏆 Goal:","🔥 سلسلة الصيد:":"🔥 Fishing streak:","🥇 أفضل نتيجة:":"🥇 Best score:",
+"🌊 البحر الاستوائي":"🌊 Tropical sea","▶ ابدأ":"▶ Start","⏸ إيقاف":"⏸ Pause","🔊 الصوت":"🔊 Sound","🛒 متجر صائد السمك":"🛒 Fish Hunter Store",
+"اجمع العملات من صيد الأسماك واشترِ أدوات تساعدك.":"Earn coins by catching fish and buy helpful tools.","رصيدك:":"Your balance:","عدسة الزوم الإضافية":"Extra zoom lens",
+"شراء":"Buy","طُعم الصياد":"Fisherman's bait","تمنحك 10 نقاط إضافية فور الشراء.":"Gives you 10 extra points immediately after purchase.","إغلاق المتجر":"Close store",
+"🐋 رحلة صائد السمك":"🐋 Fish Hunter journey","اختَر مرحلة مفتوحة على جسم السمكة العملاقة — المراحل لا نهائية":"Choose an unlocked stage on the giant fish — stages are endless",
+"📖 قواعد وإرشادات اللعب":"📖 Game rules and tips","افز في المرحلة لفتح المرحلة التالية. المراحل تتواصل بلا نهاية.":"Win the stage to unlock the next one. Stages continue endlessly.",
+"اصطد الأسماك واجمع النقاط لتفوز.":"Catch fish and collect points to win.","OPEN — افتح":"OPEN — Unlock","NEXT — التالي":"NEXT — Next","رجوع":"Back","اصطد أكبر عدد من الأسماك":"Catch as many fish as possible",
+"واحذر من 💣 القنابل و 🧨 المفرقعات و 🦈 القرش":"Beware of 💣 bombs, 🧨 fireworks, and 🦈 sharks","🎮 ابدأ اللعب":"🎮 Start playing","× خريطة المراحل":"× Stage map","متابعة":"Resume",
+"📖 قواعد صائد السمك":"📖 Fish Hunter rules","التحكم:":"Controls:","الصيد والنقاط:":"Fishing and points:","العملات والمتجر:":"Coins and store:","هدف المرحلة:":"Stage goal:",
+"القنابل والمفرقعات:":"Bombs and fireworks:","القرش:":"Shark:","البحر:":"Sea:","الصوت:":"Sound:","التكبير والتصغير:":"Zoom in/out:","الإيقاف:":"Pause:","التقدم:":"Progress:","نصيحة:":"Tip:",
+"🍳 مطعمي V4":"🍳 My Restaurant V4","🍽️ لعبة إدارة مطعم ومطبخ متحرك":"🍽️ Restaurant and kitchen management game","▶️ بداية اللعبة":"▶️ Start game",
+"📜 قواعد اللعبة":"📜 Game rules","🛒 متجر المطعم":"🛒 Restaurant store","🔊 الموسيقى:":"🔊 Music:","تشغيل":"On","🏆 اختر مرحلة المطعم":"🏆 Choose restaurant stage","✕ خروج":"✕ Exit",
+"كلما تقدمت في المراحل زادت سرعة الزبائن وصعوبة الإدارة.":"As you advance, customers move faster and management gets harder.",
+"المراحل 1–12":"Stages 1–12","⬅️ السابق":"⬅️ Previous","صفحة 1":"Page 1","التالي ➡️":"Next ➡️","🏠 الرجوع للشاشة الرئيسية":"🏠 Return to home",
+"📈 مستوى اللاعب":"📈 Player level","🧾 طلبات":"🧾 Orders","👥 مخدوم":"👥 Served","🎯 الهدف":"🎯 Goal","الصوت":"Sound","المالية":"Finances","المتجر":"Store","إيقاف":"Pause","مفتوح":"Open","القواعد":"Rules","إنهاء":"Finish","✕ المراحل":"✕ Stages",
+"🍽️ صالة المطعم":"🍽️ Restaurant hall","👥 الزبائن يتحركون داخل الصالة ويذهبون للكاشير":"👥 Customers move around the hall and go to the cashier",
+"الكاشير":"Cashier","في انتظار الزبائن":"Waiting for customers","📋 الطلبات الحالية":"📋 Current orders","لا توجد طلبات":"No orders",
+"⚡ سرعة":"⚡ Speed","المستوى":"Level","⭐ جودة":"⭐ Quality","💵 كاشير":"💵 Cashier","🔥 مطبخ":"🔥 Kitchen","⬆️ تطوير المتجر":"⬆️ Upgrade store",
+"👨‍🍳 الشيف جاهز للعمل":"👨‍🍳 Chef ready to work","👨‍🍳 المطبخ":"👨‍🍳 Kitchen","🟠 طعام بلا طلب":"🟠 Food without an order","🔵 مشروب بلا طلب":"🔵 Drink without an order",
+"🟤 طلب جديد":"🟤 New order","🔴 تجهيز":"🔴 Preparing","🟢 تم التقديم":"🟢 Served","البوتاجاز":"Stove","الفرن":"Oven","التحضير":"Preparation","المشروبات":"Drinks","🍽️ تقديم":"🍽️ Serve",
+"🍔 برجر":"🍔 Burger","🍗 دجاج":"🍗 Chicken","🥩 ستيك":"🥩 Steak","🍕 بيتزا":"🍕 Pizza","🥧 فطيرة":"🥧 Pie","🍝 مكرونة":"🍝 Pasta","🥗 سلطة":"🥗 Salad","🥪 ساندويتش":"🥪 Sandwich",
+"🍣 سوشي":"🍣 Sushi","🌯 شاورما":"🌯 Shawarma","🍟 بطاطس":"🍟 Fries","🍗 ناجتس":"🍗 Nuggets","🍲 شوربة":"🍲 Soup","🧃 عصير":"🧃 Juice","☕ قهوة":"☕ Coffee","🫖 شاي":"🫖 Tea","🍋 ليمونادة":"🍋 Lemonade","🥤 ميلك شيك":"🥤 Milkshake","🍨 آيس كريم":"🍨 Ice cream","🍰 حلوى":"🍰 Dessert",
+"🏦 المركز المالي":"🏦 Financial center","🧾 المبيعات":"🧾 Sales","💵 البقشيش":"💵 Tips","🎁 المكافآت":"🎁 Rewards","💸 المصروفات":"💸 Expenses","🏦 صافي الربح":"🏦 Net profit","💰 الخزنة":"💰 Cash register",
+"🎾 الحائط الصعب":"🎾 The Hard Wall","✕ رجوع":"✕ Back","🏆 مراحل الحائط الصعب":"🏆 The Hard Wall stages","اختر مرحلة مفتوحة واضغط OPEN. كلما أنهيت ٣ جولات تفتح المرحلة التالية. تقدمك محفوظ على هذا الجهاز.":"Choose an unlocked stage and press OPEN. Complete 3 rounds to unlock the next stage. Your progress is saved on this device.",
+"⭐ أعلى مرحلة مفتوحة:":"⭐ Highest unlocked stage:","💰 العملات:":"💰 Coins:","المرحلة المختارة:":"Selected stage:","⬅ السابق":"⬅ Previous","OPEN — فتح المرحلة":"OPEN — Open stage",
+"اضرب الكرة في الحائط وحاول تسجيل النقاط على الخصم":"Hit the ball against the wall and score points against your opponent",
+"👥 طريقة اللعب":"👥 Game mode","👤 لاعب × 🤖 كمبيوتر":"👤 Player vs 🤖 Computer","👤 لاعبان على نفس الهاتف":"👤 Two players on one phone","🌐 لاعب عبر الإنترنت":"🌐 Online player",
+"🌐 مباراة من هاتف إلى هاتف":"🌐 Phone-to-phone match","سجّل الدخول على الهاتفين. أنشئ غرفة من الهاتف الأول وأرسل الرمز للهاتف الثاني.":"Log in on both phones. Create a room on the first phone and send the code to the second.",
+"➕ إنشاء غرفة":"➕ Create room","🔗 دخول غرفة":"🔗 Join room","اختر إنشاء غرفة أو دخول غرفة.":"Choose Create Room or Join Room.",
+"🏷️ أسماء اللاعبين":"🏷️ Player names","⏱️ مدة الجولة":"⏱️ Round duration","60 ثانية":"60 seconds","90 ثانية":"90 seconds","120 ثانية":"120 seconds","🎯 الصعوبة":"🎯 Difficulty",
+"سهل":"Easy","متوسط":"Medium","صعب":"Hard","🔊 الأصوات":"🔊 Sounds","🎵 الموسيقى: تشغيل":"🎵 Music: On","🎾 صوت الكرة والمضرب: تشغيل":"🎾 Ball and paddle sound: On","👏 الجمهور: تشغيل":"👏 Crowd: On","💥 المؤثرات: تشغيل":"💥 Effects: On",
+"👕 الملابس":"👕 Outfits","🛒 المتجر":"🛒 Store","🏆 الجوائز":"🏆 Awards","👤 الحساب":"👤 Account","📖 القواعد":"📖 Rules","▶️ ابدأ المباراة":"▶️ Start match",
+"🛒 متجر التطوير":"🛒 Upgrade store","شراء":"Buy","🎯 مضرب التحكم — يوجّه الكرة بدقة أكبر":"🎯 Control paddle — aims the ball more precisely","🛡️ مضرب الحماية — مساحة صدّ أكبر ودفاع أقوى":"🛡️ Shield paddle — larger blocking area and stronger defense",
+"↩️ رجوع":"↩️ Back","🏓 قائمة اختيار نوع ولون المضارب":"🏓 Choose paddle type and color","اختار شكل ولون مضرب كل لاعب، ثم اضغط حفظ الاختيارات.":"Choose each player's paddle style and color, then save your choices.",
+"🔴 مضرب اللاعب الأحمر":"🔴 Red player's paddle","أحمر كلاسيكي":"Classic red","أزرق رياضي":"Sport blue","أخضر نيون":"Neon green","ذهبي فاخر":"Luxury gold","أسود احترافي":"Professional black","بنفسجي ملكي":"Royal purple","سماوي كهربائي":"Electric cyan",
+"🔵 مضرب اللاعب الأزرق / الكمبيوتر":"🔵 Blue player / computer paddle","💾 حفظ اختيارات المضارب":"💾 Save paddle choices","👕 ألوان الملابس":"👕 Outfit colors","🔴 الأحمر":"🔴 Red","اختيار":"Select","🔵 الأزرق":"🔵 Blue","🟢 الأخضر":"🟢 Green","🟡 الذهبي":"🟡 Gold","⚫ الأسود":"⚫ Black","🏆 الكؤوس والجوائز":"🏆 Cups and awards",
+"🎾 اضرب الكرة باتجاه الحائط.":"🎾 Hit the ball toward the wall.","🟥 الأحمر يدافع عن شبكته اليسرى.":"🟥 Red defends the left net.","🟦 الأزرق يدافع عن شبكته اليمنى.":"🟦 Blue defends the right net.","👆 حرّك اللاعب بالسحب.":"👆 Move the player by dragging.","🤖 الكمبيوتر يتحرك تلقائيًا.":"🤖 The computer moves automatically.",
+"💥 التسديدة القوية تزيد سرعة الكرة.":"💥 A power shot increases ball speed.","🎾 الملعب مفتوح بدون حواجز في جميع المراحل.":"🎾 The court is open without obstacles in all stages.","🏆 كل مرحلة تحتوي على 3 جولات.":"🏆 Each stage has 3 rounds.",
+"👤 الحساب والاشتراك":"👤 Account and subscription","لم يتم تسجيل الدخول":"Not logged in","🔐 تسجيل الدخول":"🔐 Log in","📝 إنشاء حساب":"📝 Create account","📧 نسيت كلمة المرور":"📧 Forgot password",
+"✅ تم تسجيل الدخول":"✅ Logged in","وضع التجربة جاهز":"Demo mode ready","🔄 فحص الاشتراك":"🔄 Check subscription","🛒 شراء اللعبة":"🛒 Buy game","🚪 تسجيل الخروج":"🚪 Log out",
+"في وضع التجربة، تسجيل الدخول يسمح بتشغيل اللعبة.":"In demo mode, logging in lets you play.","لأفضل تشغيل، أدر الهاتف إلى الوضع الأفقي":"For best performance, rotate your phone to landscape","↔️ تشغيل الوضع الأفقي":"↔️ Enable landscape mode","▶️ متابعة":"▶️ Continue","الأحمر":"Red","🏆 مرحلة":"🏆 Stage","جولة":"Round","الأزرق":"Blue","🎾 جاهز — اضغط ابدأ المباراة":"🎾 Ready — press Start Match"
+};
+var attrs=["placeholder","title","aria-label","alt"];
+var originalText=new WeakMap(), originalAttrs=new WeakMap(), current="ar", busy=false;
+function translateString(s,lang){
+ if(lang==="ar") return s;
+ var trimmed=s.trim();
+ if(phrases[trimmed]) return s.replace(trimmed,phrases[trimmed]);
+ var result=s;
+ var keys=Object.keys(phrases).sort(function(a,b){return b.length-a.length;});
+ for(var i=0;i<keys.length;i++){
+  var k=keys[i];
+  if(k.length<3) continue;
+  if(result.indexOf(k)!==-1) result=result.split(k).join(phrases[k]);
+ }
+ return result;
+}
+function process(root,lang){
+ if(busy)return; busy=true;
+ try{
+  var walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+  var nodes=[]; while(walker.nextNode())nodes.push(walker.currentNode);
+  nodes.forEach(function(n){
+   if(!originalText.has(n))originalText.set(n,n.nodeValue);
+   var source=originalText.get(n);
+   var target=translateString(source,lang);
+   if(n.nodeValue!==target)n.nodeValue=target;
+  });
+  var els=[];
+  if(root.nodeType===1)els.push(root);
+  if(root.querySelectorAll)els=els.concat(Array.from(root.querySelectorAll("*")));
+  els.forEach(function(el){
+   attrs.forEach(function(a){
+    if(!el.hasAttribute||!el.hasAttribute(a))return;
+    var key=a;
+    var bag=originalAttrs.get(el); if(!bag){bag={};originalAttrs.set(el,bag);}
+    if(!(key in bag))bag[key]=el.getAttribute(a);
+    var target=translateString(bag[key],lang);
+    if(el.getAttribute(a)!==target)el.setAttribute(a,target);
+   });
+   if((el.tagName==="INPUT"||el.tagName==="BUTTON")&&el.hasAttribute("value")){
+    var bag=originalAttrs.get(el);if(!bag){bag={};originalAttrs.set(el,bag);}
+    if(!("value" in bag))bag.value=el.value;
+    var tv=translateString(bag.value,lang);if(el.value!==tv)el.value=tv;
+   }
+  });
+ }catch(e){} finally{busy=false;}
+}
+window.setPlatformLanguage=function(lang){
+ current=lang==="en"?"en":"ar";
+ try{localStorage.setItem("platform_preferred_language",current);}catch(e){}
+ document.documentElement.lang=current;
+ document.documentElement.dir=current==="en"?"ltr":"rtl";
+ process(document.body,current);
+ var box=document.getElementById("google_translate_element");
+ if(box){box.style.display="none";}
+};
+function init(){
+ var lang="ar";try{lang=localStorage.getItem("platform_preferred_language")||"ar";}catch(e){}
+ window.setPlatformLanguage(lang);
+ var obs=new MutationObserver(function(records){
+  if(busy)return;
+  records.forEach(function(rec){
+   if(rec.type==="childList")rec.addedNodes.forEach(function(n){if(n.nodeType===1||n.nodeType===3)process(n,current);});
+   else if(rec.type==="characterData"){
+    var n=rec.target;
+    if(!originalText.has(n))originalText.set(n,n.nodeValue);
+    if(current==="en"){var t=translateString(originalText.get(n),"en");if(n.nodeValue!==t){busy=true;n.nodeValue=t;busy=false;}}
+   }
+  });
+ });
+ obs.observe(document.body,{childList:true,subtree:true,characterData:true});
+ document.addEventListener("click",function(e){
+  var b=e.target.closest&&e.target.closest("[data-platform-language]");
+  if(b){e.preventDefault();window.setPlatformLanguage(b.getAttribute("data-platform-language"));}
+ });
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+})();
+</script>
 </body>
 </html>
