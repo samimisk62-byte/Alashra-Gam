@@ -1201,6 +1201,11 @@ function resolvePlay(handIndex,groundIndex){
    pileSound();
    setTimeout(()=>{
     player.won+=stack.length;
+    /* مكافأة العملات الشكلية للاعب الأول فقط، مع حفظ الرصيد */
+    if(player===players[0]){
+     styleCoins+=stack.length;
+     saveCosmetics();
+    }
     lastWinner=turn;
     const stackIndex=groundStacks.indexOf(stack);
     if(stackIndex>=0) groundStacks.splice(stackIndex,1);
