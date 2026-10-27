@@ -469,6 +469,26 @@ body.cards-classic{--card-back1:#1e3fa1;--card-back2:#b5233b}
 #gameZoomControls output{min-width:42px;text-align:center;color:#fff;font:bold 12px Arial,sans-serif}
 .box{zoom:var(--game-zoom,1)}
 @media(max-width:480px){#gameZoomControls{top:6px;left:6px;gap:3px;padding:4px}#gameZoomControls button{min-width:36px;padding:8px 7px;font-size:14px}}
+
+#universalSettingsButton{position:fixed;right:12px;bottom:14px;z-index:2147483000;border:0;border-radius:50%;width:58px;height:58px;background:#087fbb;color:#fff;font-size:26px;box-shadow:0 4px 18px #0008;cursor:pointer}
+#universalSettingsShade{display:none;position:fixed;inset:0;z-index:2147483001;background:#0009;padding:14px;align-items:center;justify-content:center}
+#universalSettingsShade.open{display:flex}
+#universalSettingsCard{width:min(100%,440px);max-height:88vh;overflow:auto;background:#172b39;color:#fff;border:2px solid #3d667c;border-radius:18px;padding:17px;box-shadow:0 12px 40px #0008;font-family:Arial,sans-serif}
+#universalSettingsCard h2{margin:0 0 8px;font-size:22px}
+#universalSettingsCard p{font-size:13px;line-height:1.7;color:#c7d8e1}
+#universalSettingsCard label{display:block;font-weight:bold;margin-top:12px}
+#universalSettingsCard select,#universalSettingsCard input[type=range]{width:100%;margin-top:7px;padding:10px;border-radius:9px;font-size:16px}
+#universalSettingsCard .us-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+#universalSettingsCard button{flex:1;min-width:115px;padding:11px;border:0;border-radius:10px;background:#1686c9;color:white;font-weight:bold;font-size:14px}
+#universalSettingsCard .us-close{background:#56636c}
+html.us-large-text{font-size:1.15em}
+html.us-extra-large-text{font-size:1.3em}
+html.us-reduced-motion *,html.us-reduced-motion *::before,html.us-reduced-motion *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+html.us-light-mode body{background:#e8eef2!important;color:#14212a!important}
+html.us-light-mode .panel,html.us-light-mode .game,html.us-light-mode header,html.us-light-mode .product,html.us-light-mode #universalSettingsCard{background:#fff!important;color:#14212a!important;border-color:#b8c8d2!important}
+html.us-light-mode .small,html.us-light-mode .muted,html.us-light-mode p{color:#344b59}
+@media(max-width:500px){#universalSettingsButton{width:52px;height:52px;right:9px;bottom:10px}#universalSettingsCard{padding:13px}}
+
 </style>
 </head>
 
@@ -2016,6 +2036,58 @@ document.getElementById("downloadRecordBtn")
  document.getElementById("gameZoomOut").addEventListener("click",function(){zoom=Math.max(0.7,Math.round((zoom-0.1)*10)/10);applyZoom();});
  applyZoom();
 })();
+</script>
+
+<button id="universalSettingsButton" type="button" aria-label="ضبط المنصة واللعبة" title="ضبط المنصة واللعبة">⚙️</button>
+<div id="universalSettingsShade" role="dialog" aria-modal="true" aria-labelledby="universalSettingsTitle">
+<div id="universalSettingsCard">
+<h2 id="universalSettingsTitle">⚙️ ضبط المنصة واللعبة</h2>
+<p>عدّل شكل الصفحة وحجم العرض بما يناسب هاتفك. تُحفظ هذه الإعدادات على هذا الجهاز والمتصفح.</p>
+<label for="usTheme">🎨 شكل الألوان</label>
+<select id="usTheme"><option value="dark">داكن (الأصلي)</option><option value="light">فاتح</option></select>
+<label for="usText">🔤 حجم الكتابة</label>
+<select id="usText"><option value="normal">عادي</option><option value="large">كبير</option><option value="extra">كبير جدًا</option></select>
+<label for="usZoom">🔍 تكبير وتصغير الصفحة: <span id="usZoomValue">100%</span></label>
+<input id="usZoom" type="range" min="80" max="130" step="5" value="100">
+<label><input id="usMotion" type="checkbox" style="width:auto;transform:scale(1.2);margin-left:8px"> تقليل الحركة والمؤثرات البصرية</label>
+<div class="us-row"><button id="usFullscreen" type="button">⛶ ملء الشاشة</button><button id="usReset" type="button" style="background:#b83d45">إعادة الضبط</button><button id="usClose" type="button" class="us-close">إغلاق</button></div>
+<p id="usHelp">ملاحظة: بعض الألعاب لها إعدادات داخلية خاصة بها. هذه الإعدادات تغيّر شكل العرض العام ولا تغيّر حسابك أو اشتراكك.</p>
+</div></div>
+
+<script>
+
+(function(){
+"use strict";
+const KEY="platform_universal_settings_v1";
+const $=id=>document.getElementById(id);
+const defaults={theme:"dark",text:"normal",zoom:100,motion:false};
+let settings={...defaults};
+try{settings={...defaults,...JSON.parse(localStorage.getItem(KEY)||"{}")};}catch(e){}
+function apply(){
+document.documentElement.classList.toggle("us-light-mode",settings.theme==="light");
+document.documentElement.classList.toggle("us-large-text",settings.text==="large");
+document.documentElement.classList.toggle("us-extra-large-text",settings.text==="extra");
+document.documentElement.classList.toggle("us-reduced-motion",!!settings.motion);
+document.documentElement.style.zoom=String(Number(settings.zoom)||100)+"%";
+$("usTheme").value=settings.theme;$("usText").value=settings.text;$("usZoom").value=settings.zoom;$("usZoomValue").textContent=settings.zoom+"%";$("usMotion").checked=!!settings.motion;
+try{localStorage.setItem(KEY,JSON.stringify(settings));}catch(e){}
+}
+function open(){ $("universalSettingsShade").classList.add("open");}
+function close(){ $("universalSettingsShade").classList.remove("open");}
+$("universalSettingsButton").addEventListener("click",open);
+$("usClose").addEventListener("click",close);
+$("universalSettingsShade").addEventListener("click",e=>{if(e.target===$("universalSettingsShade"))close();});
+$("usTheme").addEventListener("change",e=>{settings.theme=e.target.value;apply();});
+$("usText").addEventListener("change",e=>{settings.text=e.target.value;apply();});
+$("usZoom").addEventListener("input",e=>{settings.zoom=Number(e.target.value);apply();});
+$("usMotion").addEventListener("change",e=>{settings.motion=e.target.checked;apply();});
+$("usReset").addEventListener("click",()=>{settings={...defaults};apply();});
+$("usFullscreen").addEventListener("click",async()=>{try{if(!document.fullscreenElement){await document.documentElement.requestFullscreen();$("usFullscreen").textContent="⛶ إلغاء ملء الشاشة";}else{await document.exitFullscreen();$("usFullscreen").textContent="⛶ ملء الشاشة";}}catch(e){$("usHelp").textContent="قد لا يدعم المتصفح ملء الشاشة في هذه الصفحة. جرّب قائمة المتصفح."; }});
+document.addEventListener("fullscreenchange",()=>{$("usFullscreen").textContent=document.fullscreenElement?"⛶ إلغاء ملء الشاشة":"⛶ ملء الشاشة";});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")close();});
+apply();
+})();
+
 </script>
 </body>
 </html>
