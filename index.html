@@ -489,6 +489,16 @@ html.us-light-mode .panel,html.us-light-mode .game,html.us-light-mode header,htm
 html.us-light-mode .small,html.us-light-mode .muted,html.us-light-mode p{color:#344b59}
 @media(max-width:500px){#universalSettingsButton{width:52px;height:52px;right:9px;bottom:10px}#universalSettingsCard{padding:13px}}
 
+
+#universalSettingsCard #google_translate_element{display:block;margin-top:8px;padding:10px;background:#fff;border-radius:10px;color:#111;min-height:40px}
+#universalSettingsCard #google_translate_element select{width:100%;padding:10px;border:1px solid #b8c5ce;border-radius:8px;background:#fff;color:#111;font-size:15px}
+#universalSettingsCard .goog-te-gadget{font-family:Arial,sans-serif!important;color:#222!important;font-size:13px!important}
+#universalSettingsCard .goog-te-gadget span{display:none!important}
+#universalSettingsCard .goog-te-gadget .goog-te-combo{margin:0!important;max-width:100%}
+.goog-te-banner-frame.skiptranslate{display:none!important}
+body{top:0!important}
+html body .skiptranslate iframe{visibility:hidden!important}
+
 </style>
 </head>
 
@@ -2057,6 +2067,13 @@ document.getElementById("downloadRecordBtn")
 <p style="margin:0 0 8px">اختصارات للإعدادات الموجودة داخل اللعبة نفسها.</p>
 <div id="usGameButtons" class="us-row" style="margin-top:8px"></div>
 </div>
+
+<div id="universalTranslateSection" style="margin-top:14px;padding-top:12px;border-top:1px solid #496273">
+<h3 style="margin:0 0 6px;font-size:17px">🌐 ترجمة المنصة واللعبة</h3>
+<p style="margin:0 0 8px">اختر اللغة التي تريد عرض النصوص بها. تتوفر لغات كثيرة حسب خدمة الترجمة.</p>
+<div id="google_translate_element"><span style="color:#222">جارٍ تحميل قائمة اللغات...</span></div>
+</div>
+
 <p id="usHelp">ملاحظة: بعض الألعاب لها إعدادات داخلية خاصة بها. هذه الإعدادات تغيّر شكل العرض العام ولا تغيّر حسابك أو اشتراكك.</p>
 </div></div>
 
@@ -2149,5 +2166,22 @@ apply();
 })();
 
 </script>
+
+<script>
+function googleTranslateElementInit(){
+ var el=document.getElementById("google_translate_element");
+ if(!el||el.getAttribute("data-ready")==="1")return;
+ el.setAttribute("data-ready","1");
+ new google.translate.TranslateElement({pageLanguage:"ar",autoDisplay:false,layout:google.translate.TranslateElement.InlineLayout.SIMPLE}, "google_translate_element");
+}
+(function(){
+ var s=document.createElement("script");
+ s.src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+ s.async=true;
+ s.onerror=function(){var el=document.getElementById("google_translate_element");if(el)el.innerHTML='<span style="color:#9b2525">تعذر تحميل الترجمة. تأكد من اتصال الإنترنت ثم أعد فتح الصفحة.</span>';};
+ document.body.appendChild(s);
+})();
+</script>
+
 </body>
 </html>
