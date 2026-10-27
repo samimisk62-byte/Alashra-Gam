@@ -2066,7 +2066,7 @@ document.getElementById("downloadRecordBtn")
 "use strict";
 const KEY="platform_universal_settings_v1";
 const $=id=>document.getElementById(id);
-const defaults={theme:"dark",text:"normal",zoom:100,motion:false};
+const defaults={theme:"dark",text:"normal",zoom:100,motion:false,ballSpeed:100,aiSpeed:100};
 let settings={...defaults};
 try{settings={...defaults,...JSON.parse(localStorage.getItem(KEY)||"{}")};}catch(e){}
 function apply(){
@@ -2095,7 +2095,17 @@ function addGameSelect(label,items,onPick,initial){
  sel.addEventListener("change",()=>onPick(sel.value));
  wrap.appendChild(sel);gameButtons.appendChild(wrap);
 }
+function addGameRange(label,min,max,step,key){
+ const wrap=document.createElement("label");wrap.textContent=label+" ";
+ const value=document.createElement("span");value.textContent=String(settings[key]||100)+"%";wrap.appendChild(value);
+ const input=document.createElement("input");input.type="range";input.min=String(min);input.max=String(max);input.step=String(step);input.value=String(settings[key]||100);input.style.width="100%";input.style.marginTop="7px";
+ input.addEventListener("input",()=>{settings[key]=Number(input.value);value.textContent=input.value+"%";try{localStorage.setItem(KEY,JSON.stringify(settings));}catch(e){}});
+ wrap.appendChild(input);gameButtons.appendChild(wrap);
+}
+
 if($("easy")&&$("medium")&&$("hard")){
+ addGameRange("⚡ سرعة الكرة",70,150,5,"ballSpeed");
+ addGameRange("🤖 سرعة الكمبيوتر",70,150,5,"aiSpeed");
  gameControls.style.display="block";
  addGameSelect("🎯 صعوبة الكمبيوتر", [["easy","سهل"],["medium","متوسط"],["hard","صعب"]],v=>{if(v==="easy"&&typeof easyMode==="function")easyMode();if(v==="medium"&&typeof mediumMode==="function")mediumMode();if(v==="hard"&&typeof hardMode==="function")hardMode();});
  addGameSelect("⏱️ مدة الجولة", [["60","60 ثانية"],["90","90 ثانية"],["120","120 ثانية"]],v=>{const t=$("t"+v);if(t)t.click();});
