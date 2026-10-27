@@ -2185,20 +2185,27 @@ function applyRememberedLanguage(){
 
 function showLanguageFallback(){
  var el=document.getElementById("google_translate_element");
- if(!el||el.querySelector("#languageFallbackSelect"))return;
- el.innerHTML='<div style="color:#222;font-weight:bold;margin-bottom:8px">اختيار اللغة البديل</div><select id="languageFallbackSelect" aria-label="اختر لغة الترجمة" style="width:100%;padding:10px;border:1px solid #b8c5ce;border-radius:8px;background:#fff;color:#111;font-size:16px"><option value="en">English - الإنجليزية</option><option value="ar">العربية</option><option value="fr">Français - الفرنسية</option><option value="es">Español - الإسبانية</option><option value="de">Deutsch - الألمانية</option><option value="it">Italiano - الإيطالية</option><option value="pt">Português - البرتغالية</option><option value="tr">Türkçe - التركية</option><option value="ru">Русский - الروسية</option><option value="zh-CN">中文 - الصينية</option><option value="ja">日本語 - اليابانية</option><option value="ko">한국어 - الكورية</option><option value="hi">हिन्दी - الهندية</option><option value="ur">اردو - الأوردية</option><option value="fa">فارسی - الفارسية</option><option value="id">Bahasa Indonesia</option><option value="ms">Bahasa Melayu</option><option value="bn">বাংলা - البنغالية</option><option value="nl">Nederlands - الهولندية</option><option value="pl">Polski - البولندية</option><option value="uk">Українська - الأوكرانية</option><option value="el">Ελληνικά - اليونانية</option><option value="he">עברית - العبرية</option><option value="th">ไทย - التايلاندية</option><option value="vi">Tiếng Việt - الفيتنامية</option><option value="sw">Kiswahili - السواحيلية</option><option value="fa">فارسی - الفارسية</option></select><button id="languageFallbackGo" type="button" style="width:100%;margin-top:8px;padding:11px;border:0;border-radius:9px;background:#168653;color:#fff;font-weight:bold;font-size:15px">🌐 ترجمة الصفحة باللغة المختارة</button><p id="languageFallbackNote" style="font-size:12px;color:#444;margin:8px 0 0">بعد فتح الصفحة في Chrome، افتح القائمة ⋮ واختر ترجمة / Translate. تحتاج إلى الإنترنت.</p>';
- var sel=document.getElementById("languageFallbackSelect");
- try{var saved=localStorage.getItem("platform_preferred_language");if(saved&&sel.querySelector('option[value="'+saved+'"]'))sel.value=saved;}catch(e){}
- document.getElementById("languageFallbackGo").textContent="🌐 طريقة الترجمة بدون نافذة منبثقة";
- document.getElementById("languageFallbackGo").addEventListener("click",function(){
-  var lang=sel.value;
-  try{localStorage.setItem("platform_preferred_language",lang);}catch(e){}
-  var names={"en":"الإنجليزية","ar":"العربية","fr":"الفرنسية","es":"الإسبانية","de":"الألمانية","it":"الإيطالية","pt":"البرتغالية","tr":"التركية","ru":"الروسية","zh-CN":"الصينية","ja":"اليابانية","ko":"الكورية","hi":"الهندية","ur":"الأردية","fa":"الفارسية","id":"الإندونيسية","ms":"الملايوية","bn":"البنغالية","nl":"الهولندية","pl":"البولندية","uk":"الأوكرانية","el":"اليونانية","he":"العبرية","th":"التايلاندية","vi":"الفيتنامية","sw":"السواحيلية"};
-  var note=document.getElementById("languageFallbackNote");
-  if(note)note.textContent="تم حفظ اختيارك: "+(names[lang]||lang)+". للترجمة: افتح رابط الصفحة في متصفح Chrome، ثم اضغط ⋮ واختر ترجمة / Translate. لا نفتح أي نافذة منبثقة. تحتاج إلى الإنترنت.";
+ if(!el||document.getElementById("languageFallbackHelp"))return;
+ var help=document.createElement("div");
+ help.id="languageFallbackHelp";
+ help.style.cssText="margin-top:8px;padding:12px;border:1px solid #d5a33b;border-radius:9px;background:#fff8e6;color:#3d321b;font-size:14px;line-height:1.5";
+ help.innerHTML='<strong>تعذر تحميل أداة الترجمة.</strong><p style="margin:6px 0">قائمة اختيار اللغة وحدها لا تترجم الصفحة. اضغط إعادة المحاولة، وتأكد من اتصال الإنترنت.</p><button id="languageFallbackRetry" type="button" style="width:100%;padding:10px;border:0;border-radius:8px;background:#168653;color:#fff;font-weight:bold">🔄 إعادة تحميل أداة الترجمة</button>';
+ el.appendChild(help);
+ document.getElementById("languageFallbackRetry").addEventListener("click",function(){
+  var oldHelp=document.getElementById("languageFallbackHelp");
+  if(oldHelp)oldHelp.remove();
+  var s=document.createElement("script");
+  s.src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit&retry="+Date.now();
+  s.async=true;
+  s.onerror=function(){showLanguageFallback();};
+  document.body.appendChild(s);
+  setTimeout(function(){
+   var combo=document.querySelector("#google_translate_element select.goog-te-combo");
+   if(!combo)showLanguageFallback();
+   else applyRememberedLanguage();
+  },10000);
  });
 }
-
 function googleTranslateElementInit(){
  var el=document.getElementById("google_translate_element");
  if(!el||el.getAttribute("data-ready")==="1")return;
@@ -2219,7 +2226,7 @@ document.addEventListener("change",function(e){
  s.async=true;
  s.onerror=function(){showLanguageFallback();};
  document.body.appendChild(s);
- setTimeout(function(){var el=document.getElementById("google_translate_element");if(el&&!el.querySelector("select.goog-te-combo"))showLanguageFallback();},8000);
+ setTimeout(function(){var el=document.getElementById("google_translate_element");if(el&&!el.querySelector("select.goog-te-combo"))showLanguageFallback();},15000);
 })();
 </script>
 
