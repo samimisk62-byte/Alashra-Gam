@@ -2051,6 +2051,12 @@ document.getElementById("downloadRecordBtn")
 <input id="usZoom" type="range" min="80" max="130" step="5" value="100">
 <label><input id="usMotion" type="checkbox" style="width:auto;transform:scale(1.2);margin-left:8px"> تقليل الحركة والمؤثرات البصرية</label>
 <div class="us-row"><button id="usFullscreen" type="button">⛶ ملء الشاشة</button><button id="usReset" type="button" style="background:#b83d45">إعادة الضبط</button><button id="usClose" type="button" class="us-close">إغلاق</button></div>
+
+<div id="usGameControls" style="display:none;margin-top:14px;padding-top:12px;border-top:1px solid #496273">
+<h3 style="margin:0 0 6px;font-size:17px">🎮 إعدادات اللعبة الحالية</h3>
+<p style="margin:0 0 8px">اختصارات للإعدادات الموجودة داخل اللعبة نفسها.</p>
+<div id="usGameButtons" class="us-row" style="margin-top:8px"></div>
+</div>
 <p id="usHelp">ملاحظة: بعض الألعاب لها إعدادات داخلية خاصة بها. هذه الإعدادات تغيّر شكل العرض العام ولا تغيّر حسابك أو اشتراكك.</p>
 </div></div>
 
@@ -2072,6 +2078,50 @@ document.documentElement.style.zoom=String(Number(settings.zoom)||100)+"%";
 $("usTheme").value=settings.theme;$("usText").value=settings.text;$("usZoom").value=settings.zoom;$("usZoomValue").textContent=settings.zoom+"%";$("usMotion").checked=!!settings.motion;
 try{localStorage.setItem(KEY,JSON.stringify(settings));}catch(e){}
 }
+
+const gameControls=$("usGameControls"),gameButtons=$("usGameButtons");
+function addGameAction(label,target){
+ const t=typeof target==="string"?$(target):target;
+ if(!t)return;
+ const b=document.createElement("button");b.type="button";b.textContent=label;
+ b.addEventListener("click",()=>{t.click();});
+ gameButtons.appendChild(b);
+}
+function addGameSelect(label,items,onPick,initial){
+ const wrap=document.createElement("label");wrap.textContent=label;
+ const sel=document.createElement("select");
+ items.forEach(it=>{const o=document.createElement("option");o.value=it[0];o.textContent=it[1];sel.appendChild(o);});
+ if(initial!==undefined)sel.value=initial;
+ sel.addEventListener("change",()=>onPick(sel.value));
+ wrap.appendChild(sel);gameButtons.appendChild(wrap);
+}
+if($("easy")&&$("medium")&&$("hard")){
+ gameControls.style.display="block";
+ addGameSelect("🎯 صعوبة الكمبيوتر", [["easy","سهل"],["medium","متوسط"],["hard","صعب"]],v=>{if(v==="easy"&&typeof easyMode==="function")easyMode();if(v==="medium"&&typeof mediumMode==="function")mediumMode();if(v==="hard"&&typeof hardMode==="function")hardMode();});
+ addGameSelect("⏱️ مدة الجولة", [["60","60 ثانية"],["90","90 ثانية"],["120","120 ثانية"]],v=>{const t=$("t"+v);if(t)t.click();});
+ addGameAction("🎵 تبديل الموسيقى","musicButton");
+ addGameAction("🎾 تبديل صوت الكرة","ballButton");
+}else if($("musicBtn")){
+ gameControls.style.display="block";
+ addGameAction("🎵 تشغيل/إيقاف الموسيقى","musicBtn");
+ addGameAction("👁️ تسليم الدور","passBtn");
+ addGameAction("📖 قواعد اللعبة","rulesBtn");
+}else if($("soundToggle")){
+ gameControls.style.display="block";
+ addGameAction("🔊 تشغيل/إيقاف الصوت","soundToggle");
+ const pause=$("game")&&$("game").querySelector(".pauseBtn");
+ if(pause)addGameAction("⏸️ إيقاف/متابعة",pause);
+ const zoomIn=$("game")&&$("game").querySelector('button[onclick="changeZoom(0.15)"]');
+ const zoomOut=$("game")&&$("game").querySelector('button[onclick="changeZoom(-0.15)"]');
+ if(zoomIn)addGameAction("🔍 تكبير اللعبة",zoomIn);
+ if(zoomOut)addGameAction("🔎 تصغير اللعبة",zoomOut);
+}else if(document.querySelector('button[onclick="toggleMusic()"]')){
+ gameControls.style.display="block";
+ addGameAction("🔊 تشغيل/إيقاف الصوت",document.querySelector('button[onclick="toggleMusic()"]'));
+ const pause=document.querySelector('button[onclick="pauseGame()"]');if(pause)addGameAction("⏸️ إيقاف/متابعة",pause);
+ const shop=document.querySelector('button[onclick="showShop()"]');if(shop)addGameAction("🛒 متجر تطوير المطعم",shop);
+}
+
 function open(){ $("universalSettingsShade").classList.add("open");}
 function close(){ $("universalSettingsShade").classList.remove("open");}
 $("universalSettingsButton").addEventListener("click",open);
