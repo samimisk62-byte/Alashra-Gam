@@ -2077,7 +2077,12 @@ document.getElementById("downloadRecordBtn")
 <div id="universalTranslateSection" style="margin-top:14px;padding-top:12px;border-top:1px solid #496273">
 <h3 style="margin:0 0 6px;font-size:17px">🌐 ترجمة المنصة واللعبة</h3>
 <p style="margin:0 0 8px">اختر اللغة التي تريد عرض النصوص بها. تتوفر لغات كثيرة حسب خدمة الترجمة.</p>
-<div id="google_translate_element"><span style="color:#222">جارٍ تحميل قائمة اللغات...</span></div>
+<div style="display:flex;gap:8px;margin:10px 0">
+<button type="button" data-platform-language="ar" style="flex:1;background:#168653;color:#fff;border:0;border-radius:9px;padding:11px;font-weight:bold">🇪🇬 العربية</button>
+<button type="button" data-platform-language="en" style="flex:1;background:#1769aa;color:#fff;border:0;border-radius:9px;padding:11px;font-weight:bold">🇬🇧 English</button>
+</div>
+<div id="google_translate_element"><span style="color:#222">جارٍ تحميل أداة الترجمة...</span></div>
+<p style="font-size:12px;line-height:1.5;margin:8px 0 0">تحتاج الترجمة إلى اتصال بالإنترنت. اختيار العربية يعيد النص الأصلي، واختيار English يستخدم خدمة الترجمة.</p>
 </div>
 
 <p id="usHelp">ملاحظة: بعض الألعاب لها إعدادات داخلية خاصة بها. هذه الإعدادات تغيّر شكل العرض العام ولا تغيّر حسابك أو اشتراكك.</p>
@@ -2175,12 +2180,34 @@ apply();
 
 <script>
 try{var q=new URLSearchParams(location.search).get("platform_lang");if(q&&q.length<12)localStorage.setItem("platform_preferred_language",q);}catch(e){}
+function setPlatformLanguage(language){
+ var preferred=(language==="en")?"en":"ar";
+ try{localStorage.setItem("platform_preferred_language",preferred);}catch(e){}
+ var root=document.documentElement;
+ if(root)root.lang=preferred;
+ var combo=document.querySelector("#google_translate_element select.goog-te-combo");
+ if(!combo){
+  var help=document.getElementById("languageFallbackHelp");
+  if(help)help.scrollIntoView({behavior:"smooth",block:"center"});
+  return;
+ }
+ combo.value=(preferred==="ar")?"":preferred;
+ combo.dispatchEvent(new Event("change",{bubbles:true}));
+ try{localStorage.setItem("platform_preferred_language",preferred);}catch(e){}
+}
+document.addEventListener("click",function(event){
+ var button=event.target.closest("[data-platform-language]");
+ if(button)setPlatformLanguage(button.getAttribute("data-platform-language"));
+});
 function applyRememberedLanguage(){
  var preferred="";
  try{preferred=localStorage.getItem("platform_preferred_language")||"";}catch(e){}
  var combo=document.querySelector("#google_translate_element select.goog-te-combo");
  if(!combo||!preferred)return false;
- if(combo.value!==preferred){combo.value=preferred;combo.dispatchEvent(new Event("change",{bubbles:true}));}
+ var targetLanguage=(preferred==="ar")?"":preferred;
+ if(combo.value!==targetLanguage){combo.value=targetLanguage;combo.dispatchEvent(new Event("change",{bubbles:true}));}
+ var root=document.documentElement;
+ if(root)root.lang=(preferred==="en")?"en":"ar";
  return true;
 }
 
