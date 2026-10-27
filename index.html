@@ -499,6 +499,11 @@ html.us-light-mode .small,html.us-light-mode .muted,html.us-light-mode p{color:#
 body{top:0!important}
 html body .skiptranslate iframe{visibility:hidden!important}
 
+
+#universalLanguageButton{position:fixed;left:12px;bottom:14px;z-index:2147483000;border:0;border-radius:50%;width:54px;height:54px;background:#168653;color:#fff;font-size:23px;box-shadow:0 4px 18px #0008;cursor:pointer}
+#universalLanguageButton:focus-visible,#universalSettingsButton:focus-visible{outline:3px solid #ffd166;outline-offset:3px}
+@media(max-width:500px){#universalLanguageButton{width:49px;height:49px;left:9px;bottom:10px}}
+
 </style>
 </head>
 
@@ -2048,6 +2053,7 @@ document.getElementById("downloadRecordBtn")
 })();
 </script>
 
+<button id="universalLanguageButton" type="button" aria-label="اختيار اللغة" title="اختيار اللغة">🌐</button>
 <button id="universalSettingsButton" type="button" aria-label="ضبط المنصة واللعبة" title="ضبط المنصة واللعبة">⚙️</button>
 <div id="universalSettingsShade" role="dialog" aria-modal="true" aria-labelledby="universalSettingsTitle">
 <div id="universalSettingsCard">
@@ -2168,12 +2174,28 @@ apply();
 </script>
 
 <script>
+function applyRememberedLanguage(){
+ var preferred="";
+ try{preferred=localStorage.getItem("platform_preferred_language")||"";}catch(e){}
+ var combo=document.querySelector("#google_translate_element select.goog-te-combo");
+ if(!combo||!preferred)return false;
+ if(combo.value!==preferred){combo.value=preferred;combo.dispatchEvent(new Event("change",{bubbles:true}));}
+ return true;
+}
 function googleTranslateElementInit(){
  var el=document.getElementById("google_translate_element");
  if(!el||el.getAttribute("data-ready")==="1")return;
  el.setAttribute("data-ready","1");
  new google.translate.TranslateElement({pageLanguage:"ar",autoDisplay:false,layout:google.translate.TranslateElement.InlineLayout.SIMPLE}, "google_translate_element");
+ var tries=0;
+ var timer=setInterval(function(){tries++;if(applyRememberedLanguage()||tries>=30)clearInterval(timer);},300);
 }
+document.addEventListener("change",function(e){
+ if(e.target&&e.target.matches("#google_translate_element select.goog-te-combo")){
+  try{localStorage.setItem("platform_preferred_language",e.target.value);}catch(err){}
+ }
+});
+
 (function(){
  var s=document.createElement("script");
  s.src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
@@ -2183,5 +2205,19 @@ function googleTranslateElementInit(){
 })();
 </script>
 
+<script>
+
+(function(){
+ var b=document.getElementById("universalLanguageButton");
+ var shade=document.getElementById("universalSettingsShade");
+ if(!b||!shade)return;
+ b.addEventListener("click",function(){
+  shade.classList.add("open");
+  var section=document.getElementById("universalTranslateSection");
+  if(section){setTimeout(function(){section.scrollIntoView({behavior:"smooth",block:"start"});},80);}
+ });
+})();
+
+</script>
 </body>
 </html>
