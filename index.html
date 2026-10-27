@@ -2189,16 +2189,13 @@ function showLanguageFallback(){
  el.innerHTML='<div style="color:#222;font-weight:bold;margin-bottom:8px">اختيار اللغة البديل</div><select id="languageFallbackSelect" aria-label="اختر لغة الترجمة" style="width:100%;padding:10px;border:1px solid #b8c5ce;border-radius:8px;background:#fff;color:#111;font-size:16px"><option value="en">English - الإنجليزية</option><option value="ar">العربية</option><option value="fr">Français - الفرنسية</option><option value="es">Español - الإسبانية</option><option value="de">Deutsch - الألمانية</option><option value="it">Italiano - الإيطالية</option><option value="pt">Português - البرتغالية</option><option value="tr">Türkçe - التركية</option><option value="ru">Русский - الروسية</option><option value="zh-CN">中文 - الصينية</option><option value="ja">日本語 - اليابانية</option><option value="ko">한국어 - الكورية</option><option value="hi">हिन्दी - الهندية</option><option value="ur">اردو - الأوردية</option><option value="fa">فارسی - الفارسية</option><option value="id">Bahasa Indonesia</option><option value="ms">Bahasa Melayu</option><option value="bn">বাংলা - البنغالية</option><option value="nl">Nederlands - الهولندية</option><option value="pl">Polski - البولندية</option><option value="uk">Українська - الأوكرانية</option><option value="el">Ελληνικά - اليونانية</option><option value="he">עברית - العبرية</option><option value="th">ไทย - التايلاندية</option><option value="vi">Tiếng Việt - الفيتنامية</option><option value="sw">Kiswahili - السواحيلية</option><option value="fa">فارسی - الفارسية</option></select><button id="languageFallbackGo" type="button" style="width:100%;margin-top:8px;padding:11px;border:0;border-radius:9px;background:#168653;color:#fff;font-weight:bold;font-size:15px">🌐 ترجمة الصفحة باللغة المختارة</button><p id="languageFallbackNote" style="font-size:12px;color:#444;margin:8px 0 0">بعد فتح الصفحة في Chrome، افتح القائمة ⋮ واختر ترجمة / Translate. تحتاج إلى الإنترنت.</p>';
  var sel=document.getElementById("languageFallbackSelect");
  try{var saved=localStorage.getItem("platform_preferred_language");if(saved&&sel.querySelector('option[value="'+saved+'"]'))sel.value=saved;}catch(e){}
- document.getElementById("languageFallbackGo").textContent="🌐 فتح الصفحة في Chrome للترجمة";
+ document.getElementById("languageFallbackGo").textContent="🌐 طريقة الترجمة بدون نافذة منبثقة";
  document.getElementById("languageFallbackGo").addEventListener("click",function(){
   var lang=sel.value;
   try{localStorage.setItem("platform_preferred_language",lang);}catch(e){}
-  var url=location.href;
+  var names={"en":"الإنجليزية","ar":"العربية","fr":"الفرنسية","es":"الإسبانية","de":"الألمانية","it":"الإيطالية","pt":"البرتغالية","tr":"التركية","ru":"الروسية","zh-CN":"الصينية","ja":"اليابانية","ko":"الكورية","hi":"الهندية","ur":"الأردية","fa":"الفارسية","id":"الإندونيسية","ms":"الملايوية","bn":"البنغالية","nl":"الهولندية","pl":"البولندية","uk":"الأوكرانية","el":"اليونانية","he":"العبرية","th":"التايلاندية","vi":"الفيتنامية","sw":"السواحيلية"};
   var note=document.getElementById("languageFallbackNote");
-  if(note)note.textContent="بعد فتح الصفحة في Chrome، افتح القائمة ⋮ واختر ترجمة / Translate. تحتاج إلى الإنترنت.";
-  var clean=url.replace(/^https?:\/\//,"");
-  window.location.href="intent://"+clean+"#Intent;scheme=https;package=com.android.chrome;end";
-  setTimeout(function(){try{window.open(url,"_blank","noopener,noreferrer");}catch(e){}},1000);
+  if(note)note.textContent="تم حفظ اختيارك: "+(names[lang]||lang)+". للترجمة: افتح رابط الصفحة في متصفح Chrome، ثم اضغط ⋮ واختر ترجمة / Translate. لا نفتح أي نافذة منبثقة. تحتاج إلى الإنترنت.";
  });
 }
 
