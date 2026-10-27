@@ -2174,6 +2174,7 @@ apply();
 </script>
 
 <script>
+try{var q=new URLSearchParams(location.search).get("platform_lang");if(q&&q.length<12)localStorage.setItem("platform_preferred_language",q);}catch(e){}
 function applyRememberedLanguage(){
  var preferred="";
  try{preferred=localStorage.getItem("platform_preferred_language")||"";}catch(e){}
