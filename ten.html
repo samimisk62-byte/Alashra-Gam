@@ -100,7 +100,7 @@ button.red{box-shadow:0 4px 0 #c94a48,0 7px 13px #0003,inset 0 1px 0 #ffffffbb}
 .card .cardPip{z-index:1}
 
 /* مشهد كوتشينة WebGL ثلاثي الأبعاد حقيقي داخل نفس مساحة الترابيزة */
-#ground.threeActive{position:relative;display:block;height:clamp(170px,38vw,255px);min-height:170px;padding:0;border:7px solid #8e6038;overflow:hidden;background:#0d6248!important;isolation:isolate}
+#ground.threeActive{position:relative;display:block;height:clamp(170px,38vw,255px);min-height:170px;padding:0;border:7px solid #8e6038;overflow:hidden;background:#0a3a32!important;isolation:isolate}
 #ground.threeActive:before{z-index:3;pointer-events:none}
 #ground.threeActive:after{z-index:2;pointer-events:none}
 #ground.threeActive .slot,#ground.threeActive>.small{display:none!important}
@@ -319,7 +319,7 @@ function init3DTable(){
     const keyLight=new T.DirectionalLight(0xffe7bd,2.4);keyLight.position.set(-3,8,4);keyLight.castShadow=true;keyLight.shadow.mapSize.set(512,512);scene.add(keyLight);
     const fillLight=new T.DirectionalLight(0x8bdfff,.7);fillLight.position.set(4,4,-4);scene.add(fillLight);
     const clothCanvas=document.createElement('canvas');clothCanvas.width=256;clothCanvas.height=256;
-    const cx=clothCanvas.getContext('2d');cx.fillStyle='#0d6248';cx.fillRect(0,0,256,256);
+    const cx=clothCanvas.getContext('2d');cx.fillStyle='#0a3a32';cx.fillRect(0,0,256,256);
     for(let i=0;i<4500;i++){cx.fillStyle=i%2?'rgba(255,255,255,.025)':'rgba(0,0,0,.035)';cx.fillRect(Math.random()*256,Math.random()*256,1,2)}
     const cloth=new T.CanvasTexture(clothCanvas);cloth.wrapS=cloth.wrapT=T.RepeatWrapping;cloth.repeat.set(3,2);
     const table=new T.Mesh(new T.BoxGeometry(11.2,.35,6.5),new T.MeshStandardMaterial({color:'#704522',roughness:.55}));
@@ -355,7 +355,7 @@ function init3DTable(){
 function render3DTable(pile,backStyle,tableStyle){
   if(!init3DTable())return;
   try{
-    const T=window.THREE,colors=['#0d6248','#304e80'];
+    const T=window.THREE,colors=['#0a3a32','#304e80'];
     const felt=threeScene.children.find(o=>o.isMesh&&o.geometry&&o.geometry.type==='PlaneGeometry');
     if(felt){felt.material.color.set(colors[tableStyle%3]);felt.material.needsUpdate=true}
     while(threeGroup.children.length){const old=threeGroup.children[0];threeGroup.remove(old);old.traverse?.(o=>{if(o.geometry)o.geometry.dispose();if(o.material&&!Array.isArray(o.material))o.material.dispose()})}
