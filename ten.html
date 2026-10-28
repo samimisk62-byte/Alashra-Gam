@@ -74,10 +74,10 @@ button:disabled{opacity:.35;cursor:default}
 <script>
 (()=>{
 const $=id=>document.getElementById(id), key='alashra_ten_progress_v1';
-let state={deck:[],hands:[[],[]],scores:[[],[]],pile:[],target:1,turn:0,lastWinner:-1,lastPlayer:0,selected:-1,started:false,ended:false,stage:1,coins:0,back:0,table:0,sound:true,mode:'cpu',playedCount:0,lang:'ar'};
+let state={deck:[],hands:[[],[]],scores:[[],[]],pile:[],target:1,turn:0,lastWinner:-1,lastPlayer:0,selected:-1,started:false,ended:false,stage:1,coins:0,back:0,table:0,sound:true,mode:'cpu',playedCount:0,lang:'ar',rewardStage:0};
 const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'], suits=['♠','♥','♦','♣'];
 const num=n=>state.lang==='en'?String(n):String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[+d]);
-function save(){try{localStorage.setItem(key,JSON.stringify({stage:state.stage,coins:state.coins,back:state.back,table:state.table,sound:state.sound}))}catch(e){}}
+function save(){try{localStorage.setItem(key,JSON.stringify({stage:state.stage,coins:state.coins,back:state.back,table:state.table,sound:state.sound,rewardStage:state.rewardStage}))}catch(e){}}
 function load(){try{let x=JSON.parse(localStorage.getItem(key)||'{}');Object.assign(state,x)}catch(e){} $('stage').value=String(state.stage||1);$('sound').textContent=state.sound?'🔊 الصوت: يعمل':'🔇 الصوت: مغلق';}
 function say(s){if(state.lang==='en'){const pairs=[['ابدأ لعبة جديدة. لا تُكشف أوراق الأرض للخصم.','Start a new game. Ground cards stay hidden.'],['بدأت المرحلة ','Stage '],['. دور اللاعب الأول: اختر ورقة من يدك ثم العبها مقلوبة.','. Player 1: choose a card and play it face down.'],['اللاعب الأول','Player 1'],['اللاعب الثاني','Player 2'],['الكمبيوتر','Computer'],[' حقق المطلوب! الرقم ',' matched the target! Number '],[' صحيح، وأخذ كل ورق الأرض. المطلوب الآن ',' matched and collected the ground pile. Next target: '],[' لعب ورقة مقلوبة ولم يحقق الرقم ',' played a card face down without matching '],['. بقي الورق مقلوبًا على الأرض.','. The cards remain face down on the ground.'],['انتهت الأوراق! تعادل: ','Deck exhausted! Tie: '],[' ورقة لكل لاعب.',' cards each.'],['انتهت الأوراق! الفائز ','Deck exhausted! Winner: '],[' ورقة مقابل ',' cards versus '],['تم اختيار العربية.','English selected.'],['تم تغيير مظهر ظهر الورق.','Card back theme changed.'],['تم تغيير لون أرض اللعب.','Table color changed.'],['أُضيفت ٥ عملات تجريبية لمتجر المظاهر.','Five test coins were added to the theme shop.']];for(const [ar,en] of pairs)s=s.split(ar).join(en)}$('message').textContent=s}
 function beep(){if(!state.sound)return;try{let c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=620;g.gain.value=.04;o.start();o.stop(c.currentTime+.09)}catch(e){}}
@@ -102,12 +102,14 @@ function playCard(p,idx,automatic=false){if(!state.started||state.ended||p!==sta
 let c=state.hands[p].splice(idx,1)[0];state.pile.push(c);state.lastPlayer=p;state.playedCount++;let val=rankValue(c),matched=val===state.target;
 if(matched){state.scores[p].push(...state.pile);state.pile=[];state.lastWinner=p;let won=state.target;state.target=state.target===10?1:state.target+1;state.coins+=2;beep();say((p===0?'اللاعب الأول':state.mode==='cpu'?'الكمبيوتر':'اللاعب الثاني')+' حقق المطلوب! الرقم '+num(won)+' صحيح، وأخذ كل ورق الأرض. المطلوب الآن '+num(state.target)+'.');}
 else{say((p===0?'اللاعب الأول':state.mode==='cpu'?'الكمبيوتر':'اللاعب الثاني')+' لعب ورقة مقلوبة ولم يحقق الرقم '+num(state.target)+'. بقي الورق مقلوبًا على الأرض.');}
-refill(p);state.selected=-1;
+refill(p);state.selected=-1;save();
 if(!state.deck.length&&!state.hands[0].length&&!state.hands[1].length){endGame();return}
-state.turn=1-p;render();
+state.turn=1-p;
+if(!state.deck.length&&state.hands[state.turn].length===0&&state.hands[p].length>0)state.turn=p;
+render();
 if(state.mode==='cpu'&&state.turn===1&&!state.ended){$('play').disabled=true;setTimeout(()=>computerTurn(),650)}
 }
-function computerTurn(){if(state.ended||state.turn!==1||state.mode!=='cpu')return;let h=state.hands[1];if(!h.length){refill(1);if(!h.length){state.turn=0;render();return}}
+function computerTurn(){if(state.ended||state.turn!==1||state.mode!=='cpu')return;let h=state.hands[1];if(!h.length){refill(1);if(!h.length){if(!state.deck.length&&!state.hands[0].length){endGame();return}state.turn=0;render();return}}
 let match=h.findIndex(c=>rankValue(c)===state.target);let idx=match>=0?match:Math.floor(Math.random()*h.length);playCard(1,idx,true)}
 function endGame(){if(state.pile.length){let winner=state.lastWinner>=0?state.lastWinner:state.lastPlayer;state.scores[winner].push(...state.pile);state.pile=[]}
 state.ended=true;state.started=false;let a=state.scores[0].length,b=state.scores[1].length;state.coins+=Math.max(0,Math.floor(Math.abs(a-b)/5));save();render();$('play').disabled=true;$('again').classList.remove('hidden');if(a===b)say('انتهت الأوراق! تعادل: '+num(a)+' ورقة لكل لاعب.');else say('انتهت الأوراق! الفائز '+(a>b?'اللاعب الأول':state.mode==='cpu'?'الكمبيوتر':'اللاعب الثاني')+' بعدد '+num(Math.max(a,b))+' ورقة مقابل '+num(Math.min(a,b))+'.');$('next').classList.remove('hidden')}
@@ -118,7 +120,7 @@ function applyLanguage(){const en=state.lang==='en';document.documentElement.lan
 $('again').onclick=begin;$('next').onclick=()=>{state.stage=Math.max(1,Number(state.stage||1)+1);$('stage').value=String(state.stage);save();begin()};
 $('theme').onclick=()=>{state.back=(state.back+1)%3;render();say('تم تغيير مظهر ظهر الورق.');save()};
 $('table').onclick=()=>{state.table=(state.table+1)%3;let colors=['#0a3a32','#26365b','#563527'];$('ground').style.background=colors[state.table];say('تم تغيير لون أرض اللعب.');save()};
-$('help').onclick=()=>{state.coins+=5;save();render();say('أُضيفت ٥ عملات تجريبية لمتجر المظاهر.')};
+$('help').onclick=()=>{if(state.rewardStage>=state.stage){say('استلمت مكافأة هذه المرحلة من قبل.');return}state.rewardStage=state.stage;state.coins+=5;save();render();say('أُضيفت ٥ عملات مكافأة المرحلة '+num(state.stage)+'.')};
 $('mode').onchange=()=>{state.mode=$('mode').value;$('p1name').textContent=state.mode==='cpu'?'🤖 الكمبيوتر':'👤 اللاعب الثاني';if(state.started)begin()};
 load();applyLanguage();render();
 })();
