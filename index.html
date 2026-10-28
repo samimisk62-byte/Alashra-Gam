@@ -743,6 +743,10 @@ button.blue{background:#1f83a7;color:#fff}
 #game .playerHandZone #hand .card{flex-basis:clamp(30px,8vw,48px)!important;width:clamp(30px,8vw,48px)!important;min-width:0!important;height:65px!important}
 #game .playerHandZone #handTitle{font-size:12px!important;text-align:center!important;line-height:1.35!important}
 @media(max-width:430px){#game .playerHands{gap:6px!important}#game .playerHandZone{padding:5px!important}#game .playerHandBack{width:19px!important;height:31px!important;flex-basis:19px!important;font-size:11px!important}#game .playerHandZone #hand .card{height:55px!important}}
+
+#sixQuickTools button[data-six-action="computer"]{background:#236a9b;color:#fff}
+#sixQuickTools button[data-six-action="account"]{background:#6b4da0;color:#fff}
+#sixQuickTools button[data-six-action="share"]{background:#18865b;color:#fff}
 </style>
 </head>
 
@@ -754,6 +758,9 @@ button.blue{background:#1f83a7;color:#fff}
 <button type="button" data-six-action="rules">📖 القواعد</button>
 <button type="button" data-six-action="shop">🏪 المتجر</button>
 <button type="button" data-six-action="stages">🃏 المراحل</button>
+<button type="button" data-six-action="computer">🤖 ضد الكمبيوتر</button>
+<button type="button" data-six-action="account">🔐 الحساب</button>
+<button type="button" data-six-action="share">📱 مشاركة</button>
 <button type="button" data-six-action="home">⌂ البداية</button>
 </nav>
 
@@ -2747,6 +2754,29 @@ document.addEventListener("click",function(e){
  }
 });
 
+</script>
+
+<script>
+(function(){
+ const bar=document.getElementById('sixQuickTools'); if(!bar)return;
+ bar.addEventListener('click',async function(e){
+  const b=e.target.closest('button[data-six-action]'); if(!b)return;
+  const action=b.dataset.sixAction;
+  if(action==='computer'){
+   const mode=document.getElementById('mode'),count=document.getElementById('count');
+   if(mode){mode.value='computer';mode.dispatchEvent(new Event('change',{bubbles:true}));}
+   if(count){count.value='1';count.dispatchEvent(new Event('change',{bubbles:true}));}
+   const start=document.getElementById('start');
+   if(start && !start.classList.contains('show')){document.querySelectorAll('.page').forEach(p=>p.classList.remove('show'));start.classList.add('show');}
+   alert('تم اختيار لاعب ضد الكمبيوتر. اضغط «بداية اللعبة» لبدء اللعب.');
+  } else if(action==='account'){
+   window.open('https://samimisk62-byte.github.io/samy_gams/','_blank','noopener');
+  } else if(action==='share'){
+   const data={title:'لعبة الـ٦ ورقات',text:'جرّب لعبة الـ٦ ورقات!',url:'https://samimisk62-byte.github.io/Alashra-Gam/index.html'};
+   try{if(navigator.share){await navigator.share(data);}else if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(data.url);alert('تم نسخ رابط اللعبة. يمكنك لصقه في واتساب أو أي تطبيق تواصل.');}else{prompt('انسخ رابط اللعبة وشاركه:',data.url);}}catch(err){if(err&&err.name!=='AbortError')prompt('انسخ رابط اللعبة وشاركه:',data.url);}
+  }
+ });
+})();
 </script>
 </body>
 </html>
