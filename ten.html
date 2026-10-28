@@ -300,6 +300,7 @@ button.card:not(:disabled):hover{transform:translateY(-7px) rotateX(4deg) rotate
 const $=id=>document.getElementById(id),key='alashra_ten_progress_v1';
 let threeScene=null,threeCamera=null,threeRenderer=null,threeGroup=null,threeResizeObserver=null,threeDeck=null,threeBackTexture=null;
 function init3DTable(){
+  return false; // رجوع إلى الترابيزة المسطحة القديمة
   const ground=$('ground');
   if(threeRenderer){if(!ground.contains(threeRenderer.domElement))ground.appendChild(threeRenderer.domElement);return true;}
   if(!window.THREE)return false;
