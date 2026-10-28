@@ -87,7 +87,7 @@ function rankValue(c){return c.rank==='A'?1:/^\d+$/.test(c.rank)?Number(c.rank):
 function begin(){state.mode=$('mode').value;state.stage=Number($('stage').value);state.deck=makeDeck();state.hands=[[],[]];state.scores=[[],[]];state.pile=[];state.target=1;state.turn=0;state.lastWinner=-1;state.lastPlayer=0;state.selected=-1;state.started=true;state.ended=false;state.playedCount=0;
 for(let i=0;i<5;i++){for(let p=0;p<2;p++)state.hands[p].push(state.deck.pop())}
 $('next').classList.add('hidden');$('again').classList.add('hidden');$('play').disabled=false; say('بدأت المرحلة '+num(state.stage)+'. دور اللاعب الأول: اختر ورقة من يدك ثم العبها مقلوبة.');render();if(state.mode==='cpu')$('p1name').textContent='🤖 الكمبيوتر';else $('p1name').textContent='👤 اللاعب الثاني';}
-function refill(p){while(state.hands[p].length<5&&state.deck.length)state.hands[p].push(state.deck.pop())}
+function refill(p){if(state.hands[p].length===0&&state.deck.length){while(state.hands[p].length<5&&state.deck.length)state.hands[p].push(state.deck.pop())}}
 function render(){ $('target').textContent=num(state.target);$('deckCount').textContent=num(state.deck.length);$('coins').textContent=num(state.coins);
 for(let p=0;p<2;p++){ $('p'+p+'score').textContent=num(state.scores[p].length);$('p'+p+'count').textContent=num(state.hands[p].length);$('p'+p).classList.toggle('active',state.started&&!state.ended&&state.turn===p);
 let h=$('hand'+p);h.innerHTML='';let canSee=state.mode==='local'?state.turn===p:p===0;
