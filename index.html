@@ -731,6 +731,18 @@ button.blue{background:#1f83a7;color:#fff}
 #game .log{height:75px!important;padding:8px!important}
 @media(max-width:430px){body{padding-top:95px!important}#sixQuickTools{gap:4px!important;padding:5px!important}#sixQuickTools button{padding:7px 8px!important;font-size:12px!important}#game .players{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;padding:7px!important}#game .table{padding:8px!important;min-height:0!important}#game .pile{width:60px!important;height:80px!important}#game .card{min-width:39px!important;width:39px!important;height:57px!important;font-size:15px!important}#game .controls{gap:6px!important;padding:7px!important}}
 
+
+/* تخطيط مناطق اللاعبين والترابيزة مثل لعبة العشرة */
+#game .playerHands{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;margin:10px 0!important;align-items:stretch!important}
+#game .playerHandZone{min-width:0!important;background:linear-gradient(160deg,#173d4b,#102a35)!important;border:2px solid #4d7880!important;border-radius:12px!important;padding:8px!important;box-sizing:border-box!important;overflow:hidden!important}
+#game .playerHandZone.activeZone{border-color:#ffd36a!important;box-shadow:0 0 0 1px #ffd36a55!important}
+#game .playerHandHeading{font-weight:bold!important;color:#fff1c2!important;font-size:14px!important;text-align:center!important;margin:0 0 5px!important}
+#game .playerHandBacks{display:flex!important;justify-content:center!important;gap:4px!important;flex-wrap:wrap!important;min-height:52px!important;align-items:center!important}
+#game .playerHandBack{width:24px!important;height:38px!important;flex:0 0 24px!important;border:1px solid #fff!important;border-radius:5px!important;background:repeating-linear-gradient(45deg,#17358e 0 5px,#f4eee1 5px 7px,#b22238 7px 12px)!important;color:white!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:14px!important}
+#game .playerHandZone #hand{justify-content:center!important;min-height:0!important;padding:6px 0 12px!important;gap:4px!important}
+#game .playerHandZone #hand .card{flex-basis:clamp(30px,8vw,48px)!important;width:clamp(30px,8vw,48px)!important;min-width:0!important;height:65px!important}
+#game .playerHandZone #handTitle{font-size:12px!important;text-align:center!important;line-height:1.35!important}
+@media(max-width:430px){#game .playerHands{gap:6px!important}#game .playerHandZone{padding:5px!important}#game .playerHandBack{width:19px!important;height:31px!important;flex-basis:19px!important;font-size:11px!important}#game .playerHandZone #hand .card{height:55px!important}}
 </style>
 </head>
 
@@ -834,6 +846,7 @@ button.blue{background:#1f83a7;color:#fff}
 </div>
 
 <div id="players" class="players"></div>
+<div id="playerHands" class="playerHands" aria-label="مناطق أوراق اللاعبين"></div>
 
 <div class="table">
 
@@ -1369,6 +1382,23 @@ function render(){
  });
  const pb=document.getElementById("players");pb.innerHTML="";
  players.forEach((p,i)=>{const d=document.createElement("div");d.className="player"+(i===turn?" turn":"");d.dataset.playerIndex=i;d.innerHTML=(p.computer?"🤖 ":"👤 ")+p.name+"<br>🃏 في اليد: "+p.hand.length+" | 🏆 جمع: "+p.won;pb.appendChild(d);});
+ const playerHands=document.getElementById("playerHands");
+ if(playerHands){
+  playerHands.innerHTML="";
+  players.forEach((p,i)=>{
+   const zone=document.createElement("section");zone.className="playerHandZone"+(i===turn?" activeZone":"");
+   const heading=document.createElement("div");heading.className="playerHandHeading";heading.textContent=(p.computer?"🤖 ":"👤 ")+p.name+(i===turn?" — أوراق الدور الحالي":" — أوراق مخفية");
+   zone.appendChild(heading);
+   if(i===turn){
+    zone.appendChild(title);zone.appendChild(hand);
+   }else{
+    const backs=document.createElement("div");backs.className="playerHandBacks";
+    for(let n=0;n<p.hand.length;n++){const back=document.createElement("span");back.className="playerHandBack";back.textContent="🂠";backs.appendChild(back);}
+    zone.appendChild(backs);
+   }
+   playerHands.appendChild(zone);
+  });
+ }
  hand.innerHTML="";
  hand.style.setProperty("display","flex","important");hand.style.setProperty("visibility","visible","important");hand.style.setProperty("opacity","1","important");hand.style.setProperty("min-height","120px","important");hand.style.setProperty("width","100%","important");hand.style.setProperty("overflow-x","auto","important");hand.style.setProperty("overflow-y","visible","important");hand.style.setProperty("gap","7px","important");hand.style.setProperty("padding","12px 4px 18px","important");
  if(players[turn].computer){
