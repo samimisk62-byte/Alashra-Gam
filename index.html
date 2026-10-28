@@ -642,10 +642,48 @@ button.red{background:#a94444!important;color:#fff!important;box-shadow:0 4px 0 
  .player{min-width:100px!important}
 }
 
+
+/* واجهة موحّدة مستوحاة من لعبة العشرة — دون تغيير منطق لعبة الست */
+:root{color-scheme:dark}
+body{font-family:Arial,Tahoma,sans-serif;background:radial-gradient(circle at top,#23465a,#0b1722 70%);padding-top:58px;color:#fff}
+.page{padding:12px 10px;align-items:flex-start}
+.box{max-width:900px;margin:0 auto;background:#142a38;border:1px solid #315466;border-radius:16px;padding:12px;box-shadow:0 6px 20px #0005}
+h1{font-size:25px;color:#ffd978;margin:4px 0 14px}
+.box>p{color:#c6d9e5}
+input,select,button{border:0;border-radius:12px;padding:11px 13px;font-size:15px;font-weight:bold}
+button{background:#1f83a7;color:#fff;box-shadow:0 3px 0 #075d8b}
+button.dark{background:#435565;color:#fff}
+button.red{background:#a94444;color:#fff}
+button.blue{background:#1f83a7;color:#fff}
+.top{background:#0d1d28;border:1px solid #315466;border-radius:14px;flex-wrap:wrap}
+.target,.round{background:#0e202b;color:#ffe09a;border:1px solid #456273;border-radius:12px}
+.players{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow:visible}
+.player{min-width:0;background:#0e202b;border:1px solid #355364;border-radius:12px;padding:10px;color:#fff}
+.player.turn{background:#263d4b;color:#fff;border:2px solid #ffd978;box-shadow:0 0 12px #ffd97855}
+.table{min-height:240px;background:#0d1d28;border:1px solid #315466;border-radius:16px;padding:12px;margin:10px 0}
+.message{min-height:42px;padding:10px;background:#091923;border-radius:10px;line-height:1.6}
+.hand{justify-content:center;flex-wrap:wrap;background:#0d1d28;border-radius:12px}
+.log,.recordBox{background:#0d1d28;border:1px solid #315466;border-radius:14px}
+.controls{grid-template-columns:repeat(2,minmax(0,1fr))}
+#sixQuickTools{position:fixed;top:7px;left:7px;right:7px;z-index:5000;display:flex;gap:5px;justify-content:center;flex-wrap:wrap;padding:6px;background:#071521ee;border:1px solid #ffffff44;border-radius:13px;box-shadow:0 4px 15px #0008}
+#sixQuickTools button{width:auto;min-width:65px;margin:0;padding:8px 10px;font-size:13px;border-radius:9px}
+.stageBox{background:#142a38}
+@media(max-width:430px){body{padding-top:96px}.page{padding:7px}.box{padding:9px}.players{grid-template-columns:repeat(2,minmax(0,1fr))}h1{font-size:21px}#sixQuickTools{gap:4px;padding:5px}#sixQuickTools button{min-width:0;padding:7px 8px;font-size:12px}.table{min-height:210px;padding:8px}}
+
 </style>
 </head>
 
 <body>
+
+<!-- شريط أدوات سريع بتصميم متناسق مع لعبة العشرة -->
+<nav id="sixQuickTools" aria-label="أدوات لعبة الست">
+<button type="button" data-six-action="music">🎵 الصوت</button>
+<button type="button" data-six-action="rules">📖 القواعد</button>
+<button type="button" data-six-action="shop">🏪 المتجر</button>
+<button type="button" data-six-action="stages">🃏 المراحل</button>
+<button type="button" data-six-action="home">⌂ البداية</button>
+</nav>
+
 
 <!-- البداية -->
 <div id="start" class="page show">
@@ -2593,6 +2631,31 @@ function init(){
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
 })();
+</script>
+<script>
+
+/* ربط أدوات الشريط بالأزرار الأصلية حتى لا تكون عناصر شكلية */
+document.addEventListener("click",function(e){
+ var b=e.target.closest&&e.target.closest("[data-six-action]");
+ if(!b)return;
+ var action=b.getAttribute("data-six-action");
+ var ids={music:["musicBtn","musicStart"],rules:["rulesBtn"],shop:["shopBtn"],stages:["exitStageBtn","stageExit"],home:["newBtn"]};
+ if(action==="home"){
+   var start=document.getElementById("start");
+   if(start){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("show")});start.classList.add("show");}
+   return;
+ }
+ var list=ids[action]||[];
+ for(var i=0;i<list.length;i++){
+  var el=document.getElementById(list[i]);
+  if(el&&!el.disabled&&el.offsetParent!==null){el.click();return;}
+ }
+ if(action==="stages"){
+  var st=document.getElementById("stages");
+  if(st){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("show")});st.classList.add("show");}
+ }
+});
+
 </script>
 </body>
 </html>
