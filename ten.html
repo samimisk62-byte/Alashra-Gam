@@ -282,6 +282,65 @@ button.card:not(:disabled):hover{transform:translateY(-7px) rotateX(4deg) rotate
 .hand .card{animation:cardDeal3d .28s ease-out both}
 @media(prefers-reduced-motion:reduce){.hand .card{animation:none}}
 
+
+/* إصلاح نهائي لوضوح ورق اليد على الهاتف */
+.hand{gap:7px!important;align-items:center}
+.hand .card.faceCard{
+  box-sizing:border-box!important;
+  flex:0 0 46px!important;
+  width:46px!important;height:66px!important;
+  min-width:46px!important;
+  margin:0!important;padding:0!important;
+  border:1px solid #d8cdb7!important;
+  border-radius:7px!important;
+  overflow:hidden!important;
+  position:relative!important;
+  display:block!important;
+  line-height:normal!important;
+  text-align:center!important;
+  background:#fff!important;
+  color:#172b3a!important;
+  font-family:Arial,sans-serif!important;
+}
+.hand .card.faceCard.redSuit{color:#c62839!important;background:#fff!important}
+.hand .card.faceCard.blackSuit{color:#172b3a!important;background:#fff!important}
+.hand .card.faceCard .cardCorner{
+  position:absolute!important;top:3px!important;left:3px!important;
+  right:auto!important;bottom:auto!important;
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:flex-start!important;
+  gap:1px!important;padding:0!important;margin:0!important;
+  min-width:12px!important;background:transparent!important;
+  color:inherit!important;font-size:12px!important;font-weight:900!important;
+  line-height:1!important;opacity:1!important;visibility:visible!important;
+  transform:none!important;box-shadow:none!important;text-shadow:none!important;
+}
+.hand .card.faceCard .cardCorner small{
+  display:block!important;margin:1px 0 0!important;padding:0!important;
+  font-family:Arial,sans-serif!important;font-size:10px!important;
+  font-weight:900!important;line-height:1!important;
+  color:inherit!important;opacity:1!important;visibility:visible!important;
+}
+.hand .card.faceCard .cardCorner.bottom{
+  top:auto!important;left:auto!important;right:3px!important;bottom:3px!important;
+  transform:rotate(180deg)!important;
+}
+.hand .card.faceCard .cardPip{
+  position:absolute!important;inset:0!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  margin:0!important;padding:0!important;background:transparent!important;
+  color:inherit!important;font-size:25px!important;font-weight:700!important;
+  line-height:1!important;text-shadow:none!important;pointer-events:none!important;
+}
+.hand .card.faceCard.chosen{transform:translateY(-4px)!important}
+@media(max-width:380px){
+ .hand{gap:5px!important}
+ .hand .card.faceCard{flex-basis:43px!important;width:43px!important;min-width:43px!important;height:62px!important}
+ .hand .card.faceCard .cardCorner{font-size:11px!important;top:3px!important;left:3px!important}
+ .hand .card.faceCard .cardCorner small{font-size:9px!important}
+ .hand .card.faceCard .cardPip{font-size:23px!important}
+ .hand .card.faceCard .cardCorner.bottom{right:3px!important;bottom:3px!important}
+}
 </style>
 </head>
 <body>
