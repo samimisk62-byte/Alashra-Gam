@@ -71,6 +71,29 @@ body{padding-top:54px}
 
 
 
+
+/* عمق ولمعة ثلاثية الأبعاد للأزرار واللوحات مع الحفاظ على مواقعها */
+button,select,.stageCard,.settingCard,.player,.stat,.modal,.panel{
+  transform-style:preserve-3d;
+}
+button,select{
+  border:1px solid #b8f1ff;
+  box-shadow:0 4px 0 #075d8b,0 7px 13px #001c2b40,inset 0 1px 0 #ffffffb8;
+  transition:transform .14s ease,box-shadow .14s ease,filter .14s ease;
+}
+button:hover:not(:disabled),select:hover{
+  filter:brightness(1.1) saturate(1.08);
+  transform:translateY(-2px) perspective(240px) rotateX(2deg);
+  box-shadow:0 6px 0 #075d8b,0 11px 18px #001c2b44,inset 0 1px 0 #fff;
+}
+button:active:not(:disabled){
+  transform:translateY(2px) scale(.985);
+  box-shadow:0 1px 0 #075d8b,0 2px 4px #001c2b33,inset 0 2px 5px #002b4422;
+}
+button.gold{box-shadow:0 4px 0 #c57a12,0 7px 13px #0003,inset 0 1px 0 #fffbdc}
+button.green{box-shadow:0 4px 0 #16964a,0 7px 13px #0003,inset 0 1px 0 #ffffffbb}
+button.red{box-shadow:0 4px 0 #c94a48,0 7px 13px #0003,inset 0 1px 0 #ffffffbb}
+
 /* مشهد كوتشينة WebGL ثلاثي الأبعاد حقيقي داخل نفس مساحة الترابيزة */
 #ground.threeActive{position:relative;display:block;height:clamp(170px,38vw,255px);min-height:170px;padding:0;border:7px solid #8e6038;overflow:hidden;background:#0d6248!important;isolation:isolate}
 #ground.threeActive:before{z-index:3;pointer-events:none}
@@ -300,13 +323,19 @@ function init3DTable(){
     felt.rotation.x=-Math.PI/2;felt.position.y=-.035;felt.receiveShadow=true;scene.add(felt);
     const railMat=new T.MeshStandardMaterial({color:'#b7864e',roughness:.38,metalness:.18});
     [[0,.05,-3.12,11,.12,.12],[0,.05,3.12,11,.12,.12],[-5.43,.05,0,.12,.12,6.1],[5.43,.05,0,.12,.12,6.1]].forEach(a=>{const m=new T.Mesh(new T.BoxGeometry(a[3],a[4],a[5]),railMat);m.position.set(a[0],a[1],a[2]);m.castShadow=true;scene.add(m)});
-    const backCanvas=document.createElement('canvas');backCanvas.width=128;backCanvas.height=180;
-    const bx=backCanvas.getContext('2d');bx.fillStyle='#123d64';bx.fillRect(0,0,128,180);bx.strokeStyle='#f2d58a';bx.lineWidth=4;bx.strokeRect(6,6,116,168);bx.lineWidth=1.5;bx.strokeRect(12,12,104,156);
-    for(let y=18;y<166;y+=12)for(let x=18;x<112;x+=12){bx.save();bx.translate(x,y);bx.rotate(Math.PI/4);bx.strokeRect(-3,-3,6,6);bx.restore()}
-    const backTex=new T.CanvasTexture(backCanvas);backTex.anisotropy=2;
-    const frontMat=new T.MeshStandardMaterial({color:'#fff8e7',roughness:.7});
-    const backMat=new T.MeshStandardMaterial({map:backTex,roughness:.65});
-    const sideMat=new T.MeshStandardMaterial({color:'#d9c89f',roughness:.8});
+    const backCanvas=document.createElement('canvas');backCanvas.width=256;backCanvas.height=360;
+    const bx=backCanvas.getContext('2d');
+    const grad=bx.createLinearGradient(0,0,256,360);grad.addColorStop(0,'#164b91');grad.addColorStop(.48,'#0878a9');grad.addColorStop(1,'#172e69');bx.fillStyle=grad;bx.fillRect(0,0,256,360);
+    bx.fillStyle='#0a2c5d';bx.fillRect(10,10,236,340);
+    bx.strokeStyle='#ffe4a0';bx.lineWidth=7;bx.strokeRect(12,12,232,336);bx.lineWidth=2;bx.strokeRect(21,21,214,318);
+    bx.save();bx.translate(128,180);
+    for(let ring=0;ring<5;ring++){bx.beginPath();bx.ellipse(0,0,30+ring*19,48+ring*31,0,0,Math.PI*2);bx.strokeStyle=ring%2?'#5ce5ef':'#ffd66e';bx.lineWidth=ring%2?2:3;bx.stroke()}
+    for(let y=-140;y<=140;y+=20)for(let x=-90;x<=90;x+=20){bx.save();bx.translate(x,y);bx.rotate(Math.PI/4);bx.strokeStyle=(Math.abs(x+y)%3)?'#f9e5a8':'#73f1f4';bx.lineWidth=2;bx.strokeRect(-5,-5,10,10);bx.restore()}
+    bx.fillStyle='#fff0b6';bx.beginPath();bx.arc(0,0,27,0,Math.PI*2);bx.fill();bx.fillStyle='#123a71';bx.font='bold 27px Georgia';bx.textAlign='center';bx.textBaseline='middle';bx.fillText('10',0,1);bx.restore();
+    const backTex=new T.CanvasTexture(backCanvas);backTex.anisotropy=4;backTex.colorSpace=T.SRGBColorSpace;
+    const backMat=new T.MeshStandardMaterial({map:backTex,roughness:.5,metalness:.08});
+    const sideMat=new T.MeshStandardMaterial({color:'#f0dfb8',roughness:.72,metalness:.02});
+    const frontMat=new T.MeshStandardMaterial({color:'#174c86',roughness:.65});
     const group=new T.Group();scene.add(group);
     const deck=new T.Group();scene.add(deck);
     for(let i=0;i<8;i++){const mesh=new T.Mesh(new T.BoxGeometry(.88,.025,1.25),[sideMat,sideMat,backMat,frontMat,sideMat,sideMat]);mesh.position.set(3.75,.03+i*.026,-1.25);mesh.rotation.y=-.12;mesh.castShadow=true;mesh.receiveShadow=true;deck.add(mesh)}
@@ -321,20 +350,30 @@ function init3DTable(){
 function render3DTable(pile,backStyle,tableStyle){
   if(!init3DTable())return;
   try{
-    const T=window.THREE;
-    const colors=['#0d6248','#304e80','#70432f'];
+    const T=window.THREE,colors=['#0d6248','#304e80','#70432f'];
     const felt=threeScene.children.find(o=>o.isMesh&&o.geometry&&o.geometry.type==='PlaneGeometry');
     if(felt){felt.material.color.set(colors[tableStyle%3]);felt.material.needsUpdate=true}
-    while(threeGroup.children.length) {const old=threeGroup.children.pop();old.geometry.dispose();if(Array.isArray(old.material))old.material.forEach(m=>m.dispose());else old.material.dispose()}
-    const count=Math.min(pile.length,18);
-    const sideMat=new T.MeshStandardMaterial({color:'#d7c69b',roughness:.8});
-    const frontMat=new T.MeshStandardMaterial({color:'#fff8e8',roughness:.72});
-    const backMat=new T.MeshStandardMaterial({map:threeBackTexture,roughness:.65,color:backStyle===1?'#c4f0ff':backStyle===2?'#ffd5e4':'#ffffff'});
-    for(let i=0;i<count;i++){
-      const mesh=new T.Mesh(new T.BoxGeometry(.91,.035,1.3),[sideMat,sideMat,backMat,frontMat,sideMat,sideMat]);
-      const angle=((i*37)%31-15)*Math.PI/180;
-      mesh.position.set(Math.sin(i*2.1)*.95,.015+i*.002,Math.cos(i*1.7)*.68);
-      mesh.rotation.set(0,angle,0);mesh.castShadow=true;mesh.receiveShadow=true;threeGroup.add(mesh);
+    while(threeGroup.children.length){const old=threeGroup.children[0];threeGroup.remove(old);old.traverse?.(o=>{if(o.geometry)o.geometry.dispose();if(o.material&&!Array.isArray(o.material))o.material.dispose()})}
+    const sideMat=new T.MeshStandardMaterial({color:'#f0dfb8',roughness:.72});
+    const backMat=new T.MeshStandardMaterial({map:threeBackTexture,roughness:.5,metalness:.05,color:backStyle===1?'#c5f3ff':backStyle===2?'#ffd9ed':'#ffffff'});
+    function makeBackCard(x,z,angle,y,scale=1){
+      const card=new T.Group();
+      const body=new T.Mesh(new T.BoxGeometry(.91*scale,.035,1.3*scale),[sideMat,sideMat,backMat,backMat,sideMat,sideMat]);
+      body.position.y=.0175;body.castShadow=true;body.receiveShadow=true;card.add(body);
+      const top=new T.Mesh(new T.PlaneGeometry(.875*scale,1.265*scale),backMat);
+      top.rotation.x=-Math.PI/2;top.position.y=.036;top.castShadow=false;card.add(top);
+      card.position.set(x,y,z);card.rotation.y=angle;threeGroup.add(card);return card;
+    }
+    // A clearly visible, ornate card back stays in the middle even before the first play.
+    if(!pile.length){
+      for(let i=0;i<3;i++)makeBackCard(.03+i*.035,-.04-i*.035,(i-1)*.025,.008+i*.006,.92);
+      makeBackCard(-.02,0,-.035,.035,1.08);
+    }else{
+      const count=Math.min(pile.length,18);
+      for(let i=0;i<count;i++){
+        const angle=((i*37)%31-15)*Math.PI/180;
+        makeBackCard(Math.sin(i*2.1)*.95,Math.cos(i*1.7)*.68,angle,.006+i*.004,1);
+      }
     }
     threeRenderer.render(threeScene,threeCamera);
   }catch(e){console.warn('3D table render failed',e)}
@@ -350,7 +389,7 @@ function load(){try{Object.assign(state,JSON.parse(localStorage.getItem(key)||'{
 function say(s){$('message').textContent=s}
 let sfxContext=null,noiseBuffer=null;
 function tone(freq=620,duration=.09,type='sine',volume=.035,force=false){if(!force&&!state.sound)return;try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;sfxContext=sfxContext||new AC();if(sfxContext.state==='suspended')sfxContext.resume();const o=sfxContext.createOscillator(),g=sfxContext.createGain();o.type=type;o.frequency.setValueAtTime(freq,sfxContext.currentTime);g.gain.setValueAtTime(.0001,sfxContext.currentTime);g.gain.exponentialRampToValueAtTime(Math.max(.0001,Math.min(.8,volume)),sfxContext.currentTime+.008);g.gain.exponentialRampToValueAtTime(.0001,sfxContext.currentTime+duration);o.connect(g);g.connect(sfxContext.destination);o.start();o.stop(sfxContext.currentTime+duration+.02)}catch(e){}}
-function paperFlick(kind='play'){if(!state.cardSound)return;try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;sfxContext=sfxContext||new AC();const c=sfxContext;if(c.state==='suspended')c.resume();const now=c.currentTime,duration=kind==='shuffle'?.24:kind==='deal'?.105:.14; if(!noiseBuffer){noiseBuffer=c.createBuffer(1,Math.ceil(c.sampleRate*.5),c.sampleRate);const d=noiseBuffer.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(.75+Math.random()*.25)}const src=c.createBufferSource();src.buffer=noiseBuffer;const filter=c.createBiquadFilter();filter.type='bandpass';filter.frequency.setValueAtTime(kind==='shuffle'?1700:kind==='deal'?2300:1250,now);filter.Q.value=.65;const gain=c.createGain();const peak=kind==='shuffle'?.62:kind==='deal'?.52:.68;gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(peak,now+.009);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);src.connect(filter);filter.connect(gain);gain.connect(c.destination);src.start(now);src.stop(now+duration);if(kind==='play'){setTimeout(()=>tone(175,.045,'triangle',.13,true),24);setTimeout(()=>{if(state.cardSound)tone(310,.028,'sine',.07,true)},48)}}catch(e){}}
+function paperFlick(kind='play'){if(!state.cardSound)return;try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;sfxContext=sfxContext||new AC();const c=sfxContext;if(c.state==='suspended')c.resume();const now=c.currentTime,duration=kind==='shuffle'?.24:kind==='deal'?.105:.14; if(!noiseBuffer){noiseBuffer=c.createBuffer(1,Math.ceil(c.sampleRate*.5),c.sampleRate);const d=noiseBuffer.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(.75+Math.random()*.25)}const src=c.createBufferSource();src.buffer=noiseBuffer;const filter=c.createBiquadFilter();filter.type='bandpass';filter.frequency.setValueAtTime(kind==='shuffle'?1700:kind==='deal'?2300:1250,now);filter.Q.value=.65;const gain=c.createGain();const pan=c.createStereoPanner?c.createStereoPanner():null;const peak=kind==='shuffle'?.62:kind==='deal'?.72:.78;gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(peak,now+.009);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);src.connect(filter);filter.connect(gain);if(pan){pan.pan.setValueAtTime(kind==='shuffle'?0:(Math.random()*.8-.4),now);gain.connect(pan);pan.connect(c.destination)}else gain.connect(c.destination);src.start(now);src.stop(now+duration);if(kind==='play'){setTimeout(()=>tone(175,.045,'triangle',.13,true),24);setTimeout(()=>{if(state.cardSound)tone(310,.028,'sine',.07,true)},48)}}catch(e){}}
 function beep(){tone(740,.14,'sine',.045);setTimeout(()=>tone(990,.16,'sine',.035),90)}
 function cardSound(){paperFlick('play')}
 function selectSound(){paperFlick('deal')}
