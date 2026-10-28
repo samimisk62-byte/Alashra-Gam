@@ -95,12 +95,9 @@ button.green{box-shadow:0 4px 0 #16964a,0 7px 13px #0003,inset 0 1px 0 #ffffffbb
 button.red{box-shadow:0 4px 0 #c94a48,0 7px 13px #0003,inset 0 1px 0 #ffffffbb}
 
 
-/* إصلاح وضوح الأرقام والرموز على ورق اللاعبين */
-.card.faceCard{color:#172b3a!important;background:linear-gradient(145deg,#fffefb,#fff5df 60%,#ead9b5)!important;border:2px solid #fff9e9!important;box-shadow:0 4px 0 #b6a37e,0 7px 11px #0006,inset 0 0 0 1px #d7c7a0!important}
-.card.faceCard.redSuit{color:#c51f39!important}
-.card.faceCard.blackSuit{color:#14283b!important}
-.card.faceCard .cardCorner{color:inherit!important;opacity:1!important;visibility:visible!important}
-.card.faceCard .cardPip{color:inherit!important;opacity:1!important;visibility:visible!important}
+/* Keep ranks and suits readable on cards in the player's hand */
+.card .cardCorner{z-index:4;background:#fffdf0e8;border-radius:4px;padding:2px 2px 3px;min-width:13px;text-shadow:none;box-shadow:0 1px 2px #0002}
+.card .cardPip{z-index:1}
 
 /* مشهد كوتشينة WebGL ثلاثي الأبعاد حقيقي داخل نفس مساحة الترابيزة */
 #ground.threeActive{position:relative;display:block;height:clamp(170px,38vw,255px);min-height:170px;padding:0;border:7px solid #8e6038;overflow:hidden;background:#0d6248!important;isolation:isolate}
@@ -157,9 +154,9 @@ button.red{box-shadow:0 4px 0 #c94a48,0 7px 13px #0003,inset 0 1px 0 #ffffffbb}
 .card.faceCard{display:block;position:relative;padding:0;text-align:center;font-family:Georgia,serif;overflow:hidden}
 .card.faceCard.redSuit{color:#c62839;background:linear-gradient(145deg,#fffefb,#fff1e8 62%,#f4dfd4)}
 .card.faceCard.blackSuit{color:#172b3a}
-.card .cardCorner{position:absolute;z-index:4;top:3px;left:4px;display:flex;flex-direction:column;align-items:center;line-height:.95;font-size:13px;font-weight:900;background:#fffdf0e8;border-radius:4px;padding:2px 2px 3px;min-width:13px;text-shadow:none;box-shadow:0 1px 2px #0002}
+.card .cardCorner{position:absolute;top:3px;left:4px;display:flex;flex-direction:column;align-items:center;line-height:.9;font-size:11px;font-weight:900}
 .card .cardCorner.bottom{top:auto;left:auto;right:4px;bottom:3px;transform:rotate(180deg)}
-.card .cardPip{position:absolute;z-index:1;inset:0;display:flex;align-items:center;justify-content:center;font-size:27px;font-weight:700;text-shadow:0 1px 0 #fff9}
+.card .cardPip{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:700;text-shadow:0 1px 0 #fff9}
 .card .cardCorner small{font-size:10px;margin-top:2px}
 @media(max-width:430px){.card .cardCorner{font-size:9px;top:3px;left:3px}.card .cardCorner small{font-size:8px}.card .cardPip{font-size:20px}.card .cardCorner.bottom{right:3px;bottom:3px}}
 @keyframes groundWinPulse{0%{box-shadow:inset 0 8px 18px #0005,0 0 0 0 #ffe17a00}35%{box-shadow:inset 0 8px 18px #0005,0 0 0 5px #ffe17a99,0 0 24px #ffe17a88}100%{box-shadow:inset 0 8px 18px #0005,0 0 0 0 #ffe17a00}}
