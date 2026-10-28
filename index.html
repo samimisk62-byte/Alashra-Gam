@@ -504,6 +504,100 @@ html body .skiptranslate iframe{visibility:hidden!important}
 #universalLanguageButton:focus-visible,#universalSettingsButton:focus-visible{outline:3px solid #ffd166;outline-offset:3px}
 @media(max-width:500px){#universalLanguageButton{width:49px;height:49px;left:9px;bottom:10px}}
 
+
+/* توحيد تصميم لعبة الست ورقات مع لعبة العشرة: طاولة مسطحة وورق كلاسيكي */
+:root{--six-felt:#126044;--six-felt-dark:#083c2d;--six-gold:#d7ad55}
+body{
+ background:radial-gradient(circle at top,#23465a,#0b1722 70%)!important;
+ perspective:none!important;
+ color:#fff!important;
+}
+.page .box{
+ background:#142a38ee!important;
+ border:1px solid #315466!important;
+ border-radius:16px!important;
+ box-shadow:0 6px 20px #0004!important;
+}
+h1{color:#ffd978!important}
+button,select{
+ border-radius:12px!important;
+ box-shadow:none!important;
+ border:1px solid #ffffff24!important;
+ font-weight:700!important;
+}
+button:active{transform:scale(.98)}
+/* سطح اللعب نفسه يبقى مسطحًا */
+.table{
+ min-height:285px!important;
+ background:linear-gradient(145deg,var(--six-felt),var(--six-felt-dark))!important;
+ border:3px solid #d7ad55!important;
+ border-radius:16px!important;
+ box-shadow:inset 0 0 0 2px #ffffff18!important;
+ perspective:none!important;
+ transform:none!important;
+ overflow:visible!important;
+}
+.table::before,.table::after{display:none!important;content:none!important}
+.pile{
+ width:54px!important;height:76px!important;
+ border:2px solid #f7d8a0!important;border-radius:7px!important;
+ background-color:#b51f2a!important;
+ background-image:repeating-linear-gradient(45deg,transparent 0 4px,#ffffff26 4px 6px),linear-gradient(135deg,#c92b36,#8f101c)!important;
+ box-shadow:inset 0 0 0 2px #f7d8a0,0 3px 8px #0005!important;
+ margin:8px auto!important;font-size:27px!important;
+}
+.tableSpread{
+ perspective:none!important;
+ gap:5px!important;
+ padding:8px 4px!important;
+}
+.tableCard{
+ width:43px!important;height:65px!important;min-width:43px!important;
+ flex:0 0 43px!important;margin:0!important;
+ border:1px solid #d8cdb7!important;border-radius:7px!important;
+ background:#fff!important;color:#172b3a!important;
+ box-shadow:0 2px 4px #0004!important;
+ transform:rotate(var(--tilt,0deg))!important;
+ animation:tableCardDeal .25s ease-out both!important;
+}
+.tableCard.red{background:#fff!important;color:#c62839!important}
+.tableCard span{font-family:Arial,sans-serif!important;font-weight:900!important}
+.hand{
+ gap:6px!important;min-height:100px!important;padding:10px 3px 14px!important;
+ perspective:none!important;
+}
+.hand .card{
+ box-sizing:border-box!important;
+ flex:0 0 46px!important;width:46px!important;min-width:46px!important;
+ height:66px!important;padding:0!important;margin:0!important;
+ border:1px solid #d8cdb7!important;border-radius:7px!important;
+ background:#fff!important;color:#172b3a!important;
+ box-shadow:0 2px 4px #0004!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ font-family:Arial,sans-serif!important;font-size:20px!important;font-weight:900!important;
+ transform:none!important;perspective:none!important;
+}
+.hand .card.red{color:#c62839!important}
+.hand .card.faceDown,.hand .card:not(.red):not(.faceUp){
+ background-color:#b51f2a!important;
+ background-image:repeating-linear-gradient(45deg,transparent 0 4px,#ffffff26 4px 6px),linear-gradient(135deg,#c92b36,#8f101c)!important;
+ color:#fff!important;border:2px solid #f7d8a0!important;
+}
+.hand .card.selectedCard{outline:3px solid #ffd978!important;transform:translateY(-5px)!important}
+.players .player{border:1px solid #315466!important;border-radius:10px!important}
+.players .player.turn{background:#ffd978!important;color:#172b3a!important}
+.log{background:#081a24!important;border:1px solid #315466!important;border-radius:10px!important}
+.controls{gap:8px!important}
+@media(max-width:430px){
+ .page{padding:8px!important}
+ .page .box{padding:10px!important;border-radius:14px!important}
+ .table{min-height:245px!important;padding:8px 4px!important}
+ .tableSpread{gap:4px!important}
+ .tableCard{width:38px!important;height:58px!important;min-width:38px!important;flex-basis:38px!important}
+ .hand{gap:4px!important;min-height:88px!important}
+ .hand .card{width:40px!important;min-width:40px!important;flex-basis:40px!important;height:60px!important;font-size:18px!important}
+ .pile{width:46px!important;height:66px!important}
+}
 </style>
 </head>
 
