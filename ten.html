@@ -95,6 +95,28 @@ button.green{box-shadow:0 4px 0 #16964a,0 7px 13px #0003,inset 0 1px 0 #ffffffbb
 button.red{box-shadow:0 4px 0 #c94a48,0 7px 13px #0003,inset 0 1px 0 #ffffffbb}
 
 
+/* ورق كوتشينة عادي: وجه أبيض واضح، أحمر للقلوب والماس وأسود للبستوني والكلوب */
+.card.faceCard{
+  background:#fff!important;
+  border:1px solid #d6d6d6!important;
+  border-radius:7px!important;
+  color:#111!important;
+  box-shadow:0 2px 4px #0003,inset 0 0 0 1px #ffffff!important;
+  text-shadow:none!important;
+}
+.card.faceCard.redSuit{background:#fff!important;color:#d71920!important}
+.card.faceCard.blackSuit{background:#fff!important;color:#111!important}
+.card.faceCard .cardCorner{background:transparent!important;color:inherit!important;box-shadow:none!important}
+.card.faceCard .cardPip{color:inherit!important;text-shadow:none!important}
+.card.back{
+  background-color:#b51f2a!important;
+  background-image:repeating-linear-gradient(45deg,transparent 0 4px,#ffffff26 4px 6px),linear-gradient(135deg,#c92b36,#8f101c)!important;
+  border:2px solid #fff!important;
+  box-shadow:0 2px 4px #0004,inset 0 0 0 2px #f7d8a0!important;
+  color:#fff!important;
+}
+.card.back:before{border:1px solid #f7d8a0!important;background:repeating-linear-gradient(-45deg,transparent 0 5px,#ffffff25 5px 7px)!important}
+
 /* Keep ranks and suits readable on cards in the player's hand */
 .card .cardCorner{z-index:4;background:#fffdf0e8;border-radius:4px;padding:2px 2px 3px;min-width:13px;text-shadow:none;box-shadow:0 1px 2px #0002}
 .card .cardPip{z-index:1}
