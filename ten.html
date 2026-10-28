@@ -94,6 +94,14 @@ button.gold{box-shadow:0 4px 0 #c57a12,0 7px 13px #0003,inset 0 1px 0 #fffbdc}
 button.green{box-shadow:0 4px 0 #16964a,0 7px 13px #0003,inset 0 1px 0 #ffffffbb}
 button.red{box-shadow:0 4px 0 #c94a48,0 7px 13px #0003,inset 0 1px 0 #ffffffbb}
 
+
+/* إصلاح وضوح الأرقام والرموز على ورق اللاعبين */
+.card.faceCard{color:#172b3a!important;background:linear-gradient(145deg,#fffefb,#fff5df 60%,#ead9b5)!important;border:2px solid #fff9e9!important;box-shadow:0 4px 0 #b6a37e,0 7px 11px #0006,inset 0 0 0 1px #d7c7a0!important}
+.card.faceCard.redSuit{color:#c51f39!important}
+.card.faceCard.blackSuit{color:#14283b!important}
+.card.faceCard .cardCorner{color:inherit!important;opacity:1!important;visibility:visible!important}
+.card.faceCard .cardPip{color:inherit!important;opacity:1!important;visibility:visible!important}
+
 /* مشهد كوتشينة WebGL ثلاثي الأبعاد حقيقي داخل نفس مساحة الترابيزة */
 #ground.threeActive{position:relative;display:block;height:clamp(170px,38vw,255px);min-height:170px;padding:0;border:7px solid #8e6038;overflow:hidden;background:#0d6248!important;isolation:isolate}
 #ground.threeActive:before{z-index:3;pointer-events:none}
@@ -149,9 +157,9 @@ button.red{box-shadow:0 4px 0 #c94a48,0 7px 13px #0003,inset 0 1px 0 #ffffffbb}
 .card.faceCard{display:block;position:relative;padding:0;text-align:center;font-family:Georgia,serif;overflow:hidden}
 .card.faceCard.redSuit{color:#c62839;background:linear-gradient(145deg,#fffefb,#fff1e8 62%,#f4dfd4)}
 .card.faceCard.blackSuit{color:#172b3a}
-.card .cardCorner{position:absolute;top:3px;left:4px;display:flex;flex-direction:column;align-items:center;line-height:.9;font-size:11px;font-weight:900}
+.card .cardCorner{position:absolute;z-index:4;top:3px;left:4px;display:flex;flex-direction:column;align-items:center;line-height:.95;font-size:13px;font-weight:900;background:#fffdf0e8;border-radius:4px;padding:2px 2px 3px;min-width:13px;text-shadow:none;box-shadow:0 1px 2px #0002}
 .card .cardCorner.bottom{top:auto;left:auto;right:4px;bottom:3px;transform:rotate(180deg)}
-.card .cardPip{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:25px;font-weight:700;text-shadow:0 1px 0 #fff9}
+.card .cardPip{position:absolute;z-index:1;inset:0;display:flex;align-items:center;justify-content:center;font-size:27px;font-weight:700;text-shadow:0 1px 0 #fff9}
 .card .cardCorner small{font-size:10px;margin-top:2px}
 @media(max-width:430px){.card .cardCorner{font-size:9px;top:3px;left:3px}.card .cardCorner small{font-size:8px}.card .cardPip{font-size:20px}.card .cardCorner.bottom{right:3px;bottom:3px}}
 @keyframes groundWinPulse{0%{box-shadow:inset 0 8px 18px #0005,0 0 0 0 #ffe17a00}35%{box-shadow:inset 0 8px 18px #0005,0 0 0 5px #ffe17a99,0 0 24px #ffe17a88}100%{box-shadow:inset 0 8px 18px #0005,0 0 0 0 #ffe17a00}}
@@ -308,8 +316,8 @@ function init3DTable(){
     renderer.domElement.className='ten3dCanvas';
     ground.appendChild(renderer.domElement);
     const scene=new T.Scene();scene.background=new T.Color('#0c4637');
-    const camera=new T.PerspectiveCamera(37,ground.clientWidth/Math.max(ground.clientHeight,150),.1,100);
-    camera.position.set(0,7.8,8.6);camera.lookAt(0,0,0);
+    const camera=new T.PerspectiveCamera(34,ground.clientWidth/Math.max(ground.clientHeight,150),.1,100);
+    camera.position.set(0,6.6,7.6);camera.lookAt(0,0,0);
     scene.add(new T.HemisphereLight(0xe8f6ff,0x163c2a,2.0));
     const keyLight=new T.DirectionalLight(0xffe7bd,2.4);keyLight.position.set(-3,8,4);keyLight.castShadow=true;keyLight.shadow.mapSize.set(512,512);scene.add(keyLight);
     const fillLight=new T.DirectionalLight(0x8bdfff,.7);fillLight.position.set(4,4,-4);scene.add(fillLight);
@@ -358,21 +366,21 @@ function render3DTable(pile,backStyle,tableStyle){
     const backMat=new T.MeshStandardMaterial({map:threeBackTexture,roughness:.5,metalness:.05,color:backStyle===1?'#c5f3ff':backStyle===2?'#ffd9ed':'#ffffff'});
     function makeBackCard(x,z,angle,y,scale=1){
       const card=new T.Group();
-      const body=new T.Mesh(new T.BoxGeometry(.91*scale,.035,1.3*scale),[sideMat,sideMat,backMat,backMat,sideMat,sideMat]);
-      body.position.y=.0175;body.castShadow=true;body.receiveShadow=true;card.add(body);
-      const top=new T.Mesh(new T.PlaneGeometry(.875*scale,1.265*scale),backMat);
-      top.rotation.x=-Math.PI/2;top.position.y=.036;top.castShadow=false;card.add(top);
+      const body=new T.Mesh(new T.BoxGeometry(1.12*scale,.045,1.58*scale),[sideMat,sideMat,backMat,backMat,sideMat,sideMat]);
+      body.position.y=.0225;body.castShadow=true;body.receiveShadow=true;card.add(body);
+      const top=new T.Mesh(new T.PlaneGeometry(1.085*scale,1.545*scale),backMat);
+      top.rotation.x=-Math.PI/2;top.position.y=.046;top.castShadow=false;card.add(top);
       card.position.set(x,y,z);card.rotation.y=angle;threeGroup.add(card);return card;
     }
     // A clearly visible, ornate card back stays in the middle even before the first play.
     if(!pile.length){
-      for(let i=0;i<3;i++)makeBackCard(.03+i*.035,-.04-i*.035,(i-1)*.025,.008+i*.006,.92);
-      makeBackCard(-.02,0,-.035,.035,1.08);
+      for(let i=0;i<3;i++)makeBackCard(.10+i*.045,-.12-i*.045,(i-1)*.035,.008+i*.009,.98);
+      makeBackCard(-.02,0,-.035,.045,1.18);
     }else{
       const count=Math.min(pile.length,18);
       for(let i=0;i<count;i++){
         const angle=((i*37)%31-15)*Math.PI/180;
-        makeBackCard(Math.sin(i*2.1)*.95,Math.cos(i*1.7)*.68,angle,.006+i*.004,1);
+        makeBackCard(Math.sin(i*2.1)*.85,Math.cos(i*1.7)*.62,angle,.006+i*.004,1.02);
       }
     }
     threeRenderer.render(threeScene,threeCamera);
