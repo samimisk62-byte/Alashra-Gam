@@ -316,8 +316,8 @@ function init3DTable(){
     renderer.domElement.className='ten3dCanvas';
     ground.appendChild(renderer.domElement);
     const scene=new T.Scene();scene.background=new T.Color('#0c4637');
-    const camera=new T.PerspectiveCamera(34,ground.clientWidth/Math.max(ground.clientHeight,150),.1,100);
-    camera.position.set(0,6.6,7.6);camera.lookAt(0,0,0);
+    const camera=new T.PerspectiveCamera(37,ground.clientWidth/Math.max(ground.clientHeight,150),.1,100);
+    camera.position.set(0,7.8,8.6);camera.lookAt(0,0,0);
     scene.add(new T.HemisphereLight(0xe8f6ff,0x163c2a,2.0));
     const keyLight=new T.DirectionalLight(0xffe7bd,2.4);keyLight.position.set(-3,8,4);keyLight.castShadow=true;keyLight.shadow.mapSize.set(512,512);scene.add(keyLight);
     const fillLight=new T.DirectionalLight(0x8bdfff,.7);fillLight.position.set(4,4,-4);scene.add(fillLight);
@@ -366,21 +366,21 @@ function render3DTable(pile,backStyle,tableStyle){
     const backMat=new T.MeshStandardMaterial({map:threeBackTexture,roughness:.5,metalness:.05,color:backStyle===1?'#c5f3ff':backStyle===2?'#ffd9ed':'#ffffff'});
     function makeBackCard(x,z,angle,y,scale=1){
       const card=new T.Group();
-      const body=new T.Mesh(new T.BoxGeometry(1.12*scale,.045,1.58*scale),[sideMat,sideMat,backMat,backMat,sideMat,sideMat]);
-      body.position.y=.0225;body.castShadow=true;body.receiveShadow=true;card.add(body);
-      const top=new T.Mesh(new T.PlaneGeometry(1.085*scale,1.545*scale),backMat);
-      top.rotation.x=-Math.PI/2;top.position.y=.046;top.castShadow=false;card.add(top);
+      const body=new T.Mesh(new T.BoxGeometry(.91*scale,.035,1.3*scale),[sideMat,sideMat,backMat,backMat,sideMat,sideMat]);
+      body.position.y=.0175;body.castShadow=true;body.receiveShadow=true;card.add(body);
+      const top=new T.Mesh(new T.PlaneGeometry(.875*scale,1.265*scale),backMat);
+      top.rotation.x=-Math.PI/2;top.position.y=.036;top.castShadow=false;card.add(top);
       card.position.set(x,y,z);card.rotation.y=angle;threeGroup.add(card);return card;
     }
     // A clearly visible, ornate card back stays in the middle even before the first play.
     if(!pile.length){
-      for(let i=0;i<3;i++)makeBackCard(.10+i*.045,-.12-i*.045,(i-1)*.035,.008+i*.009,.98);
-      makeBackCard(-.02,0,-.035,.045,1.18);
+      for(let i=0;i<3;i++)makeBackCard(.03+i*.035,-.04-i*.035,(i-1)*.025,.008+i*.006,.92);
+      makeBackCard(-.02,0,-.035,.035,1.08);
     }else{
       const count=Math.min(pile.length,18);
       for(let i=0;i<count;i++){
         const angle=((i*37)%31-15)*Math.PI/180;
-        makeBackCard(Math.sin(i*2.1)*.85,Math.cos(i*1.7)*.62,angle,.006+i*.004,1.02);
+        makeBackCard(Math.sin(i*2.1)*.95,Math.cos(i*1.7)*.68,angle,.006+i*.004,1);
       }
     }
     threeRenderer.render(threeScene,threeCamera);
