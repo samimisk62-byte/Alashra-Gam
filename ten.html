@@ -272,10 +272,11 @@ button.card:not(:disabled):hover{transform:translateY(-7px) rotateX(4deg) rotate
 const $=id=>document.getElementById(id),key='alashra_ten_progress_v1';
 let threeScene=null,threeCamera=null,threeRenderer=null,threeGroup=null,threeResizeObserver=null,threeDeck=null,threeBackTexture=null;
 function init3DTable(){
-  if(threeRenderer)return true;
+  const ground=$('ground');
+  if(threeRenderer){if(!ground.contains(threeRenderer.domElement))ground.appendChild(threeRenderer.domElement);return true;}
   if(!window.THREE)return false;
   try{
-    const T=window.THREE,ground=$('ground');
+    const T=window.THREE;
     const renderer=new T.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
     renderer.setSize(Math.max(ground.clientWidth,280),Math.max(ground.clientHeight,150),false);
