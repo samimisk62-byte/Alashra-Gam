@@ -557,6 +557,91 @@ input{max-width:100%}
  button,select{font-size:13px!important;padding:9px 7px!important}
  .players .player{min-width:100px!important}
 }
+
+/* === توحيد واجهة لعبة الست ورقات بصرياً مع لعبة العشرة === */
+:root{color-scheme:dark}
+*{-webkit-tap-highlight-color:transparent}
+body{
+ background:radial-gradient(circle at top,#23465a,#0b1722 70%)!important;
+ color:#fff!important;font-family:Arial,Tahoma,sans-serif!important;
+}
+.page{padding:12px!important;align-items:flex-start!important}
+.page.show{display:flex!important}
+#game.page.show{padding-top:12px!important}
+.box{
+ background:#142a38!important;border:1px solid #315466!important;
+ border-radius:16px!important;padding:12px!important;margin:10px auto!important;
+ box-shadow:0 6px 20px #0004!important;max-width:900px!important;width:100%!important;
+}
+h1{color:#ffd978!important;font-size:25px!important;margin:4px 0 12px!important}
+label{color:#e5eef3}
+input,select{
+ background:#0d1d28!important;color:#fff!important;border:1px solid #456273!important;
+ border-radius:10px!important;
+}
+button,select{
+ border:1px solid #b8f1ff!important;border-radius:12px!important;
+ padding:11px 13px!important;font-size:15px!important;font-weight:bold!important;
+ background:#1f83a7!important;color:#fff!important;cursor:pointer;
+ box-shadow:0 4px 0 #075d8b,0 7px 13px #001c2b40,inset 0 1px 0 #ffffffb8!important;
+ transition:transform .14s ease,filter .14s ease!important;
+}
+button:active{transform:translateY(2px) scale(.985)!important}
+button.dark,button.blue{background:#435565!important;color:#fff!important;box-shadow:0 4px 0 #263846,0 7px 13px #0003!important}
+button.red{background:#a94444!important;color:#fff!important;box-shadow:0 4px 0 #702d2d,0 7px 13px #0003!important}
+#shopBtn,button:not(.dark):not(.blue):not(.red){ }
+#startBtn,#nextStageBtn{background:#bd8a27!important;color:#17120a!important;box-shadow:0 4px 0 #8b621b,0 7px 13px #0003!important}
+.players{display:flex!important;gap:8px!important;overflow-x:auto!important;margin:9px 0!important}
+.player{
+ background:#0e202b!important;border:1px solid #355364!important;border-radius:12px!important;
+ padding:10px!important;text-align:center!important;color:#fff!important;
+ box-shadow:0 5px 0 #07121a,0 8px 14px #0003!important;
+}
+.player.turn,.player.active{
+ background:linear-gradient(145deg,#214d60,#102d3a)!important;color:#fff!important;
+ border:2px solid #ffd978!important;box-shadow:0 0 12px #ffd97855,0 5px 0 #8d651e!important;
+}
+.top{
+ background:#08121b!important;border:1px solid #315466!important;border-bottom:2px solid #d7ad55!important;
+ border-radius:13px!important;padding:10px!important;flex-wrap:wrap!important;
+}
+.target{background:#bd8a27!important;color:#17120a!important;border-radius:12px!important}
+.round{background:#435565!important;color:#fff!important;border-radius:12px!important}
+#game .table{
+ position:relative!important;isolation:isolate!important;overflow:visible!important;
+ border:7px solid #8e6038!important;border-radius:18px!important;
+ background-color:#0a3a32!important;
+ background-image:radial-gradient(ellipse at 50% 45%,#ffffff12 0%,transparent 68%),repeating-linear-gradient(3deg,#ffffff05 0px,#ffffff05 1px,transparent 1px,transparent 4px),repeating-linear-gradient(93deg,#001b1710 0px,#001b1710 1px,transparent 1px,transparent 5px)!important;
+ box-shadow:inset 0 0 0 2px #e9c38a,inset 0 8px 22px #0005,0 5px 0 #50331f,0 11px 20px #0005!important;
+ border-radius:18px!important;padding:18px 12px!important;min-height:112px!important;
+}
+#game .table:before{content:"";position:absolute;inset:6px;border:1px solid #e8d1a277;border-radius:9px;pointer-events:none;z-index:-1}
+#game .message{
+ min-height:42px!important;padding:10px!important;background:#091923!important;
+ border-radius:10px!important;line-height:1.6!important;text-align:center!important;color:#fff!important;
+}
+#game .pile{border-color:#e4c77b!important;background:repeating-linear-gradient(45deg,#163c59 0 5px,#163c59 5px 10px,#275b7b 10px 15px)!important;box-shadow:0 5px 0 #50331f,0 11px 20px #0005!important}
+.card,.fly,.tableCard{
+ border:2px solid #e3d8bb!important;background:#f7f0dc!important;color:#1a2831!important;
+ border-radius:8px!important;box-shadow:0 3px 6px #0005!important;
+}
+.card.red,.tableCard.red{color:#a94444!important}
+#game .log{background:#091923!important;border:1px solid #315466!important;border-radius:10px!important;color:#c0d3dc!important}
+.controls{gap:8px!important}
+.recordBox{background:#0d1d28!important;border:1px solid #315466!important;border-radius:12px!important}
+.recordTitle{color:#ffe09a!important}
+.shopPanel{background:#142a38!important;border:2px solid #d7ad55!important}
+.shopItem{background:#0d1d28!important;border:1px solid #456273!important}
+.small{color:#c0d3dc!important}
+@media(max-width:430px){
+ .page{padding:7px!important}
+ .box{padding:9px!important}
+ h1{font-size:21px!important}
+ #game .table{padding:12px 6px!important}
+ button,select{font-size:13px!important;padding:9px 7px!important}
+ .player{min-width:100px!important}
+}
+
 </style>
 </head>
 
