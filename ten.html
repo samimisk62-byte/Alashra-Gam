@@ -67,6 +67,56 @@ body.reduceMotion *,body.reduceMotion *:before,body.reduceMotion *:after{animati
 body{padding-top:54px}
 @media(max-width:430px){body{padding-top:92px}#quickTools{right:6px;left:6px;justify-content:center;gap:4px;padding:5px}#quickTools button,#quickTools select{padding:7px 8px;font-size:12px;min-width:34px}#quickTools select{max-width:86px}}
 
+
+/* ألوان أزرار مشرقة وممتعة مع الحفاظ على أماكنها وتصميم اللعبة */
+button,select{
+  background:linear-gradient(145deg,#55d8ff 0%,#168fda 55%,#0875b8 100%);
+  color:#062a40;
+  border:1px solid #a8efff;
+  box-shadow:0 4px 0 #075d8b,0 6px 12px #0003,inset 0 1px 0 #ffffffa8;
+  text-shadow:0 1px 0 #ffffff55;
+  transition:transform .16s ease,filter .16s ease,box-shadow .16s ease;
+}
+button:hover:not(:disabled),select:hover{
+  filter:brightness(1.12) saturate(1.08);
+  transform:translateY(-2px);
+  box-shadow:0 6px 0 #075d8b,0 9px 15px #0004,inset 0 1px 0 #ffffffbb;
+}
+button:active:not(:disabled){
+  transform:translateY(2px) scale(.985);
+  box-shadow:0 1px 0 #075d8b,0 2px 5px #0003,inset 0 1px 3px #0002;
+}
+button:disabled{filter:saturate(.35);box-shadow:none}
+button.gold{
+  background:linear-gradient(145deg,#fff19a,#ffd044 55%,#ffad24);
+  color:#533000;border:1px solid #fff7c2;
+  box-shadow:0 4px 0 #c57a12,0 7px 13px #0003,inset 0 1px 0 #fffbdc;
+}
+button.gray{
+  background:linear-gradient(145deg,#e9f8ff,#b9e6ff 58%,#8bd4f5);
+  color:#17415b;border:1px solid #ffffff;
+  box-shadow:0 4px 0 #64a9ce,0 6px 12px #0002,inset 0 1px 0 #fff;
+}
+button.green{
+  background:linear-gradient(145deg,#a8ffbf,#54e88c 55%,#22c76b);
+  color:#064526;border:1px solid #d5ffe1;
+  box-shadow:0 4px 0 #16964a,0 6px 12px #0003,inset 0 1px 0 #ffffffbb;
+}
+button.red{
+  background:linear-gradient(145deg,#ffb7a8,#ff8579 55%,#ff665f);
+  color:#641d20;border:1px solid #ffe1d9;
+  box-shadow:0 4px 0 #c94a48,0 6px 12px #0003,inset 0 1px 0 #ffffffbb;
+}
+#quickTools{
+  background:linear-gradient(135deg,#f2fbffef,#cceefff2);
+  border-color:#ffffff;
+  box-shadow:0 5px 18px #0003;
+}
+#quickTools .zoomRead{color:#15435b;font-weight:900}
+#quickTools select{background:linear-gradient(145deg,#e9f8ff,#a9ddfa);color:#17415b}
+.modalActions button{filter:saturate(1.06)}
+button.card{background:linear-gradient(135deg,#fffef7 0%,#f7edcf 52%,#e7d6ad 100%);color:#1a2831}
+
 /* تحسين ملمس الكوتشينة ثلاثي الأبعاد مع الحفاظ على التصميم والألوان الأصلية */
 .hand{perspective:900px;gap:7px}
 .card{position:relative;overflow:hidden;transform-style:preserve-3d;transition:transform .22s ease,box-shadow .22s ease;box-shadow:0 5px 0 #b9ad91,0 8px 13px #0008,inset 0 0 0 1px #fff9;background:linear-gradient(135deg,#fffdf4 0%,#f2e8cf 52%,#e5d8b8 100%);text-shadow:0 1px 0 #fff9}
