@@ -70,6 +70,15 @@ body{padding-top:54px}
 
 
 
+
+/* مشهد كوتشينة WebGL ثلاثي الأبعاد حقيقي داخل نفس مساحة الترابيزة */
+#ground.threeActive{position:relative;display:block;height:clamp(170px,38vw,255px);min-height:170px;padding:0;border:7px solid #8e6038;overflow:hidden;background:#0d6248!important;isolation:isolate}
+#ground.threeActive:before{z-index:3;pointer-events:none}
+#ground.threeActive:after{z-index:2;pointer-events:none}
+#ground.threeActive .slot,#ground.threeActive>.small{display:none!important}
+#ground .ten3dCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1;outline:none}
+@media(max-width:430px){#ground.threeActive{height:190px;min-height:190px;border-width:5px}}
+
 /* ترابيزة كوتشينة أكثر واقعية — نفس المكان واللون الأساسي */
 #ground{
   position:relative;isolation:isolate;overflow:hidden;
@@ -257,9 +266,79 @@ button.card:not(:disabled):hover{transform:translateY(-7px) rotateX(4deg) rotate
 <div class="modalShade" id="dataModal"><div class="modalCard"><div class="modalHead"><h2>💾 البيانات والحساب</h2><button class="xBtn" data-close="dataModal">×</button></div>
 <div class="panel"><b>👤 حساب المنصة</b><p class="small">تسجيل الدخول والبريد وكلمة المرور من حساب منصة ألعابي، ولا نغيّر إعدادات الدخول من هنا.</p><div class="modalActions"><button id="platformAccount" class="green">🔐 فتح حساب المنصة</button></div></div>
 <div class="panel"><b>📊 بيانات لعبة العشرة المحفوظة على هذا الجهاز</b><div id="dataSummary" class="small"></div><div class="modalActions"><button id="exportData" class="green">📤 عرض نسخة احتياطية</button><button id="importData" class="gray">📥 استعادة نسخة</button><button id="resetData" class="red">🗑️ مسح تقدم اللعبة</button></div><textarea id="dataText" placeholder="تظهر هنا النسخة الاحتياطية. الصق نسخة محفوظة هنا لاستعادتها."></textarea></div></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (()=>{
 const $=id=>document.getElementById(id),key='alashra_ten_progress_v1';
+let threeScene=null,threeCamera=null,threeRenderer=null,threeGroup=null,threeResizeObserver=null,threeDeck=null,threeBackTexture=null;
+function init3DTable(){
+  if(threeRenderer)return true;
+  if(!window.THREE)return false;
+  try{
+    const T=window.THREE,ground=$('ground');
+    const renderer=new T.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
+    renderer.setSize(Math.max(ground.clientWidth,280),Math.max(ground.clientHeight,150),false);
+    renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+    renderer.outputEncoding=T.sRGBEncoding;
+    renderer.domElement.className='ten3dCanvas';
+    ground.appendChild(renderer.domElement);
+    const scene=new T.Scene();scene.background=new T.Color('#0c4637');
+    const camera=new T.PerspectiveCamera(37,ground.clientWidth/Math.max(ground.clientHeight,150),.1,100);
+    camera.position.set(0,7.8,8.6);camera.lookAt(0,0,0);
+    scene.add(new T.HemisphereLight(0xe8f6ff,0x163c2a,2.0));
+    const keyLight=new T.DirectionalLight(0xffe7bd,2.4);keyLight.position.set(-3,8,4);keyLight.castShadow=true;keyLight.shadow.mapSize.set(512,512);scene.add(keyLight);
+    const fillLight=new T.DirectionalLight(0x8bdfff,.7);fillLight.position.set(4,4,-4);scene.add(fillLight);
+    const clothCanvas=document.createElement('canvas');clothCanvas.width=256;clothCanvas.height=256;
+    const cx=clothCanvas.getContext('2d');cx.fillStyle='#0d6248';cx.fillRect(0,0,256,256);
+    for(let i=0;i<4500;i++){cx.fillStyle=i%2?'rgba(255,255,255,.025)':'rgba(0,0,0,.035)';cx.fillRect(Math.random()*256,Math.random()*256,1,2)}
+    const cloth=new T.CanvasTexture(clothCanvas);cloth.wrapS=cloth.wrapT=T.RepeatWrapping;cloth.repeat.set(3,2);
+    const table=new T.Mesh(new T.BoxGeometry(11.2,.35,6.5),new T.MeshStandardMaterial({color:'#704522',roughness:.55}));
+    table.position.y=-.22;table.receiveShadow=true;table.castShadow=true;scene.add(table);
+    const felt=new T.Mesh(new T.PlaneGeometry(10.7,6.0),new T.MeshStandardMaterial({map:cloth,roughness:.96,metalness:0}));
+    felt.rotation.x=-Math.PI/2;felt.position.y=-.035;felt.receiveShadow=true;scene.add(felt);
+    const railMat=new T.MeshStandardMaterial({color:'#b7864e',roughness:.38,metalness:.18});
+    [[0,.05,-3.12,11,.12,.12],[0,.05,3.12,11,.12,.12],[-5.43,.05,0,.12,.12,6.1],[5.43,.05,0,.12,.12,6.1]].forEach(a=>{const m=new T.Mesh(new T.BoxGeometry(a[3],a[4],a[5]),railMat);m.position.set(a[0],a[1],a[2]);m.castShadow=true;scene.add(m)});
+    const backCanvas=document.createElement('canvas');backCanvas.width=128;backCanvas.height=180;
+    const bx=backCanvas.getContext('2d');bx.fillStyle='#123d64';bx.fillRect(0,0,128,180);bx.strokeStyle='#f2d58a';bx.lineWidth=4;bx.strokeRect(6,6,116,168);bx.lineWidth=1.5;bx.strokeRect(12,12,104,156);
+    for(let y=18;y<166;y+=12)for(let x=18;x<112;x+=12){bx.save();bx.translate(x,y);bx.rotate(Math.PI/4);bx.strokeRect(-3,-3,6,6);bx.restore()}
+    const backTex=new T.CanvasTexture(backCanvas);backTex.anisotropy=2;
+    const frontMat=new T.MeshStandardMaterial({color:'#fff8e7',roughness:.7});
+    const backMat=new T.MeshStandardMaterial({map:backTex,roughness:.65});
+    const sideMat=new T.MeshStandardMaterial({color:'#d9c89f',roughness:.8});
+    const group=new T.Group();scene.add(group);
+    const deck=new T.Group();scene.add(deck);
+    for(let i=0;i<8;i++){const mesh=new T.Mesh(new T.BoxGeometry(.88,.025,1.25),[sideMat,sideMat,backMat,frontMat,sideMat,sideMat]);mesh.position.set(3.75,.03+i*.026,-1.25);mesh.rotation.y=-.12;mesh.castShadow=true;mesh.receiveShadow=true;deck.add(mesh)}
+    const soft=new T.Mesh(new T.CircleGeometry(.55,32),new T.MeshBasicMaterial({color:'#061e18',transparent:true,opacity:.28}));soft.rotation.x=-Math.PI/2;soft.position.set(0,-.018,0);soft.scale.set(1.6,1,.75);scene.add(soft);
+    threeScene=scene;threeCamera=camera;threeRenderer=renderer;threeGroup=group;threeDeck=deck;threeBackTexture=backTex;
+    ground.classList.add('threeActive');
+    const resize=()=>{if(!threeRenderer)return;const w=Math.max(ground.clientWidth,280),h=Math.max(ground.clientHeight,150);threeRenderer.setSize(w,h,false);threeCamera.aspect=w/h;threeCamera.updateProjectionMatrix();threeRenderer.render(threeScene,threeCamera)};
+    if(window.ResizeObserver){threeResizeObserver=new ResizeObserver(resize);threeResizeObserver.observe(ground)}else window.addEventListener('resize',resize);
+    return true;
+  }catch(e){console.warn('3D table unavailable; using standard table',e);return false}
+}
+function render3DTable(pile,backStyle,tableStyle){
+  if(!init3DTable())return;
+  try{
+    const T=window.THREE;
+    const colors=['#0d6248','#304e80','#70432f'];
+    const felt=threeScene.children.find(o=>o.isMesh&&o.geometry&&o.geometry.type==='PlaneGeometry');
+    if(felt){felt.material.color.set(colors[tableStyle%3]);felt.material.needsUpdate=true}
+    while(threeGroup.children.length) {const old=threeGroup.children.pop();old.geometry.dispose();if(Array.isArray(old.material))old.material.forEach(m=>m.dispose());else old.material.dispose()}
+    const count=Math.min(pile.length,18);
+    const sideMat=new T.MeshStandardMaterial({color:'#d7c69b',roughness:.8});
+    const frontMat=new T.MeshStandardMaterial({color:'#fff8e8',roughness:.72});
+    const backMat=new T.MeshStandardMaterial({map:threeBackTexture,roughness:.65,color:backStyle===1?'#c4f0ff':backStyle===2?'#ffd5e4':'#ffffff'});
+    for(let i=0;i<count;i++){
+      const mesh=new T.Mesh(new T.BoxGeometry(.91,.035,1.3),[sideMat,sideMat,backMat,frontMat,sideMat,sideMat]);
+      const angle=((i*37)%31-15)*Math.PI/180;
+      mesh.position.set(Math.sin(i*2.1)*.95,.015+i*.002,Math.cos(i*1.7)*.68);
+      mesh.rotation.set(0,angle,0);mesh.castShadow=true;mesh.receiveShadow=true;threeGroup.add(mesh);
+    }
+    threeRenderer.render(threeScene,threeCamera);
+  }catch(e){console.warn('3D table render failed',e)}
+}
+
 let state={deck:[],hands:[],scores:[],names:['اللاعب الأول','اللاعب الثاني','اللاعب الثالث','اللاعب الرابع'],pile:[],target:1,turn:0,lastWinner:-1,lastPlayer:0,selected:-1,started:false,ended:false,stage:1,highestStage:1,coins:100,back:0,table:0,sound:true,cardSound:true,mode:'human',playerCount:2,lang:'ar',rewardStage:0,light:false,bigText:false,reduceMotion:false,music:false,paused:false};
 let stagePageIndex=0;
 const ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'],suits=['♠','♥','♦','♣'];
@@ -285,6 +364,7 @@ function begin(){state.paused=false;$('pauseShade').classList.remove('open');sta
 function refill(p){if(state.hands[p].length===0&&state.deck.length)while(state.hands[p].length<5&&state.deck.length)state.hands[p].push(state.deck.pop())}
 function render(){let colors=['#0a3a32','#26365b','#563527'];$('ground').style.background=colors[state.table%3];$('target').textContent=num(state.target);$('deckCount').textContent=num(state.started||state.ended?state.deck.length:156);$('coins').textContent=num(state.coins);let all=$('players');all.innerHTML='';for(let p=0;p<state.playerCount;p++){let box=document.createElement('div');box.className='player'+(state.started&&!state.ended&&state.turn===p?' active':'');let nm=document.createElement('strong');nm.textContent=(isComputer(p)?'🤖 ':'👤 ')+displayName(p);box.appendChild(nm);let sc=document.createElement('div');sc.className='small';sc.textContent='الأوراق المجموعة: ';let sb=document.createElement('b');sb.textContent=num(state.scores[p]?.length||0);sc.appendChild(sb);box.appendChild(sc);let ct=document.createElement('div');ct.className='small';ct.textContent='في اليد: ';let cb=document.createElement('b');cb.textContent=num(state.hands[p]?.length||0);ct.appendChild(cb);box.appendChild(ct);let hand=document.createElement('div');hand.className='hand';let visible=!isComputer(p)&&state.turn===p;for(let i=0;i<(state.hands[p]||[]).length;i++){if(visible){let b=document.createElement('button');let c=state.hands[p][i];b.className='card faceCard '+('♥♦'.includes(c.suit)?'redSuit':'blackSuit')+(state.selected===i?' chosen':'');b.innerHTML='<span class="cardCorner">'+c.rank+'<small>'+c.suit+'</small></span><span class="cardPip">'+c.suit+'</span><span class="cardCorner bottom">'+c.rank+'<small>'+c.suit+'</small></span>';b.setAttribute('aria-label',c.rank+' '+c.suit);b.disabled=!state.started||state.ended;b.onclick=()=>{state.selected=i;selectSound();render()};hand.appendChild(b)}else{let b=document.createElement('div');b.className='card back';b.style.filter='hue-rotate('+state.back*75+'deg)';b.textContent='◆';hand.appendChild(b)}}box.appendChild(hand);all.appendChild(box)}
 let g=$('ground');g.innerHTML='';if(!state.pile.length)g.innerHTML='<span class="small">الأرض فارغة — أول ورقة ستوضع هنا مقلوبة</span>';else{state.pile.slice(-12).forEach(()=>{let d=document.createElement('div');d.className='slot';let b=document.createElement('div');b.className='card back';b.style.filter='hue-rotate('+state.back*75+'deg)';b.textContent='◆';d.appendChild(b);g.appendChild(d)});if(state.pile.length>12){let d=document.createElement('div');d.className='slot';d.textContent='+'+num(state.pile.length-12);g.appendChild(d)}}
+render3DTable(state.pile,state.back,state.table);
 $('play').disabled=!state.started||state.ended||state.paused||isComputer(state.turn)||state.selected<0||!state.hands[state.turn]?.length;$('play').textContent=state.lang==='en'?'🂠 Play face-down card':'🂠 العب ورقة مقلوبة'}
 function advanceTurn(){if(!state.deck.length&&state.hands.every(h=>!h.length)){endGame();return}let tries=0;do{state.turn=(state.turn+1)%state.playerCount;refill(state.turn);tries++}while(!state.hands[state.turn].length&&tries<=state.playerCount);state.selected=-1;render();if(isComputer(state.turn)&&!state.ended)computerTurnLater()}
 function playCard(p,idx){if(!state.started||state.ended||state.paused||p!==state.turn||idx<0||idx>=state.hands[p].length)return;let c=state.hands[p].splice(idx,1)[0];cardSound();if(navigator.vibrate)try{navigator.vibrate(18)}catch(e){}state.pile.push(c);state.lastPlayer=p;let matched=rankValue(c)===state.target;if(matched){state.scores[p].push(...state.pile);state.pile=[];state.lastWinner=p;let won=state.target;state.target=state.target===10?1:state.target+1;state.coins+=2;beep();const ground=$('ground');ground.classList.remove('winPulse');void ground.offsetWidth;ground.classList.add('winPulse');const scoreBox=$('players').children[p]?.querySelector('.small');if(scoreBox){scoreBox.classList.remove('scorePop');void scoreBox.offsetWidth;scoreBox.classList.add('scorePop')}if(navigator.vibrate)try{navigator.vibrate([35,35,65])}catch(e){}say(displayName(p)+' حقق الرقم '+num(won)+' وأخذ ورق الأرض! الرقم التالي '+num(state.target))}else say(displayName(p)+' لعب ورقة مقلوبة. الرقم المطلوب '+num(state.target));refill(p);state.selected=-1;save();advanceTurn()}
