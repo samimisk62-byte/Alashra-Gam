@@ -747,6 +747,8 @@ button.blue{background:#1f83a7;color:#fff}
 #sixQuickTools button[data-six-action="computer"]{background:#236a9b;color:#fff}
 #sixQuickTools button[data-six-action="account"]{background:#6b4da0;color:#fff}
 #sixQuickTools button[data-six-action="share"]{background:#18865b;color:#fff}
+
+#sixAccountPanel{display:none;position:fixed;inset:0;z-index:2147483002;background:#000b;padding:14px;align-items:center;justify-content:center;direction:rtl;font-family:Arial,sans-serif}#sixAccountPanel.open{display:flex}#sixAccountCard{width:min(100%,460px);max-height:88vh;overflow:auto;background:#172b39;color:#fff;border:2px solid #496b80;border-radius:17px;padding:16px;box-shadow:0 12px 40px #000b}#sixAccountCard h2{margin:0 0 10px}#sixAccountCard p{line-height:1.7;font-size:14px;color:#d6e2e9}#sixSocialLinks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#sixSocialLinks a,#sixAccountCard button{display:block;text-align:center;text-decoration:none;padding:11px 8px;border-radius:10px;background:#176d8e;color:white;font-weight:bold;border:0;font-size:14px}#sixAccountCard .accountMain{background:#684da0}#sixAccountCard .closeAccount{background:#596873;width:100%;margin-top:12px}@media(max-width:430px){#sixQuickTools button{font-size:11px;padding:7px 6px}}
 </style>
 </head>
 
@@ -760,6 +762,7 @@ button.blue{background:#1f83a7;color:#fff}
 <button type="button" data-six-action="stages">🃏 المراحل</button>
 <button type="button" data-six-action="computer">🤖 ضد الكمبيوتر</button>
 <button type="button" data-six-action="account">🔐 الحساب</button>
+<button type="button" data-six-action="settings">⚙️ الضبط</button>
 <button type="button" data-six-action="share">📱 مشاركة</button>
 <button type="button" data-six-action="home">⌂ البداية</button>
 </nav>
@@ -2770,13 +2773,21 @@ document.addEventListener("click",function(e){
    if(start && !start.classList.contains('show')){document.querySelectorAll('.page').forEach(p=>p.classList.remove('show'));start.classList.add('show');}
    alert('تم اختيار لاعب ضد الكمبيوتر. اضغط «بداية اللعبة» لبدء اللعب.');
   } else if(action==='account'){
-   window.open('https://samimisk62-byte.github.io/samy_gams/','_blank','noopener');
+   const panel=document.getElementById('sixAccountPanel');if(panel)panel.classList.add('open');
+  } else if(action==='settings'){
+   const settings=document.getElementById('universalSettingsButton');if(settings)settings.click();
   } else if(action==='share'){
    const data={title:'لعبة الـ٦ ورقات',text:'جرّب لعبة الـ٦ ورقات!',url:'https://samimisk62-byte.github.io/Alashra-Gam/index.html'};
    try{if(navigator.share){await navigator.share(data);}else if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(data.url);alert('تم نسخ رابط اللعبة. يمكنك لصقه في واتساب أو أي تطبيق تواصل.');}else{prompt('انسخ رابط اللعبة وشاركه:',data.url);}}catch(err){if(err&&err.name!=='AbortError')prompt('انسخ رابط اللعبة وشاركه:',data.url);}
   }
  });
 })();
+</script>
+
+<div id="sixAccountPanel" role="dialog" aria-modal="true" aria-labelledby="sixAccountTitle"><div id="sixAccountCard"><h2 id="sixAccountTitle">🔐 حساب المنصة والتواصل</h2><p>البريد الإلكتروني وكلمة المرور وإعادة تعيين كلمة المرور تتم من حساب منصة ألعابي الآمن. لا تكتب كلمة مرورك داخل اللعبة ولا تشاركها مع أحد.</p><a class="accountMain" href="https://samimisk62-byte.github.io/samy_gams/" target="_blank" rel="noopener">🔐 فتح حساب ألعابي (البريد وكلمة المرور)</a><h3>🌐 الإنترنت والتواصل الاجتماعي</h3><div id="sixSocialLinks"><a href="https://www.facebook.com/" target="_blank" rel="noopener">📘 فيسبوك</a><a href="https://web.whatsapp.com/" target="_blank" rel="noopener">🟢 واتساب ويب</a><a href="https://www.instagram.com/" target="_blank" rel="noopener">📸 إنستجرام</a><a href="https://www.youtube.com/" target="_blank" rel="noopener">▶️ يوتيوب</a><a href="https://www.tiktok.com/" target="_blank" rel="noopener">🎵 تيك توك</a><a href="https://web.telegram.org/" target="_blank" rel="noopener">✈️ تيليجرام</a><a href="https://www.google.com/" target="_blank" rel="noopener">🔎 بحث الإنترنت</a></div><button class="closeAccount" type="button" id="sixAccountClose">إغلاق</button></div></div>
+
+<script>
+(function(){const panel=document.getElementById('sixAccountPanel');const close=document.getElementById('sixAccountClose');if(close)close.addEventListener('click',()=>panel&&panel.classList.remove('open'));if(panel)panel.addEventListener('click',e=>{if(e.target===panel)panel.classList.remove('open')});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel)panel.classList.remove('open')});})();
 </script>
 </body>
 </html>
