@@ -749,6 +749,8 @@ button.blue{background:#1f83a7;color:#fff}
 #sixQuickTools button[data-six-action="share"]{background:#18865b;color:#fff}
 
 #sixAccountPanel{display:none;position:fixed;inset:0;z-index:2147483002;background:#000b;padding:14px;align-items:center;justify-content:center;direction:rtl;font-family:Arial,sans-serif}#sixAccountPanel.open{display:flex}#sixAccountCard{width:min(100%,460px);max-height:88vh;overflow:auto;background:#172b39;color:#fff;border:2px solid #496b80;border-radius:17px;padding:16px;box-shadow:0 12px 40px #000b}#sixAccountCard h2{margin:0 0 10px}#sixAccountCard p{line-height:1.7;font-size:14px;color:#d6e2e9}#sixSocialLinks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#sixSocialLinks a,#sixAccountCard button{display:block;text-align:center;text-decoration:none;padding:11px 8px;border-radius:10px;background:#176d8e;color:white;font-weight:bold;border:0;font-size:14px}#sixAccountCard .accountMain{background:#684da0}#sixAccountCard .closeAccount{background:#596873;width:100%;margin-top:12px}@media(max-width:430px){#sixQuickTools button{font-size:11px;padding:7px 6px}}
+
+#sixRoomsPanel{display:none;position:fixed;inset:0;z-index:2147483003;background:#000c;padding:12px;align-items:center;justify-content:center;direction:rtl;font-family:Arial,sans-serif}#sixRoomsPanel.open{display:flex}#sixRoomsCard{width:min(100%,460px);max-height:90vh;overflow:auto;background:#142b39;color:#fff;border:2px solid #3982a0;border-radius:17px;padding:16px;box-shadow:0 12px 40px #000b}#sixRoomsCard h2{margin:0 0 8px}#sixRoomsCard p{line-height:1.65;font-size:13px;color:#d4e2e9}#sixRoomsCard input{box-sizing:border-box;width:100%;padding:12px;margin:6px 0 10px;border-radius:9px;border:1px solid #7894a5;font-size:17px}#sixRoomsCard button{border:0;border-radius:9px;padding:11px 9px;margin:4px 0;background:#187da4;color:white;font-weight:bold;font-size:14px}#sixRoomsCard .roomRow{display:flex;gap:7px;flex-wrap:wrap}#sixRoomsCard .roomRow button{flex:1;min-width:125px}#sixRoomStatus{background:#0b1c26;padding:10px;border-radius:10px;line-height:1.7;margin-top:10px;white-space:pre-line}#sixRoomPlayers{padding-right:20px;line-height:1.9}#sixRoomClose{background:#586975;width:100%}
 </style>
 </head>
 
@@ -761,6 +763,7 @@ button.blue{background:#1f83a7;color:#fff}
 <button type="button" data-six-action="shop">🏪 المتجر</button>
 <button type="button" data-six-action="stages">🃏 المراحل</button>
 <button type="button" data-six-action="computer">🤖 ضد الكمبيوتر</button>
+<button type="button" data-six-action="rooms">🌐 غرف أونلاين</button>
 <button type="button" data-six-action="account">🔐 الحساب</button>
 <button type="button" data-six-action="settings">⚙️ الضبط</button>
 <button type="button" data-six-action="share">📱 مشاركة</button>
@@ -2788,6 +2791,28 @@ document.addEventListener("click",function(e){
 
 <script>
 (function(){const panel=document.getElementById('sixAccountPanel');const close=document.getElementById('sixAccountClose');if(close)close.addEventListener('click',()=>panel&&panel.classList.remove('open'));if(panel)panel.addEventListener('click',e=>{if(e.target===panel)panel.classList.remove('open')});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel)panel.classList.remove('open')});})();
+</script>
+
+<div id="sixRoomsPanel" role="dialog" aria-modal="true" aria-labelledby="sixRoomsTitle"><div id="sixRoomsCard"><h2 id="sixRoomsTitle">🌐 غرف لعبة الـ٦ ورقات</h2><p>العب مع أصحابك من تليفونات مختلفة. كل لاعب يدخل بحساب منصة ألعابي، والغرفة تستوعب من ٢ إلى ٤ لاعبين.</p><label for="sixRoomPlayerName">اسمك داخل اللعبة</label><input id="sixRoomPlayerName" maxlength="24" placeholder="اكتب اسم اللاعب"><div class="roomRow"><button type="button" id="sixCreateRoom">➕ إنشاء غرفة</button></div><hr><label for="sixRoomCodeInput">كود الغرفة (٦ أرقام)</label><input id="sixRoomCodeInput" inputmode="numeric" maxlength="6" placeholder="مثال: 123456"><div class="roomRow"><button type="button" id="sixJoinRoom">🚪 دخول غرفة</button><button type="button" id="sixRefreshRoom">🔄 تحديث اللاعبين</button></div><div id="sixRoomStatus">لم تدخل أي غرفة بعد.</div><ul id="sixRoomPlayers"></ul><div class="roomRow"><button type="button" id="sixLeaveRoom" style="background:#a94444">مغادرة الغرفة</button></div><p>ملاحظة: هذه المرحلة تجهّز إنشاء الغرف والانضمام وعرض اللاعبين. مزامنة أوراق اللعب والأدوار بين الهواتف تحتاج استكمال مرحلة اللعب المباشر قبل بدء مباراة أونلاين.</p><button type="button" id="sixRoomClose">إغلاق</button></div></div>
+
+<script>
+(function(){
+ const panel=document.getElementById('sixRoomsPanel'),$=id=>document.getElementById(id);if(!panel)return;
+ const URL='https://auptwgjiivhglxtdjlnd.supabase.co',KEY='sb_publishable_6dszOZKIdlA57hHf2E3V5Q_VO-ewwtM';let poll=null,roomCode=localStorage.getItem('six_card_current_room')||'';
+ function say(t){$('sixRoomStatus').textContent=t;}
+ function session(){try{return JSON.parse(localStorage.getItem('game_platform_session')||'null')}catch(e){return null}}
+ async function rpc(fn,args){const ss=session();if(!ss||!ss.access_token)throw new Error('سجّل دخولك إلى منصة ألعابي أولاً، ثم ارجع للعبة وافتح الغرف.');const res=await fetch(URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+ss.access_token,'Content-Type':'application/json'},body:JSON.stringify(args)});let data={};try{data=await res.json()}catch(e){}if(!res.ok)throw new Error(data.message||data.msg||data.details||'تعذر الاتصال بالغرفة ('+res.status+')');return data;}
+ function open(){panel.classList.add('open');if(roomCode){$('sixRoomCodeInput').value=roomCode;refresh().catch(e=>say(e.message));}}
+ function stopPoll(){if(poll){clearInterval(poll);poll=null;}}
+ async function refresh(){if(!roomCode)return;const d=await rpc('six_card_room_status',{p_room_code:roomCode});const names=(d.players||[]).map(p=>'اللاعب '+p.seat+': '+p.name+(p.ready?' ✓':'')).join('\n');say('كود الغرفة: '+d.room_code+'\nالحالة: '+(d.status==='waiting'?'في انتظار اللاعبين':d.status==='playing'?'اللعبة بدأت':'انتهت')+'\nعدد اللاعبين: '+(d.players||[]).length+' / 4'+(d.host?'\nأنت صاحب الغرفة':'')+'\nمقعدك: '+d.my_seat);$('sixRoomPlayers').textContent='';(d.players||[]).forEach(p=>{const li=document.createElement('li');li.textContent='👤 '+p.name+' — المقعد '+p.seat;$('sixRoomPlayers').appendChild(li)});}
+ async function enter(fn,args){try{say('جارٍ الاتصال...');const d=await rpc(fn,args);roomCode=d.room_code;localStorage.setItem('six_card_current_room',roomCode);$('sixRoomCodeInput').value=roomCode;await refresh();stopPoll();poll=setInterval(()=>refresh().catch(e=>say(e.message)),4000);}catch(e){say('⚠️ '+e.message);}}
+ $('sixCreateRoom').addEventListener('click',()=>enter('six_card_create_room',{p_player_name:$('sixRoomPlayerName').value.trim()||'لاعب'}));
+ $('sixJoinRoom').addEventListener('click',()=>{roomCode=$('sixRoomCodeInput').value.trim();enter('six_card_join_room',{p_room_code:roomCode,p_player_name:$('sixRoomPlayerName').value.trim()||'لاعب'});});
+ $('sixRefreshRoom').addEventListener('click',()=>refresh().catch(e=>say('⚠️ '+e.message)));
+ $('sixLeaveRoom').addEventListener('click',async()=>{if(!roomCode)return;try{await rpc('six_card_leave_room',{p_room_code:roomCode});roomCode='';localStorage.removeItem('six_card_current_room');stopPoll();$('sixRoomPlayers').textContent='';say('غادرت الغرفة.');}catch(e){say('⚠️ '+e.message);}});
+ $('sixRoomClose').addEventListener('click',()=>panel.classList.remove('open'));panel.addEventListener('click',e=>{if(e.target===panel)panel.classList.remove('open')});document.addEventListener('keydown',e=>{if(e.key==='Escape')panel.classList.remove('open')});
+ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-six-action="rooms"]');if(b)open();});
+})();
 </script>
 </body>
 </html>
