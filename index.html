@@ -1040,6 +1040,14 @@ let music=false;
 let musicTimer=null;
 let audioCtx=null;
 
+/* مستويات الصوت المستقلة للموسيقى والمؤثرات */
+const SIX_AUDIO_KEY="six_cards_audio_settings_v1";
+let sixAudio={music:100,effects:100};
+try{sixAudio={...sixAudio,...JSON.parse(localStorage.getItem(SIX_AUDIO_KEY)||"{}")};}catch(e){}
+sixAudio.music=Math.max(0,Math.min(300,Number(sixAudio.music)||0));
+sixAudio.effects=Math.max(0,Math.min(300,Number(sixAudio.effects)||0));
+function saveSixAudio(){try{localStorage.setItem(SIX_AUDIO_KEY,JSON.stringify(sixAudio));}catch(e){}}
+
 let recorder=null;
 let recordedChunks=[];
 let recordedBlob=null;
@@ -1760,7 +1768,7 @@ return audioCtx;
 }
 
 
-function tone(f,d,v){
+function tone(f,d,v,channel){
 
 let c=getAudio();
 
@@ -1773,8 +1781,8 @@ let g=c.createGain();
 o.type="sawtooth";
 
 o.frequency.value=f;
-
-g.gain.value=v||.05;
+const level=(channel==="music"?sixAudio.music:sixAudio.effects)/100;
+g.gain.value=Math.max(0,Math.min(.95,(v||.05)*level));
 
 o.connect(g);
 
@@ -1791,10 +1799,10 @@ o.stop(c.currentTime+d);
 
 function cardSound(){
 
-tone(130,.07,.13);
+tone(130,.07,.13,"effects");
 
 setTimeout(
-()=>tone(380,.08,.09),
+()=>tone(380,.08,.09,"effects"),
 60
 );
 
@@ -1812,7 +1820,7 @@ function pileSound(){
 .forEach(
 (n,i)=>
 setTimeout(
-()=>tone(n,.16,.12),
+()=>tone(n,.16,.12,"effects"),
 i*80
 )
 );
@@ -1849,7 +1857,8 @@ notes[
 pos++%notes.length
 ],
 .16,
-.045
+.045,
+"music"
 );
 
 },
@@ -1907,7 +1916,7 @@ clearInterval(musicTimer);
 ].forEach(
 (n,i)=>
 setTimeout(
-()=>tone(n,.28,.11),
+()=>tone(n,.28,.11,"effects"),
 i*150
 )
 );
@@ -2429,6 +2438,18 @@ if($("easy")&&$("medium")&&$("hard")){
  addGameAction("🎵 تشغيل/إيقاف الموسيقى","musicBtn");
  addGameAction("👁️ تسليم الدور","passBtn");
  addGameAction("📖 قواعد اللعبة","rulesBtn");
+ /* تحكم مستقل في مستوى الموسيقى والمؤثرات الصوتية */
+ function addSixAudioControl(label,key){
+  const wrap=document.createElement("label");
+  wrap.style.display="block";wrap.style.width="100%";wrap.style.marginTop="10px";
+  const value=document.createElement("span");value.textContent=sixAudio[key]+"%";
+  wrap.appendChild(document.createTextNode(label+" "));wrap.appendChild(value);
+  const range=document.createElement("input");range.type="range";range.min="0";range.max="300";range.step="5";range.value=String(sixAudio[key]);range.style.width="100%";
+  range.addEventListener("input",()=>{sixAudio[key]=Number(range.value);value.textContent=range.value+"%";saveSixAudio();});
+  gameButtons.appendChild(wrap);wrap.appendChild(range);
+ }
+ addSixAudioControl("🎵 مستوى الموسيقى","music");
+ addSixAudioControl("🃏 مستوى أصوات الورق والمؤثرات","effects");
 }else if($("soundToggle")){
  gameControls.style.display="block";
  addGameAction("🔊 تشغيل/إيقاف الصوت","soundToggle");
