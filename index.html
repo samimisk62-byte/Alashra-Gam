@@ -1771,60 +1771,40 @@ return audioCtx;
 function tone(f,d,v,channel){
 
 let c=getAudio();
-
 if(!c)return;
-
 let o=c.createOscillator();
-
 let g=c.createGain();
-
-o.type="sawtooth";
-
-o.frequency.value=f;
+let now=c.currentTime;
 const level=(channel==="music"?sixAudio.music:sixAudio.effects)/100;
-g.gain.value=Math.max(0,Math.min(.95,(v||.05)*level));
-
+const peak=Math.max(0,Math.min(.72,(v||.05)*level));
+o.type=channel==="music"?"triangle":"sine";
+o.frequency.setValueAtTime(f,now);
+g.gain.setValueAtTime(.0001,now);
+g.gain.exponentialRampToValueAtTime(Math.max(.0002,peak),now+.025);
+g.gain.exponentialRampToValueAtTime(.0001,now+Math.max(.06,d));
 o.connect(g);
-
 g.connect(c.destination);
-
-o.start();
-
-o.stop(c.currentTime+d);
-
+o.start(now);
+o.stop(now+Math.max(.07,d+.02));
 }
 
 
 /* صوت الورقة */
 
 function cardSound(){
-
-tone(130,.07,.13,"effects");
-
-setTimeout(
-()=>tone(380,.08,.09,"effects"),
-60
-);
-
+/* تقليبة ورق سريعة: خبطة دافئة ثم رنين خفيف */
+tone(175,.09,.18,"effects");
+setTimeout(()=>tone(520,.075,.10,"effects"),35);
+setTimeout(()=>tone(760,.045,.055,"effects"),72);
 }
 
 
 /* صوت أخذ الكومة */
 
 function pileSound(){
-
-[
-392,494,587,659,
-784,988,1175
-]
-.forEach(
-(n,i)=>
-setTimeout(
-()=>tone(n,.16,.12,"effects"),
-i*80
-)
-);
-
+/* جملة شرقية صاعدة عند جمع الكومة */
+[[330,.13,.10],[392,.13,.11],[440,.15,.12],[523,.18,.14],[494,.13,.10],[587,.24,.15]]
+.forEach((n,i)=>setTimeout(()=>tone(n[0],n[1],n[2],"effects"),i*95));
 }
 
 
@@ -1839,32 +1819,17 @@ if(music)return;
 music=true;
 
 let notes=[
-262,330,392,523,
-392,330,440,523,
-659,523,440,659,
-784,659,523,440,
-330,392,523,659,
-784,659,523,392
+[330,.30],[349,.16],[415,.30],[440,.16],
+[415,.24],[349,.20],[330,.30],[294,.18],
+[330,.24],[392,.18],[415,.30],[494,.18],
+[440,.24],[415,.18],[349,.28],[330,.34],
+[294,.20],[330,.20],[349,.28],[415,.34]
 ];
-
 let pos=0;
-
-musicTimer=setInterval(
-()=>{
-
-tone(
-notes[
-pos++%notes.length
-],
-.16,
-.045,
-"music"
-);
-
-},
-190
-);
-
+musicTimer=setInterval(()=>{
+const note=notes[pos++%notes.length];
+tone(note[0],note[1],.075,"music");
+},310);
 updateMusic();
 
 }
@@ -1910,16 +1875,8 @@ music=false;
 
 clearInterval(musicTimer);
 
-[
-523,659,784,
-988,1175,1318
-].forEach(
-(n,i)=>
-setTimeout(
-()=>tone(n,.28,.11,"effects"),
-i*150
-)
-);
+[[415,.20],[440,.20],[494,.24],[523,.30],[415,.42]]
+.forEach((n,i)=>setTimeout(()=>tone(n[0],n[1],.12,"effects"),i*145));
 
 }
 
